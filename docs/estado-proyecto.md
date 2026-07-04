@@ -10,19 +10,25 @@ Valorianvaelum/AuraNails
 
 ## Estado general
 
-Etapa inicial.
+Proyecto en etapa inicial.
 
-El proyecto se encuentra en fase de definición documental y planificación técnica.
+La base documental ya fue creada y se comenzó la preparación de la Capa 1: setup técnico inicial.
 
-Todavía no hay código productivo.
+Todavía no hay módulos de negocio.
 
 ## Capa actual
 
+### Capa 1 - Setup técnico inicial
+
+Estado: en preparación.
+
+## Capas
+
 ### Capa 0 - Base documental
 
-Estado: en curso.
+Estado: validada inicialmente.
 
-## Avances realizados
+Avances:
 
 - Repositorio creado.
 - README inicial agregado.
@@ -33,26 +39,27 @@ Estado: en curso.
 - Roadmap por capas definido.
 - Stack técnico recomendado definido.
 
-## Pendientes de Capa 0
-
-- Revisar documentación con criterio de simplicidad.
-- Ajustar nombres de módulos si hace falta.
-- Confirmar alcance del MVP.
-- Definir primera estructura de carpetas para backend y frontend.
-
-## Próxima capa
-
 ### Capa 1 - Setup técnico inicial
 
-Objetivo:
+Estado: iniciada.
 
-- Crear estructura base del proyecto.
-- Configurar backend Django.
-- Configurar frontend React/Vite.
-- Configurar PostgreSQL.
-- Configurar Docker Compose.
-- Agregar archivos `.env.example`.
-- Documentar cómo levantar el proyecto localmente.
+Avances:
+
+- Dependencias backend agregadas.
+- Dockerfile backend agregado.
+- Documento de Capa 1 agregado.
+
+Pendientes:
+
+- Crear proyecto Django base.
+- Crear proyecto React/Vite base.
+- Crear configuración Docker Compose.
+- Crear archivos de entorno de ejemplo.
+- Documentar comandos locales.
+
+## Próximo objetivo
+
+Completar Capa 1 y dejar el proyecto ejecutable localmente.
 
 ## Riesgos detectados
 
