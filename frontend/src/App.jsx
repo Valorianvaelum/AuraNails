@@ -7,6 +7,7 @@ import ClientaDetailPage from "./pages/ClientaDetailPage.jsx";
 import ClientaFormPage from "./pages/ClientaFormPage.jsx";
 import ClientasPage from "./pages/ClientasPage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
+import ServiciosPage from "./pages/ServiciosPage.jsx";
 
 function RedirectBySession() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -31,6 +32,7 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       />
+      <Route path="/servicios/*" element={<ProtectedRoute><ServiciosPage /></ProtectedRoute>} />
       <Route
         path="/clientas"
         element={
