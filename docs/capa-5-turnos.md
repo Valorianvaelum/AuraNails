@@ -1,42 +1,51 @@
-# Capa 5: Turnos
+# Capa 5 — Turnos
 
-## Objetivo y alcance
+## Estado
 
-Permite a cada usuaria administrar sus propios turnos: listado diario, filtros, alta, detalle, edición, reprogramación y los cambios de estado habilitados. No incluye calendario avanzado, recordatorios, pagos, señas ni notificaciones.
+**Cerrada y estable.**
 
-## Datos y reglas aplicadas
+Commits de referencia:
 
-Cada turno pertenece a una propietaria y a una clienta de esa misma propietaria. Debe incluir uno o más servicios propios y activos al crearse. Se guarda una copia del nombre, duración y precio de los servicios elegidos para conservar el historial aunque el servicio cambie después.
+```text
+525d416 feat: agregar modulo de turnos
+bc574fb fix: mejorar consulta y experiencia de turnos
+```
 
-La duración y el precio estimado se calculan en el backend. Al crear no se admite una fecha pasada. Dos turnos no cancelados de la misma propietaria no pueden ocupar intervalos que se superpongan; los horarios consecutivos sí están permitidos. Un turno cancelado conserva su información y deja libre su horario.
+## Capacidades cerradas
 
-Los estados implementados son `pendiente`, `confirmado`, `reprogramado`, `cancelado`, `realizado` y `no_vino`. La correspondencia visible es Finalizado / Realizado → `realizado` y No vino → `no_vino`. Solo el backend puede aplicar las siguientes transiciones:
+- Listado global de turnos, con próximos turnos priorizados.
+- Filtro opcional por fecha, filtros por estado y búsqueda parcial por nombre de clienta.
+- Combinación de filtros por intersección y acción para limpiarlos.
+- Alta, detalle, edición y reprogramación controlada.
+- Detección de superposiciones; los turnos cancelados liberan su horario.
+- Snapshot histórico de servicios, duración y precio estimado.
+- Aislamiento por propietaria y respuesta `404` para recursos ajenos.
+- Transiciones controladas: `confirmar`, `cancelar`, `realizar` y `no_vino`.
+- Estados terminales: `cancelado`, `realizado` y `no_vino`.
+- Validaciones temporales: no se puede realizar ni marcar como no vino un turno futuro.
+- Integración frontend con carga, errores, vacíos, filtros y acciones contextuales.
+- Saludo personalizado seguro en el dashboard.
+- Campo de Servicios aclarado como “Posición en la lista”.
 
-- Pendiente o reprogramado a confirmado.
-- Pendiente, confirmado o reprogramado a cancelado.
-- Confirmado o reprogramado a realizado.
-- Pendiente, confirmado o reprogramado a no vino, únicamente cuando su inicio ya ocurrió.
-- Un turno cancelado, realizado o no vino no se puede editar ni reprogramar, ni cambiar nuevamente de estado.
+## Reglas operativas
 
-No se puede marcar como realizado ni como no vino un turno cuyo inicio todavía es futuro.
+Un turno pertenece a una propietaria y a una clienta propia. Debe incluir uno o más servicios propios y activos al crearse. La duración y el precio estimado se derivan de los servicios, y su snapshot queda preservado aunque esos servicios cambien posteriormente.
 
-La reprogramación recibe únicamente `inicio`; recalcula el fin con la duración ya guardada y no modifica clienta, servicios ni notas.
+Dos turnos no cancelados de la misma propietaria no pueden superponerse; los horarios consecutivos sí están permitidos. La reprogramación recibe únicamente `inicio`, recalcula `fin` con la duración guardada y no modifica clienta, servicios ni notas.
 
-## API y aislamiento
+La correspondencia visible es Finalizado / Realizado → `realizado` y No vino → `no_vino`. `cancelado` y `no_vino` son estados distintos: el primero registra una cancelación y el segundo una ausencia.
 
-- `GET /api/turnos/` admite `fecha`, `desde`, `hasta`, `estado`, `search` y `ordering=-inicio`.
-- `POST /api/turnos/`
-- `GET`, `PATCH /api/turnos/:id/`
-- `POST /api/turnos/:id/confirmar/`
-- `POST /api/turnos/:id/cancelar/`
-- `POST /api/turnos/:id/realizar/`
-- `POST /api/turnos/:id/no-vino/`
-- `POST /api/turnos/:id/reprogramar/`
+## Validaciones registradas
 
-Todos los endpoints requieren sesión. El queryset se limita siempre a `propietaria=request.user`, por lo que un identificador ajeno responde `404`. No se expone `DELETE`.
+- `manage.py check` — OK.
+- Migraciones sin cambios pendientes.
+- Tests específicos de Turnos — 9/9 OK.
+- Suite backend — 42/42 OK.
+- Lint frontend — OK.
+- Build frontend — OK.
+- `docker-compose config` — OK.
+- `git diff --check` — OK.
 
-## Frontend
+## Riesgo no bloqueante
 
-Las rutas privadas son `/turnos`, `/turnos/nuevo`, `/turnos/:id`, `/turnos/:id/editar` y `/turnos/:id/reprogramar`. El listado permite navegar por día y filtrar por estado o clienta. Formularios, detalle y reprogramación informan carga, errores de API y estados sin resultados.
-
-Al editar, se muestran también las clientas inactivas y servicios pausados ya disponibles para no ocultar datos vinculados a un turno existente. Al crear, sólo se ofrecen clientas activas y servicios activos.
+No se pudo completar el smoke test con contenedores en ejecución por falta de acceso local al daemon de Docker. La configuración Compose sí fue validada. Este punto queda como verificación operativa pendiente y no como defecto confirmado del módulo.
