@@ -15,19 +15,24 @@ const claseEstado = (estado) => estado === "no_vino"
   : "text-sm";
 
 function ListaTurnos() {
-  const [fecha, setFecha] = useState(hoy());
+  const [fecha, setFecha] = useState("");
   const [estado, setEstado] = useState("");
   const [busqueda, setBusqueda] = useState("");
   const [turnos, setTurnos] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
+  const tieneFiltros = Boolean(fecha || estado || busqueda.trim());
 
   useEffect(() => {
     let vigente = true;
+    const parametros = {};
+    if (fecha) parametros.fecha = fecha;
+    if (estado) parametros.estado = estado;
+    if (busqueda.trim()) parametros.search = busqueda.trim();
+
     setCargando(true);
     setError("");
-
-    listarTurnos({ fecha, estado, search: busqueda.trim() })
+    listarTurnos(parametros)
       .then((data) => {
         if (vigente) setTurnos(data);
       })
@@ -47,9 +52,16 @@ function ListaTurnos() {
   }, [busqueda, estado, fecha]);
 
   const moverDia = (cantidad) => {
-    const proximaFecha = new Date(`${fecha}T12:00:00`);
+    const base = fecha || hoy();
+    const proximaFecha = new Date(`${base}T12:00:00`);
     proximaFecha.setDate(proximaFecha.getDate() + cantidad);
     setFecha(proximaFecha.toLocaleDateString("en-CA"));
+  };
+
+  const limpiarFiltros = () => {
+    setFecha("");
+    setEstado("");
+    setBusqueda("");
   };
 
   return (
@@ -64,13 +76,14 @@ function ListaTurnos() {
         </div>
 
         <div className="mt-5 grid gap-3 rounded-2xl border bg-white p-4 sm:grid-cols-2">
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap items-end gap-2">
             <button type="button" onClick={() => moverDia(-1)}>Día anterior</button>
             <button type="button" onClick={() => setFecha(hoy())}>Hoy</button>
             <button type="button" onClick={() => moverDia(1)}>Día siguiente</button>
+            {tieneFiltros && <button type="button" onClick={limpiarFiltros}>Limpiar filtros</button>}
           </div>
           <label className="grid gap-1 text-sm font-medium">
-            Día
+            Fecha
             <input type="date" value={fecha} onChange={(event) => setFecha(event.target.value)} />
           </label>
           <label className="grid gap-1 text-sm font-medium">
@@ -108,11 +121,9 @@ function ListaTurnos() {
             ))}
             {!turnos.length && (
               <p>
-                {busqueda
-                  ? "No encontramos turnos para esa búsqueda."
-                  : estado
-                    ? "No encontramos turnos con ese estado."
-                    : "No tenés turnos para este día."}
+                {tieneFiltros
+                  ? "No encontramos turnos con los filtros seleccionados."
+                  : "Todavía no tenés turnos registrados."}
               </p>
             )}
           </div>

@@ -128,7 +128,17 @@ class TurnosTests(TestCase):
     def test_lista_por_fecha_estado_y_busqueda(self):
         primer_turno = self.crear_turno()
         self.client.post(f"/api/turnos/{primer_turno['id']}/confirmar/")
-        self.crear_turno(inicio=(self.inicio + timedelta(days=1)).isoformat())
+        segundo_turno = self.crear_turno(inicio=(self.inicio + timedelta(days=1)).isoformat())
+        turno_pasado = self.crear_turno_pasado()
+        turno_ajeno = self.crear_turno_pasado(propietaria=self.otro_usuario)
+
+        listado_global = self.client.get("/api/turnos/")
+        self.assertEqual(listado_global.status_code, 200)
+        self.assertEqual(
+            [turno["id"] for turno in listado_global.data],
+            [primer_turno["id"], segundo_turno["id"], turno_pasado.id],
+        )
+        self.assertNotIn(turno_ajeno.id, [turno["id"] for turno in listado_global.data])
 
         fecha = self.inicio.date().isoformat()
         por_fecha = self.client.get("/api/turnos/", {"fecha": fecha})
@@ -138,8 +148,20 @@ class TurnosTests(TestCase):
         por_estado = self.client.get("/api/turnos/", {"estado": "confirmado"})
         self.assertEqual([turno["id"] for turno in por_estado.data], [primer_turno["id"]])
 
-        por_busqueda = self.client.get("/api/turnos/", {"search": "1111"})
-        self.assertEqual(len(por_busqueda.data), 2)
+        por_busqueda = self.client.get("/api/turnos/", {"search": "aN"})
+        self.assertEqual(len(por_busqueda.data), 3)
+
+        combinados = self.client.get(
+            "/api/turnos/",
+            {"fecha": fecha, "estado": "confirmado", "search": "ana"},
+        )
+        self.assertEqual([turno["id"] for turno in combinados.data], [primer_turno["id"]])
+
+        sin_coincidencias = self.client.get(
+            "/api/turnos/",
+            {"fecha": fecha, "estado": "cancelado", "search": "ana"},
+        )
+        self.assertEqual(list(sin_coincidencias.data), [])
 
     def test_transiciones_invalidas_bloquean_edicion_y_delete(self):
         turno = self.crear_turno()

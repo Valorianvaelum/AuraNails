@@ -1,4 +1,4 @@
-from django.db.models import Q
+from django.db.models import Case, IntegerField, Q, Value, When
 from django.utils import timezone
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
@@ -37,7 +37,18 @@ class TurnoViewSet(ModelViewSet):
                 | Q(clienta__telefono__icontains=params["search"])
             )
 
-        return queryset.order_by("-inicio" if params.get("ordering") == "-inicio" else "inicio")
+        if params.get("ordering") == "-inicio":
+            return queryset.order_by("-inicio")
+
+        if not any(params.get(name) for name in ("fecha", "desde", "hasta")):
+            proximidad = Case(
+                When(inicio__gte=timezone.now(), then=Value(0)),
+                default=Value(1),
+                output_field=IntegerField(),
+            )
+            return queryset.order_by(proximidad, "inicio")
+
+        return queryset.order_by("inicio")
 
     def _cambiar_estado(self, turno, estados_permitidos, nuevo_estado):
         if turno.estado not in estados_permitidos:

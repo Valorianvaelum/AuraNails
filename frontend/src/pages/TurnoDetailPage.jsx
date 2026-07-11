@@ -66,6 +66,7 @@ export default function TurnoDetailPage() {
 
   const sePuedeEditar = ["pendiente", "confirmado", "reprogramado"].includes(turno.estado);
   const turnoYaInicio = new Date(turno.inicio) <= new Date();
+  const noVinoPendienteDeHorario = sePuedeEditar && !turnoYaInicio;
   const avisoExito = location.state?.message;
 
   return (
@@ -85,6 +86,11 @@ export default function TurnoDetailPage() {
           <p>{turno.notas || "Sin notas."}</p>
           <p className="text-sm">Creado: {new Intl.DateTimeFormat("es-AR", { dateStyle: "medium" }).format(new Date(turno.creado_en))}</p>
           {error && <p className="mt-3 text-[#8b3f4c]">{error}</p>}
+          {noVinoPendienteDeHorario && (
+            <p className="mt-3 text-sm text-[#6f5b60]">
+              La opción “No vino” estará disponible después del horario de inicio.
+            </p>
+          )}
           {sePuedeEditar && (
             <div className="mt-5 flex flex-wrap gap-3">
               {turno.estado !== "confirmado" && (
