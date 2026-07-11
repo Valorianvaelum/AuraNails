@@ -2,9 +2,11 @@
 
 ## Estado
 
-La **Capa 6A — Modelo, reglas de negocio y API** está implementada y pendiente de validación final. La Capa 6B (frontend e integración con Turnos) y la Capa 6C (validación integral y recorrido manual) siguen pendientes. No existe todavía interfaz de Cobros.
+La **Capa 6A — Modelo, reglas de negocio y API** está implementada. La **Capa 6B — Frontend e integración con Turnos** está implementada y pendiente de validación final. La Capa 6C (validación integral y recorrido manual) sigue pendiente. Capa 6 no está cerrada.
 
 La implementación 6A incorpora un modelo de Cobro, migración, API privada de listado, creación, detalle y anulación explícita. Mantiene un único cobro activo por turno mediante constraint condicional y creación transaccional. Los importes y el nombre de clienta se conservan desde los datos históricos del turno.
+
+La implementación 6B incorpora cliente API, listado global con filtros opcionales, detalle, registro desde un turno realizado, anulación con motivo e integración del estado de cobro en el detalle de Turnos. No agrega estados financieros al Turno ni modifica las reglas backend de Cobros.
 
 ## Objetivo
 

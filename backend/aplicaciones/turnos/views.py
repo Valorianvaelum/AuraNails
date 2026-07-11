@@ -1,9 +1,11 @@
-from django.db.models import Case, IntegerField, Q, Value, When
+from django.db.models import Case, IntegerField, Prefetch, Q, Value, When
 from django.utils import timezone
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
+
+from aplicaciones.cobros.models import Cobro
 
 from .models import Turno
 from .serializers import ReprogramarTurnoSerializer, TurnoSerializer
@@ -18,7 +20,14 @@ class TurnoViewSet(ModelViewSet):
         queryset = (
             Turno.objects.filter(propietaria=self.request.user)
             .select_related("clienta")
-            .prefetch_related("turno_servicios")
+            .prefetch_related(
+                "turno_servicios",
+                Prefetch(
+                    "cobros",
+                    queryset=Cobro.objects.filter(estado=Cobro.Estado.REGISTRADO),
+                    to_attr="cobros_activos",
+                ),
+            )
         )
         params = self.request.query_params
 

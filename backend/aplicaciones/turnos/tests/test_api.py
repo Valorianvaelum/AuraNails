@@ -6,6 +6,7 @@ from django.utils import timezone
 from rest_framework.test import APIClient
 
 from aplicaciones.clientas.models import Clienta
+from aplicaciones.cobros.models import Cobro
 from aplicaciones.servicios.models import Servicio
 from aplicaciones.turnos.models import Turno
 
@@ -231,3 +232,30 @@ class TurnosTests(TestCase):
         )
         self.assertEqual(conflicto.status_code, 400)
         self.assertIn("inicio", conflicto.data)
+
+    def test_detalle_expone_cobro_activo_solo_para_turno_realizado(self):
+        turno = self.crear_turno_pasado(estado=Turno.Estado.REALIZADO)
+
+        sin_cobro = self.client.get(f"/api/turnos/{turno.id}/")
+        self.assertIsNone(sin_cobro.data["cobro_activo"])
+        self.assertTrue(sin_cobro.data["puede_registrar_cobro"])
+
+        cobro = Cobro.objects.create(
+            propietaria=self.usuario,
+            turno=turno,
+            importe="100.00",
+            clienta_nombre_historica="Ana",
+            metodo_pago=Cobro.MetodoPago.EFECTIVO,
+        )
+        con_cobro = self.client.get(f"/api/turnos/{turno.id}/")
+        self.assertEqual(con_cobro.data["cobro_activo"]["id"], cobro.id)
+        self.assertFalse(con_cobro.data["puede_registrar_cobro"])
+
+        cobro.estado = Cobro.Estado.ANULADO
+        cobro.anulado_en = timezone.now()
+        cobro.motivo_anulacion = "Error de carga"
+        cobro.anulado_por = self.usuario
+        cobro.save()
+        luego_de_anular = self.client.get(f"/api/turnos/{turno.id}/")
+        self.assertIsNone(luego_de_anular.data["cobro_activo"])
+        self.assertTrue(luego_de_anular.data["puede_registrar_cobro"])

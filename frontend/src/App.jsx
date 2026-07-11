@@ -6,6 +6,9 @@ import InicioPage from "./pages/InicioPage.jsx";
 import ClientaDetailPage from "./pages/ClientaDetailPage.jsx";
 import ClientaFormPage from "./pages/ClientaFormPage.jsx";
 import ClientasPage from "./pages/ClientasPage.jsx";
+import CobroDetailPage from "./pages/CobroDetailPage.jsx";
+import CobroFormPage from "./pages/CobroFormPage.jsx";
+import CobrosPage from "./pages/CobrosPage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
 import ServiciosPage from "./pages/ServiciosPage.jsx";
 import TurnosPage from "./pages/TurnosPage.jsx";
@@ -35,6 +38,9 @@ function AppRoutes() {
       />
       <Route path="/servicios/*" element={<ProtectedRoute><ServiciosPage /></ProtectedRoute>} />
       <Route path="/turnos/*" element={<ProtectedRoute><TurnosPage /></ProtectedRoute>} />
+      <Route path="/cobros" element={<ProtectedRoute><CobrosPage /></ProtectedRoute>} />
+      <Route path="/cobros/nuevo" element={<ProtectedRoute><CobroFormPage /></ProtectedRoute>} />
+      <Route path="/cobros/:id" element={<ProtectedRoute><CobroDetailPage /></ProtectedRoute>} />
       <Route
         path="/clientas"
         element={

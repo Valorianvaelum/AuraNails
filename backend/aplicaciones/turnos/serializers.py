@@ -6,6 +6,7 @@ from django.utils import timezone
 from rest_framework import serializers
 
 from aplicaciones.clientas.models import Clienta
+from aplicaciones.cobros.models import Cobro
 from aplicaciones.servicios.models import Servicio
 
 from .models import Turno, TurnoServicio
@@ -35,6 +36,8 @@ class TurnoSerializer(serializers.ModelSerializer):
     clienta = serializers.SerializerMethodField()
     duracion_legible = serializers.SerializerMethodField()
     estado_display = serializers.CharField(source="get_estado_display", read_only=True)
+    cobro_activo = serializers.SerializerMethodField()
+    puede_registrar_cobro = serializers.SerializerMethodField()
 
     class Meta:
         model = Turno
@@ -46,6 +49,8 @@ class TurnoSerializer(serializers.ModelSerializer):
             "fin",
             "estado",
             "estado_display",
+            "cobro_activo",
+            "puede_registrar_cobro",
             "servicios",
             "servicios_ids",
             "duracion_total_minutos",
@@ -77,6 +82,26 @@ class TurnoSerializer(serializers.ModelSerializer):
 
     def get_duracion_legible(self, turno):
         return duracion_legible(turno.duracion_total_minutos)
+
+    @staticmethod
+    def _cobro_activo(turno):
+        cobros_activos = getattr(turno, "cobros_activos", None)
+        if cobros_activos is not None:
+            return cobros_activos[0] if cobros_activos else None
+        return turno.cobros.filter(estado=Cobro.Estado.REGISTRADO).first()
+
+    def get_cobro_activo(self, turno):
+        cobro = self._cobro_activo(turno)
+        if not cobro:
+            return None
+        return {
+            "id": cobro.id,
+            "importe": str(cobro.importe),
+            "creado_en": cobro.creado_en,
+        }
+
+    def get_puede_registrar_cobro(self, turno):
+        return turno.estado == Turno.Estado.REALIZADO and not self._cobro_activo(turno)
 
     def validate(self, attrs):
         user = self.context["request"].user

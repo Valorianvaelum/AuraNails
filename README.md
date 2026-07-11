@@ -48,4 +48,4 @@ No existe eliminación física de Clientas, Servicios ni Turnos. Cobros, Product
 
 ## Próxima etapa
 
-La **Capa 6A — Cobros de turnos** incorpora el backend de modelo, reglas de negocio y API. La interfaz e integración visual con Turnos siguen pendientes para Capa 6B. El alcance completo está en [Capa 6](docs/capa-6-cobros.md).
+La **Capa 6A — Cobros de turnos** incorpora el backend de modelo, reglas de negocio y API. La **Capa 6B** incorpora listado, detalle, registro, anulación e integración visual con Turnos; queda pendiente de validación final. El alcance completo está en [Capa 6](docs/capa-6-cobros.md).

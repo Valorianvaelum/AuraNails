@@ -32,4 +32,4 @@ El smoke test con contenedores en ejecución queda pendiente por falta de acceso
 
 ## Próxima etapa
 
-**Capa 6 — Cobros de turnos**. La [Capa 6A](capa-6-cobros.md) implementa modelo, reglas de negocio y API backend, pendiente de validación final. Capa 6B (frontend e integración con Turnos) y Capa 6C (validación integral y recorrido manual) siguen pendientes. No existe todavía interfaz de Cobros.
+**Capa 6 — Cobros de turnos**. La [Capa 6A](capa-6-cobros.md) implementa modelo, reglas de negocio y API backend. La Capa 6B implementa el frontend de Cobros y su integración visual con Turnos, pendiente de validación final. Capa 6C (validación integral y recorrido manual) sigue pendiente. Capa 6 no está cerrada.

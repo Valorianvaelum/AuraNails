@@ -18,9 +18,10 @@ function AppHeader() {
         </NavLink>
         <nav className="flex flex-wrap items-center justify-center gap-1" aria-label="Navegación principal">
           <NavLink className={linkClassName} to="/inicio">Inicio</NavLink>
-          <NavLink className={linkClassName} to="/turnos">Turnos</NavLink>
           <NavLink className={linkClassName} to="/clientas">Clientas</NavLink>
           <NavLink className={linkClassName} to="/servicios">Servicios</NavLink>
+          <NavLink className={linkClassName} to="/turnos">Turnos</NavLink>
+          <NavLink className={linkClassName} to="/cobros">Cobros</NavLink>
           <button
             className="rounded-lg px-3 py-2 text-sm font-semibold text-[#7d4e57] transition hover:bg-[#fff0f1] focus:outline-none focus:ring-4 focus:ring-[#f4dce0]"
             type="button"

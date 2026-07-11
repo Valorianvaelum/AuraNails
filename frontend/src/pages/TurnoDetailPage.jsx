@@ -68,6 +68,7 @@ export default function TurnoDetailPage() {
   const turnoYaInicio = new Date(turno.inicio) <= new Date();
   const noVinoPendienteDeHorario = sePuedeEditar && !turnoYaInicio;
   const avisoExito = location.state?.message;
+  const cobroActivo = turno.cobro_activo;
 
   return (
     <main className="min-h-screen bg-[#fff8f7] text-[#3d2f32]">
@@ -85,6 +86,18 @@ export default function TurnoDetailPage() {
           <p>{turno.duracion_legible} · {dinero(turno.precio_estimado)}</p>
           <p>{turno.notas || "Sin notas."}</p>
           <p className="text-sm">Creado: {new Intl.DateTimeFormat("es-AR", { dateStyle: "medium" }).format(new Date(turno.creado_en))}</p>
+          {turno.estado !== "realizado" && <p className="mt-4 text-sm text-[#6f5b60]">El cobro estará disponible cuando el turno se marque como realizado.</p>}
+          {turno.estado === "realizado" && (
+            <div className="mt-5 rounded-xl bg-[#fff8f7] p-4">
+              {cobroActivo ? (
+                <><p className="font-semibold text-[#356640]">Cobrado</p><p className="text-sm">{dinero(cobroActivo.importe)}</p><Link className="mt-2 inline-block font-semibold underline" to={`/cobros/${cobroActivo.id}`}>Ver cobro</Link></>
+              ) : turno.puede_registrar_cobro ? (
+                <><p className="font-semibold">Este turno todavía no tiene un cobro activo.</p><Link className="mt-2 inline-block rounded-xl bg-[#b76e79] px-4 py-2 font-semibold text-white" to={`/cobros/nuevo?turno=${id}`}>Registrar cobro</Link></>
+              ) : (
+                <p>No pudimos determinar la disponibilidad de cobro para este turno.</p>
+              )}
+            </div>
+          )}
           {error && <p className="mt-3 text-[#8b3f4c]">{error}</p>}
           {noVinoPendienteDeHorario && (
             <p className="mt-3 text-sm text-[#6f5b60]">
