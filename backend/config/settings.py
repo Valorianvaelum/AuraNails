@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     "aplicaciones.clientas",
     "aplicaciones.servicios",
     "aplicaciones.turnos",
+    "aplicaciones.cobros",
 ]
 
 MIDDLEWARE = [

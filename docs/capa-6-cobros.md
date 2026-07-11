@@ -2,7 +2,9 @@
 
 ## Estado
 
-Planificada. Este documento define el contrato previo a la implementación; no crea modelos, API, pantallas ni reglas activas.
+La **Capa 6A — Modelo, reglas de negocio y API** está implementada y pendiente de validación final. La Capa 6B (frontend e integración con Turnos) y la Capa 6C (validación integral y recorrido manual) siguen pendientes. No existe todavía interfaz de Cobros.
+
+La implementación 6A incorpora un modelo de Cobro, migración, API privada de listado, creación, detalle y anulación explícita. Mantiene un único cobro activo por turno mediante constraint condicional y creación transaccional. Los importes y el nombre de clienta se conservan desde los datos históricos del turno.
 
 ## Objetivo
 
