@@ -10,6 +10,7 @@ AuraNails es una web app simple para manicuras y pequeños estudios de uñas. El
 - Capa 1 setup técnico inicial: completada.
 - Capa 2 usuarios y autenticación: completada.
 - Capa 3 clientas: implementada, pendiente de validación y commit.
+- Capa 4 servicios: implementada, pendiente de validación y commit.
 
 ## Estado actual
 

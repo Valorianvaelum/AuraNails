@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt",
     "aplicaciones.usuarios",
     "aplicaciones.clientas",
+    "aplicaciones.servicios",
 ]
 
 MIDDLEWARE = [

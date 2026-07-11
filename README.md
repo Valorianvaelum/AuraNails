@@ -65,3 +65,7 @@ API de clientas:
 - `POST /api/clientas/:id/reactivar/`
 
 No se expone eliminación física. Los módulos de Turnos, Servicios, Cobros, Productos y Fotos siguen fuera de alcance.
+
+## Servicios
+
+La Capa 4 incorpora servicios privados por usuaria, con duración, precio, orden visual y estado activo o pausado. Consultá `docs/capa-4-servicios.md` para las rutas y reglas.
