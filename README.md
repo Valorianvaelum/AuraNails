@@ -46,6 +46,22 @@ cd backend
 
 La sesión inicial se conserva en el almacenamiento del navegador mediante access y refresh tokens. Esta decisión está documentada en `docs/capa-2-autenticacion.md` y podrá evolucionar en capas posteriores.
 
-## Estado funcional
+## Clientas
 
-La Capa 2 incorpora usuarios personalizados, autenticación JWT y las rutas privadas `/inicio`. Aún no existen módulos de negocio para Turnos, Clientas, Servicios, Productos, Dinero o Fotos.
+La Capa 3 incorpora el módulo privado de Clientas: alta, búsqueda, edición, detalle, desactivación y reactivación. Cada cuenta solamente puede consultar y modificar sus propias clientas.
+
+Rutas privadas del frontend:
+
+- `/clientas`
+- `/clientas/nueva`
+- `/clientas/:id`
+- `/clientas/:id/editar`
+
+API de clientas:
+
+- `GET` y `POST /api/clientas/`
+- `GET` y `PATCH /api/clientas/:id/`
+- `POST /api/clientas/:id/desactivar/`
+- `POST /api/clientas/:id/reactivar/`
+
+No se expone eliminación física. Los módulos de Turnos, Servicios, Cobros, Productos y Fotos siguen fuera de alcance.
