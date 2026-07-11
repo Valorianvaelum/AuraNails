@@ -43,9 +43,10 @@ cd backend
 - Clientas: gestión privada por usuaria.
 - Servicios: duración, precio, estado y posición en la lista.
 - Turnos: Capa 5 cerrada y estable. Incluye listado global, filtros opcionales, alta, detalle, edición, reprogramación y acciones de estado controladas. Consultá [Capa 5](docs/capa-5-turnos.md).
+- Cobros: Capa 6 cerrada y estable. Incluye registro desde turnos realizados, historial, anulación con motivo, listado global e integración con Turnos. Consultá [Capa 6](docs/capa-6-cobros.md).
 
-No existe eliminación física de Clientas, Servicios ni Turnos. Cobros, Productos y Fotos siguen fuera de la implementación actual.
+No existe eliminación física de Clientas, Servicios, Turnos ni Cobros. Productos y Fotos siguen fuera de la implementación actual.
 
-## Próxima etapa
+## Estado de Cobros
 
-La Capa 6 planificada es **Cobros de turnos**. Su alcance, límites y criterios de aceptación están definidos en [Capa 6](docs/capa-6-cobros.md); todavía no está implementada.
+La Capa 6 está cerrada con validación técnica completa. El smoke test Docker y recorrido manual quedan pendientes por falta de acceso local al daemon; la configuración Compose fue validada.

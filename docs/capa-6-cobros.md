@@ -2,7 +2,33 @@
 
 ## Estado
 
-Planificada. Este documento define el contrato previo a la implementación; no crea modelos, API, pantallas ni reglas activas.
+**Capa 6 — Cobros: cerrada y estable.**
+
+Commits de referencia:
+
+```text
+a5554d6 feat: agregar backend de cobros
+6df2dbe feat: agregar frontend de cobros
+```
+
+La Capa 6A implementa modelo, reglas de negocio y API. La Capa 6B implementa listado, detalle, registro, anulación e integración con Turnos. La validación técnica de Capa 6C finalizó correctamente; el recorrido manual y runtime Docker no pudieron ejecutarse por falta de acceso local al daemon.
+
+La implementación 6A incorpora un modelo de Cobro, migración, API privada de listado, creación, detalle y anulación explícita. Mantiene un único cobro activo por turno mediante constraint condicional y creación transaccional. Los importes y el nombre de clienta se conservan desde los datos históricos del turno.
+
+La implementación 6B incorpora cliente API, listado global con filtros opcionales, detalle, registro desde un turno realizado, anulación con motivo e integración del estado de cobro en el detalle de Turnos. No agrega estados financieros al Turno ni modifica las reglas backend de Cobros.
+
+## Validaciones de cierre
+
+- `manage.py check` — OK.
+- Migraciones sin cambios pendientes.
+- Tests de Cobros — 9/9 OK.
+- Tests de Turnos — 10/10 OK.
+- Suite backend — 52/52 OK.
+- Lint y build frontend — OK.
+- `docker-compose config` — OK.
+- `git diff --check` — OK.
+
+El daemon Docker no permitió ejecutar `docker-compose ps`, por lo que no se afirma validación runtime ni recorrido manual. Es una limitación operativa local, no un defecto funcional confirmado.
 
 ## Objetivo
 

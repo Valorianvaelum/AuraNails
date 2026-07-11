@@ -12,6 +12,7 @@ AuraNails es una web app simple para manicuras y pequeños estudios de uñas. El
 - Capa 3 clientas: implementada.
 - Capa 4 servicios: implementada.
 - Capa 5 — Turnos: **cerrada y estable**.
+- Capa 6 — Cobros: **cerrada y estable**.
 
 ## Capa 5 — Turnos
 
@@ -32,4 +33,15 @@ El smoke test con contenedores en ejecución queda pendiente por falta de acceso
 
 ## Próxima etapa
 
-**Capa 6 — Cobros de turnos**. El contrato previo a su implementación está en [capa-6-cobros.md](capa-6-cobros.md). La futura rama única será `capa-6-cobros`; no se creó todavía.
+**Capa 6 — Cobros de turnos: cerrada y estable.**
+
+Commits de referencia:
+
+```text
+a5554d6 feat: agregar backend de cobros
+6df2dbe feat: agregar frontend de cobros
+```
+
+Incluye cobro desde turno realizado, importe histórico, un cobro activo por turno, anulación con motivo, nuevo cobro posterior a una anulación, aislamiento por propietaria, listado global con filtros opcionales, detalle histórico e integración con Turnos. No expone edición ni eliminación de cobros.
+
+Las validaciones técnicas de Cobros, Turnos, suite backend, lint, build, migraciones y Compose config finalizaron correctamente. El recorrido manual y el runtime Docker quedan pendientes por falta de acceso local al daemon, sin defecto funcional confirmado.

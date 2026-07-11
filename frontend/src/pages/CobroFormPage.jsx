@@ -1,0 +1,129 @@
+import { useEffect, useState } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
+
+import { registrarCobro } from "../api/cobros.js";
+import { obtenerTurno } from "../api/turnos.js";
+import AppHeader from "../components/AppHeader.jsx";
+
+const dinero = (value) => new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 2 }).format(value);
+const fechaHora = (value) => new Intl.DateTimeFormat("es-AR", { dateStyle: "long", timeStyle: "short" }).format(new Date(value));
+
+function mensajeDeError(error, predeterminado) {
+  const data = error.response?.data;
+  if (typeof data?.detail === "string") return data.detail;
+  for (const value of Object.values(data || {})) {
+    if (Array.isArray(value) && typeof value[0] === "string") return value[0];
+  }
+  return predeterminado;
+}
+
+export default function CobroFormPage() {
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const turnoId = searchParams.get("turno");
+  const [turno, setTurno] = useState(null);
+  const [metodoPago, setMetodoPago] = useState("efectivo");
+  const [detalleMetodo, setDetalleMetodo] = useState("");
+  const [cargando, setCargando] = useState(true);
+  const [guardando, setGuardando] = useState(false);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (!turnoId) {
+      setError("Necesitás indicar un turno para registrar el cobro.");
+      setCargando(false);
+      return;
+    }
+    let vigente = true;
+    obtenerTurno(turnoId)
+      .then((data) => {
+        if (vigente) setTurno(data);
+      })
+      .catch((requestError) => {
+        if (vigente) setError(requestError.response?.status === 404 ? "No encontramos este turno." : "No pudimos cargar el turno.");
+      })
+      .finally(() => {
+        if (vigente) setCargando(false);
+      });
+    return () => {
+      vigente = false;
+    };
+  }, [turnoId]);
+
+  const puedeRegistrar = turno?.estado === "realizado" && turno?.puede_registrar_cobro;
+
+  const guardar = async (event) => {
+    event.preventDefault();
+    setError("");
+    if (!puedeRegistrar) {
+      setError("Este turno no está disponible para registrar un cobro.");
+      return;
+    }
+    if (metodoPago === "otro" && !detalleMetodo.trim()) {
+      setError("Ingresá un detalle para el método de pago Otro.");
+      return;
+    }
+    if (!window.confirm(`Vas a registrar un cobro por ${dinero(turno.precio_estimado)} para este turno.`)) return;
+
+    setGuardando(true);
+    try {
+      const cobro = await registrarCobro({
+        turno_id: Number(turnoId),
+        metodo_pago: metodoPago,
+        detalle_metodo: detalleMetodo.trim(),
+      });
+      navigate(`/cobros/${cobro.id}`, { state: { message: "Cobro registrado correctamente." } });
+    } catch (requestError) {
+      setError(mensajeDeError(requestError, "No pudimos registrar el cobro. Intentá nuevamente."));
+    } finally {
+      setGuardando(false);
+    }
+  };
+
+  return (
+    <main className="min-h-screen bg-[#fff8f7] text-[#3d2f32]">
+      <AppHeader />
+      <section className="mx-auto max-w-3xl px-5 py-8">
+        <Link to={turnoId ? `/turnos/${turnoId}` : "/turnos"}>Volver al turno</Link>
+        <h1 className="mt-4 text-3xl font-semibold">Registrar cobro</h1>
+        {cargando && <p className="mt-5">Cargando información del turno...</p>}
+        {!cargando && error && !turno && <p className="mt-5 text-[#8b3f4c]">{error}</p>}
+        {!cargando && turno && !puedeRegistrar && (
+          <div className="mt-5 rounded-2xl border bg-white p-6">
+            <p>El cobro solo está disponible para un turno realizado sin cobro activo.</p>
+            {turno.cobro_activo && <Link className="mt-3 inline-block font-semibold underline" to={`/cobros/${turno.cobro_activo.id}`}>Ver cobro activo</Link>}
+          </div>
+        )}
+        {!cargando && turno && puedeRegistrar && (
+          <form className="mt-5 space-y-5 rounded-2xl border bg-white p-6" onSubmit={guardar}>
+            <div className="rounded-xl bg-[#fff8f7] p-4">
+              <p className="font-semibold">{turno.clienta.nombre_completo}</p>
+              <p>{fechaHora(turno.inicio)} · {turno.duracion_legible}</p>
+              <p>{turno.servicios.map((servicio) => servicio.nombre).join(", ")}</p>
+              <p className="mt-2 text-lg font-semibold">Importe: {dinero(turno.precio_estimado)}</p>
+            </div>
+            <label className="grid gap-1">
+              Método de pago
+              <select value={metodoPago} onChange={(event) => setMetodoPago(event.target.value)}>
+                <option value="efectivo">Efectivo</option>
+                <option value="transferencia">Transferencia</option>
+                <option value="tarjeta">Tarjeta</option>
+                <option value="otro">Otro</option>
+              </select>
+            </label>
+            {metodoPago === "otro" && (
+              <label className="grid gap-1">
+                Detalle del método
+                <input required value={detalleMetodo} onChange={(event) => setDetalleMetodo(event.target.value)} />
+              </label>
+            )}
+            {error && <p className="text-[#8b3f4c]">{error}</p>}
+            <button disabled={guardando} className="rounded-xl bg-[#b76e79] px-5 py-3 text-white">
+              {guardando ? "Registrando..." : "Registrar cobro"}
+            </button>
+          </form>
+        )}
+      </section>
+    </main>
+  );
+}
