@@ -1,0 +1,11 @@
+import { apiClient } from "./client.js";
+export const listarTurnos=async(p)=>(await apiClient.get("/turnos/",{params:p})).data;
+export const obtenerTurno=async(id)=>(await apiClient.get(`/turnos/${id}/`)).data;
+export const crearTurno=async(p)=>(await apiClient.post("/turnos/",p)).data;
+export const actualizarTurno=async(id,p)=>(await apiClient.patch(`/turnos/${id}/`,p)).data;
+export const accionTurno=async(id,a,p={})=>(await apiClient.post(`/turnos/${id}/${a}/`,p)).data;
+export const confirmarTurno=(id)=>accionTurno(id,"confirmar");
+export const reprogramarTurno=(id,p)=>accionTurno(id,"reprogramar",p);
+export const cancelarTurno=(id)=>accionTurno(id,"cancelar");
+export const realizarTurno=(id)=>accionTurno(id,"realizar");
+export const marcarNoVino=(id)=>accionTurno(id,"no-vino");

@@ -23,6 +23,13 @@ Estados iniciales:
 - Cancelado.
 - No vino.
 
+Correspondencia técnica actual de Capa 5:
+
+- Finalizado / Realizado → `realizado`.
+- No vino → `no_vino`.
+
+`cancelado` y `no_vino` son estados distintos: el primero registra una cancelación y el segundo que la clienta no se presentó. `realizado` registra que el servicio fue efectuado.
+
 ## Reglas de clientas
 
 1. Una clienta debe tener nombre.

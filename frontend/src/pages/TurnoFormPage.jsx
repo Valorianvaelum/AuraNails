@@ -1,0 +1,190 @@
+import { useEffect, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
+
+import { listClientas } from "../api/clientas.js";
+import { listServicios } from "../api/servicios.js";
+import { actualizarTurno, crearTurno, obtenerTurno } from "../api/turnos.js";
+import AppHeader from "../components/AppHeader.jsx";
+
+const dinero = (value) => new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 }).format(value);
+const hoy = () => new Date().toLocaleDateString("en-CA");
+
+function mensajeDeError(error, predeterminado) {
+  const data = error.response?.data;
+  if (typeof data?.detail === "string") return data.detail;
+  for (const value of Object.values(data || {})) {
+    if (Array.isArray(value) && typeof value[0] === "string") return value[0];
+  }
+  return predeterminado;
+}
+
+export default function TurnoFormPage() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const editando = Boolean(id);
+  const [clientas, setClientas] = useState([]);
+  const [servicios, setServicios] = useState([]);
+  const [cargando, setCargando] = useState(true);
+  const [guardando, setGuardando] = useState(false);
+  const [errorCarga, setErrorCarga] = useState("");
+  const [error, setError] = useState("");
+  const [estadoTurno, setEstadoTurno] = useState("");
+  const [valores, setValores] = useState({
+    clienta_id: "",
+    fecha: hoy(),
+    hora: "09:00",
+    servicios_ids: [],
+    notas: "",
+  });
+
+  useEffect(() => {
+    let vigente = true;
+    setCargando(true);
+    setErrorCarga("");
+    setError("");
+
+    const cargaTurno = editando ? obtenerTurno(id) : Promise.resolve(null);
+    Promise.all([
+      listClientas({ estado: editando ? "todas" : "activas" }),
+      listServicios({ estado: editando ? "todos" : "activos" }),
+      cargaTurno,
+    ])
+      .then(([clientasData, serviciosData, turno]) => {
+        if (!vigente) return;
+        setClientas(clientasData);
+        setServicios(serviciosData);
+        if (turno) {
+          setEstadoTurno(turno.estado);
+          setValores({
+            clienta_id: String(turno.clienta.id),
+            fecha: turno.inicio.slice(0, 10),
+            hora: turno.inicio.slice(11, 16),
+            servicios_ids: turno.servicios.map((servicio) => servicio.servicio_id),
+            notas: turno.notas || "",
+          });
+        }
+      })
+      .catch((requestError) => {
+        if (vigente) setErrorCarga(mensajeDeError(requestError, "No pudimos cargar los datos necesarios para este turno."));
+      })
+      .finally(() => {
+        if (vigente) setCargando(false);
+      });
+
+    return () => {
+      vigente = false;
+    };
+  }, [editando, id]);
+
+  const serviciosSeleccionados = servicios.filter((servicio) => valores.servicios_ids.includes(servicio.id));
+  const minutos = serviciosSeleccionados.reduce((total, servicio) => total + servicio.duracion_minutos, 0);
+  const precio = serviciosSeleccionados.reduce((total, servicio) => total + Number(servicio.precio), 0);
+  const turnoNoEditable = ["cancelado", "realizado", "no_vino"].includes(estadoTurno);
+
+  const guardar = async (event) => {
+    event.preventDefault();
+    setError("");
+    if (!valores.clienta_id || !valores.servicios_ids.length) {
+      setError("Elegí una clienta y al menos un servicio.");
+      return;
+    }
+
+    setGuardando(true);
+    try {
+      const payload = {
+        clienta_id: Number(valores.clienta_id),
+        inicio: `${valores.fecha}T${valores.hora}:00-03:00`,
+        servicios_ids: valores.servicios_ids,
+        notas: valores.notas,
+      };
+      const turno = editando
+        ? await actualizarTurno(id, payload)
+        : await crearTurno(payload);
+      navigate(`/turnos/${turno.id}`);
+    } catch (requestError) {
+      setError(mensajeDeError(requestError, "No pudimos guardar el turno. Intentá nuevamente."));
+    } finally {
+      setGuardando(false);
+    }
+  };
+
+  const cambiarServicio = (servicioId) => {
+    setValores((actual) => ({
+      ...actual,
+      servicios_ids: actual.servicios_ids.includes(servicioId)
+        ? actual.servicios_ids.filter((idServicio) => idServicio !== servicioId)
+        : [...actual.servicios_ids, servicioId],
+    }));
+  };
+
+  return (
+    <main className="min-h-screen bg-[#fff8f7] text-[#3d2f32]">
+      <AppHeader />
+      <section className="mx-auto max-w-3xl px-5 py-8">
+        <Link to="/turnos">Volver</Link>
+        <h1 className="mt-4 text-3xl font-semibold">{editando ? "Editar turno" : "Nuevo turno"}</h1>
+        {cargando ? (
+          <p className="mt-6">Cargando datos del turno...</p>
+        ) : !errorCarga && !turnoNoEditable ? (
+          <form className="mt-6 space-y-5 rounded-2xl border bg-white p-6" onSubmit={guardar}>
+            <label className="grid gap-1">
+              Clienta
+              <select
+                className="w-full rounded-xl border p-3"
+                required
+                value={valores.clienta_id}
+                onChange={(event) => setValores({ ...valores, clienta_id: event.target.value })}
+              >
+                <option value="">Elegí una clienta</option>
+                {clientas.map((clienta) => (
+                  <option value={clienta.id} key={clienta.id}>
+                    {clienta.nombre_completo}{clienta.telefono ? ` · ${clienta.telefono}` : ""}{!clienta.activa ? " (inactiva)" : ""}
+                  </option>
+                ))}
+              </select>
+            </label>
+            {!clientas.length && (
+              <p>Primero necesitás agregar una clienta. <Link to="/clientas/nueva">Agregar clienta</Link></p>
+            )}
+            <div className="grid gap-3 sm:grid-cols-2">
+              <label className="grid gap-1">
+                Fecha
+                <input className="rounded-xl border p-3" required type="date" value={valores.fecha} onChange={(event) => setValores({ ...valores, fecha: event.target.value })} />
+              </label>
+              <label className="grid gap-1">
+                Hora
+                <input className="rounded-xl border p-3" required type="time" value={valores.hora} onChange={(event) => setValores({ ...valores, hora: event.target.value })} />
+              </label>
+            </div>
+            <fieldset>
+              <legend>Servicios</legend>
+              {!servicios.length && <p className="mt-2">No hay servicios disponibles para este turno.</p>}
+              {servicios.map((servicio) => (
+                <label className="mt-2 flex gap-3 rounded-xl border p-3" key={servicio.id}>
+                  <input type="checkbox" checked={valores.servicios_ids.includes(servicio.id)} onChange={() => cambiarServicio(servicio.id)} />
+                  <span>
+                    {servicio.nombre} · {servicio.duracion_legible} · {dinero(servicio.precio)} {!servicio.activo ? "(pausado)" : ""}
+                  </span>
+                </label>
+              ))}
+            </fieldset>
+            <div className="rounded-xl bg-[#fff8f7] p-4">
+              Duración estimada: {minutos} min<br />
+              Precio estimado: {dinero(precio)}
+            </div>
+            <label className="grid gap-1">
+              Notas
+              <textarea className="w-full rounded-xl border p-3" value={valores.notas} onChange={(event) => setValores({ ...valores, notas: event.target.value })} />
+            </label>
+            {error && <p className="text-[#8b3f4c]">{error}</p>}
+            <button disabled={guardando} className="rounded-xl bg-[#b76e79] px-5 py-3 text-white">
+              {guardando ? "Guardando..." : editando ? "Guardar cambios" : "Guardar turno"}
+            </button>
+          </form>
+        ) : null}
+        {!cargando && errorCarga && <p className="mt-4 text-[#8b3f4c]">{errorCarga}</p>}
+        {!cargando && !errorCarga && turnoNoEditable && <p className="mt-4">Este turno ya no puede editarse.</p>}
+      </section>
+    </main>
+  );
+}

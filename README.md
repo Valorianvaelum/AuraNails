@@ -64,8 +64,24 @@ API de clientas:
 - `POST /api/clientas/:id/desactivar/`
 - `POST /api/clientas/:id/reactivar/`
 
-No se expone eliminación física. Los módulos de Turnos, Servicios, Cobros, Productos y Fotos siguen fuera de alcance.
+No se expone eliminación física. Los módulos de Cobros, Productos y Fotos siguen fuera de alcance.
 
 ## Servicios
 
 La Capa 4 incorpora servicios privados por usuaria, con duración, precio, orden visual y estado activo o pausado. Consultá `docs/capa-4-servicios.md` para las rutas y reglas.
+
+## Turnos
+
+La Capa 5 incorpora turnos privados: listado diario con filtros, alta, detalle, edición, reprogramación, confirmación, cancelación, marcado como realizado y registro de no asistencia. Cada cuenta sólo accede a sus propios turnos.
+
+API de turnos:
+
+- `GET` y `POST /api/turnos/`
+- `GET` y `PATCH /api/turnos/:id/`
+- `POST /api/turnos/:id/confirmar/`
+- `POST /api/turnos/:id/cancelar/`
+- `POST /api/turnos/:id/realizar/`
+- `POST /api/turnos/:id/no-vino/`
+- `POST /api/turnos/:id/reprogramar/`
+
+El detalle de reglas, filtros y estados está en `docs/capa-5-turnos.md`.
