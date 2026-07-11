@@ -3,6 +3,9 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import { AuthProvider, useAuth } from "./auth/AuthContext.jsx";
 import ProtectedRoute from "./auth/ProtectedRoute.jsx";
 import InicioPage from "./pages/InicioPage.jsx";
+import ClientaDetailPage from "./pages/ClientaDetailPage.jsx";
+import ClientaFormPage from "./pages/ClientaFormPage.jsx";
+import ClientasPage from "./pages/ClientasPage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
 
 function RedirectBySession() {
@@ -25,6 +28,38 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <InicioPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/clientas"
+        element={
+          <ProtectedRoute>
+            <ClientasPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/clientas/nueva"
+        element={
+          <ProtectedRoute>
+            <ClientaFormPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/clientas/:id"
+        element={
+          <ProtectedRoute>
+            <ClientaDetailPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/clientas/:id/editar"
+        element={
+          <ProtectedRoute>
+            <ClientaFormPage />
           </ProtectedRoute>
         }
       />
