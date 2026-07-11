@@ -18,7 +18,7 @@ URLs locales:
 
 ## Autenticación
 
-No existe registro público. Las cuentas se crean desde el administrador de Django o mediante el siguiente comando, que solicita el correo y la contraseña de forma interactiva:
+No existe registro público. Las cuentas se crean desde el administrador de Django o con:
 
 ```bash
 docker-compose exec backend python manage.py createsuperuser
@@ -31,41 +31,21 @@ Rutas disponibles:
 - `GET /api/auth/me/`
 - `GET /api/health/`
 
-Para ejecutar las pruebas del backend dentro de Docker:
-
-```bash
-docker-compose exec backend python manage.py test
-```
-
-En desarrollo local, usar el entorno virtual de `backend`:
+Para las pruebas locales del backend:
 
 ```bash
 cd backend
 .\.venv\Scripts\python.exe manage.py test
 ```
 
-La sesión inicial se conserva en el almacenamiento del navegador mediante access y refresh tokens. Esta decisión está documentada en `docs/capa-2-autenticacion.md` y podrá evolucionar en capas posteriores.
+## Módulos disponibles
 
-## Clientas
+- Clientas: gestión privada por usuaria.
+- Servicios: duración, precio, estado y posición en la lista.
+- Turnos: Capa 5 cerrada y estable. Incluye listado global, filtros opcionales, alta, detalle, edición, reprogramación y acciones de estado controladas. Consultá [Capa 5](docs/capa-5-turnos.md).
 
-La Capa 3 incorpora el módulo privado de Clientas: alta, búsqueda, edición, detalle, desactivación y reactivación. Cada cuenta solamente puede consultar y modificar sus propias clientas.
+No existe eliminación física de Clientas, Servicios ni Turnos. Cobros, Productos y Fotos siguen fuera de la implementación actual.
 
-Rutas privadas del frontend:
+## Próxima etapa
 
-- `/clientas`
-- `/clientas/nueva`
-- `/clientas/:id`
-- `/clientas/:id/editar`
-
-API de clientas:
-
-- `GET` y `POST /api/clientas/`
-- `GET` y `PATCH /api/clientas/:id/`
-- `POST /api/clientas/:id/desactivar/`
-- `POST /api/clientas/:id/reactivar/`
-
-No se expone eliminación física. Los módulos de Turnos, Servicios, Cobros, Productos y Fotos siguen fuera de alcance.
-
-## Servicios
-
-La Capa 4 incorpora servicios privados por usuaria, con duración, precio, orden visual y estado activo o pausado. Consultá `docs/capa-4-servicios.md` para las rutas y reglas.
+La Capa 6 planificada es **Cobros de turnos**. Su alcance, límites y criterios de aceptación están definidos en [Capa 6](docs/capa-6-cobros.md); todavía no está implementada.

@@ -12,12 +12,13 @@ function AppHeader() {
 
   return (
     <header className="border-b border-[#efdadd] bg-white">
-      <div className="mx-auto flex w-full max-w-5xl items-center justify-between gap-3 px-5 py-3 sm:px-8">
+      <div className="mx-auto flex w-full max-w-5xl flex-col items-center justify-between gap-3 px-5 py-3 sm:flex-row sm:px-8">
         <NavLink className="text-lg font-semibold tracking-tight text-[#2f2528]" to="/inicio">
           AuraNails
         </NavLink>
-        <nav className="flex items-center gap-1" aria-label="Navegación principal">
+        <nav className="flex flex-wrap items-center justify-center gap-1" aria-label="Navegación principal">
           <NavLink className={linkClassName} to="/inicio">Inicio</NavLink>
+          <NavLink className={linkClassName} to="/turnos">Turnos</NavLink>
           <NavLink className={linkClassName} to="/clientas">Clientas</NavLink>
           <NavLink className={linkClassName} to="/servicios">Servicios</NavLink>
           <button

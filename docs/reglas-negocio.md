@@ -23,6 +23,13 @@ Estados iniciales:
 - Cancelado.
 - No vino.
 
+Correspondencia técnica actual de Capa 5:
+
+- Finalizado / Realizado → `realizado`.
+- No vino → `no_vino`.
+
+`cancelado` y `no_vino` son estados distintos: el primero registra una cancelación y el segundo que la clienta no se presentó. `realizado` registra que el servicio fue efectuado.
+
 ## Reglas de clientas
 
 1. Una clienta debe tener nombre.
@@ -50,6 +57,15 @@ Estados iniciales:
 4. Puede existir saldo pendiente.
 5. El sistema debe diferenciar cobro total, seña y pago parcial.
 6. Los pagos no deberían eliminarse sin dejar rastro; a futuro deberían anularse o corregirse.
+
+### Reglas planificadas para Capa 6 — Cobros
+
+Estas reglas aún no están implementadas:
+
+1. Solo los turnos `realizado` podrán cobrarse.
+2. Un turno tendrá como máximo un cobro activo.
+3. Un cobro anulado se conservará históricamente, no se eliminará físicamente y no se incluirá en totales.
+4. La anulación requerirá motivo; si no queda otro cobro activo, podrá registrarse uno nuevo.
 
 ## Reglas de productos
 
