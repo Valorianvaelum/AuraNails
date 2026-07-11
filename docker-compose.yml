@@ -14,7 +14,7 @@ services:
     build:
       context: ./backend
     environment:
-      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:-dev-only-aura-nails-secret-key}
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:-dev-only-aura-nails-secret-key-change-me-2026}
       DJANGO_DEBUG: ${DJANGO_DEBUG:-true}
       DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS:-localhost,127.0.0.1,backend}
       POSTGRES_DB: ${POSTGRES_DB:-auranails_dev}
