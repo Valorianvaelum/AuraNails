@@ -8,14 +8,14 @@ AuraNails es una web app simple para manicuras y pequeños estudios de uñas. El
 
 - Capa 0 documental: completada.
 - Capa 1 setup técnico inicial: completada.
+- Capa 2 usuarios y autenticación: completada.
 
 ## Estado actual
 
-La base técnica inicial está lista con Django, Django REST Framework, PostgreSQL, CORS, React, Vite, Tailwind CSS, React Router, Axios y Docker Compose.
+La base técnica usa Django, Django REST Framework, PostgreSQL, CORS, React, Vite, Tailwind CSS, React Router, Axios y Docker Compose. La autenticación está resuelta con un usuario personalizado basado en email y JWT.
 
-Todavía no existen módulos de negocio. No se crearon modelos, rutas ni pantallas para Clientas, Turnos, Servicios, Productos, Pagos, Dinero o Fotos.
+No existe registro público ni módulos de negocio. No se crearon modelos, rutas ni pantallas para Clientas, Turnos, Servicios, Productos, Pagos, Dinero o Fotos.
 
 ## Pendientes próximos
 
-- Definir alcance de la Capa 2.
-- Diseñar los primeros flujos de negocio antes de crear modelos o pantallas.
+- Definir el alcance funcional de la Capa 3 antes de crear modelos de negocio.
