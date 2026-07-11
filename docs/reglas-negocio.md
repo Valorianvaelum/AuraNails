@@ -58,14 +58,14 @@ Correspondencia técnica actual de Capa 5:
 5. El sistema debe diferenciar cobro total, seña y pago parcial.
 6. Los pagos no deberían eliminarse sin dejar rastro; a futuro deberían anularse o corregirse.
 
-### Reglas implementadas en Capa 6A — Cobros
+### Reglas implementadas en Capa 6 — Cobros
 
 1. Solo los turnos `realizado` podrán cobrarse.
 2. Un turno tendrá como máximo un cobro activo.
 3. Un cobro anulado se conservará históricamente, no se eliminará físicamente y no se incluirá en totales.
 4. La anulación requerirá motivo; si no queda otro cobro activo, podrá registrarse uno nuevo.
 
-La interfaz, integración visual con Turnos, totales y recorrido manual siguen pendientes para etapas posteriores de Capa 6.
+La integración visual con Turnos está implementada. Totales económicos y extensiones de caja siguen fuera del alcance de Capa 6.
 
 ## Reglas de productos
 

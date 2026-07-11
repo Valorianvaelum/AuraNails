@@ -24,6 +24,7 @@ export default function CobroDetailPage() {
   const [mostrarAnulacion, setMostrarAnulacion] = useState(false);
   const [motivo, setMotivo] = useState("");
   const [anulando, setAnulando] = useState(false);
+  const [mensajeExito, setMensajeExito] = useState(location.state?.message || "");
 
   const cargarCobro = useCallback(async () => {
     setError("");
@@ -52,6 +53,7 @@ export default function CobroDetailPage() {
       setCobro(await anularCobro(id, { motivo: motivo.trim() }));
       setMostrarAnulacion(false);
       setMotivo("");
+      setMensajeExito("Cobro anulado correctamente.");
     } catch (requestError) {
       setError(mensajeDeError(requestError, "No pudimos anular el cobro. Intentá nuevamente."));
     } finally {
@@ -68,7 +70,7 @@ export default function CobroDetailPage() {
       <AppHeader />
       <section className="mx-auto max-w-3xl px-5 py-8">
         <Link to="/cobros">Volver a mis cobros</Link>
-        {location.state?.message && <p className="mt-4 rounded-xl bg-[#eef8f0] p-3 text-[#356640]">{location.state.message}</p>}
+        {mensajeExito && <p className="mt-4 rounded-xl bg-[#eef8f0] p-3 text-[#356640]">{mensajeExito}</p>}
         <article className="mt-5 rounded-2xl border bg-white p-6">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div><h1 className="text-3xl font-semibold">Cobro de {cobro.clienta_nombre_historica}</h1><p>#{cobro.id}</p></div>
