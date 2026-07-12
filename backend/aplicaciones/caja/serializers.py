@@ -167,3 +167,45 @@ class AnularRegistroSerializer(serializers.Serializer):
         if not motivo:
             raise serializers.ValidationError("Ingresá el motivo de anulación.")
         return motivo
+
+
+class CajaDetailSerializer(CajaSerializer):
+    cerrada_por = serializers.SerializerMethodField(read_only=True)
+    cobros = serializers.SerializerMethodField(read_only=True)
+    gastos = serializers.SerializerMethodField(read_only=True)
+    movimientos = serializers.SerializerMethodField(read_only=True)
+
+    class Meta(CajaSerializer.Meta):
+        fields = CajaSerializer.Meta.fields + ("cerrada_por", "cobros", "gastos", "movimientos")
+
+    def get_cerrada_por(self, caja):
+        if not caja.cerrada_por:
+            return None
+        return {
+            "id": caja.cerrada_por_id,
+            "nombre": str(caja.cerrada_por),
+        }
+
+    def get_cobros(self, caja):
+        return [
+            {
+                "id": cobro.id,
+                "turno_id": cobro.turno_id,
+                "clienta_nombre_historica": cobro.clienta_nombre_historica,
+                "importe": str(cobro.importe),
+                "metodo_pago": cobro.metodo_pago,
+                "metodo_pago_display": cobro.get_metodo_pago_display(),
+                "estado": cobro.estado,
+                "estado_display": cobro.get_estado_display(),
+                "creado_en": cobro.creado_en,
+                "anulado_en": cobro.anulado_en,
+                "motivo_anulacion": cobro.motivo_anulacion,
+            }
+            for cobro in caja.cobros.select_related("turno").order_by("-creado_en")
+        ]
+
+    def get_gastos(self, caja):
+        return GastoCajaSerializer(caja.gastos.all(), many=True).data
+
+    def get_movimientos(self, caja):
+        return MovimientoCajaSerializer(caja.movimientos.all(), many=True).data

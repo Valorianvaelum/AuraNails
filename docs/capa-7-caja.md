@@ -2,7 +2,7 @@
 
 ## Estado
 
-**Capa 7 en progreso.** Esta entrega implementa solamente la Capa 7A: modelo, reglas de negocio, API privada, migración y pruebas backend. No incluye frontend ni cierra la capa.
+**Capa 7 en progreso.** La Capa 7A backend está implementada. La Capa 7B implementa frontend e integración visual con Cobros y queda pendiente de validación final. La Capa 7C sigue pendiente; esta capa no está cerrada.
 
 ## Alcance implementado
 
@@ -14,6 +14,17 @@
 - Detalle con resumen por método de pago, total de cobros, total de gastos, aportes, retiros y saldo teórico.
 - Cierre con saldo contado. La diferencia se calcula como `saldo_contado - saldo_teorico`; una diferencia distinta de cero exige observación.
 - La caja cerrada guarda el resumen de cierre y queda inmutable mediante la API.
+
+### Frontend e integración visual — Capa 7B
+
+- `/caja` prioriza la caja abierta; sin una, ofrece apertura e historial.
+- `/caja/historial` muestra cajas recientes con filtros opcionales por fecha, estado y diferencia.
+- `/caja/:id` muestra el detalle; una caja cerrada es de solo lectura.
+- Se pueden registrar gastos, aportes y retiros, y anular gastos o movimientos con motivo y confirmación.
+- El formulario de Cobro comprueba visualmente la existencia de caja abierta y dirige a Caja cuando falta.
+- Inicio muestra un bloque breve de estado de caja y acceso directo.
+
+El frontend usa el resumen del backend como fuente de verdad. Solo calcula una diferencia estimada para ayudar en el formulario de cierre; el resultado persistido es el que responde el servidor.
 
 ### Cobros automáticos
 
@@ -63,6 +74,8 @@ Todas las rutas requieren autenticación y solo exponen recursos de la propietar
 
 No se exponen `PUT`, `PATCH` ni `DELETE`.
 
+El detalle incorpora, en modo solo lectura, los cobros, gastos y movimientos vinculados para mostrarlos como historial. No agrega acciones ni modifica reglas de negocio.
+
 ## Migración
 
 `aplicaciones/caja/migrations/0001_initial.py` crea `Caja`, `GastoCaja` y `MovimientoCaja`, sus índices y constraints. `aplicaciones/cobros/migrations/0002_cobro_caja.py` agrega la relación nullable de Cobro con Caja para preservar los datos existentes sin asignación arbitraria. No modifica migraciones previas.
@@ -80,7 +93,6 @@ No se exponen `PUT`, `PATCH` ni `DELETE`.
 
 ## Fuera de alcance
 
-- Pantallas, navegación e integración visual de Caja.
 - Reportes, estadísticas, conciliación bancaria, arqueos avanzados y exportaciones.
 - Pagos parciales, señas, cuentas corrientes, proveedores, compras y productos.
 - Notificaciones, pasarelas de pago, comprobantes fiscales y cambios en Cobros o Turnos.

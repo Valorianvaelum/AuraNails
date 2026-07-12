@@ -117,6 +117,9 @@ class CajaApiTests(TestCase):
         self.assertEqual(detalle["resumen"]["total_cobros"], "100.00")
         self.assertEqual(detalle["resumen"]["gastos_por_metodo"]["transferencia"], "40.00")
         self.assertEqual(detalle["resumen"]["saldo_teorico"], "140.00")
+        self.assertEqual(len(detalle["cobros"]), 4)
+        self.assertEqual(len(detalle["gastos"]), 2)
+        self.assertEqual(len(detalle["movimientos"]), 2)
 
     def test_resumen_no_mezcla_cobros_de_cajas_de_distintas_propietarias(self):
         caja = self.abrir_caja().data
@@ -216,6 +219,8 @@ class CajaApiTests(TestCase):
         self.assertEqual(cerrado.data["saldo_teorico_cierre"], "150.00")
         self.assertEqual(cerrado.data["diferencia"], "-30.00")
         self.assertEqual(cerrado.data["resumen"]["saldo_teorico"], "150.00")
+        detalle_cerrado = self.client.get(f"/api/cajas/{caja['id']}/").data
+        self.assertEqual(detalle_cerrado["cerrada_por"]["id"], self.propietaria.id)
 
         Cobro.objects.filter(pk=cobro.pk).update(
             estado=Cobro.Estado.ANULADO,

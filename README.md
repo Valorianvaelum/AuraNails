@@ -49,9 +49,9 @@ No existe eliminación física de Clientas, Servicios, Turnos ni Cobros. Product
 
 ## Caja diaria
 
-La Capa 7 está en progreso. La entrega 7A incorpora únicamente el backend privado de apertura, cierre, gastos y movimientos manuales de caja diaria; cada cobro nuevo exige y se vincula automáticamente a una caja abierta propia. Consultá [Capa 7](docs/capa-7-caja.md).
+La Capa 7 está en progreso. La Capa 7A incorpora el backend privado de apertura, cierre, gastos y movimientos manuales; la Capa 7B incorpora sus pantallas, historial e integración con Cobros e Inicio. Cada cobro nuevo exige y se vincula automáticamente a una caja abierta propia. Consultá [Capa 7](docs/capa-7-caja.md).
 
-No existe eliminación física de registros de Caja; las anulaciones conservan su historial. No se implementaron todavía pantallas de Caja.
+No existe eliminación física de registros de Caja; las anulaciones conservan su historial. La Capa 7 completa sigue en progreso.
 
 ## Estado de Cobros
 

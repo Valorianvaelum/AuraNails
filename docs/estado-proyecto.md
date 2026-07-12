@@ -16,9 +16,9 @@ AuraNails es una web app simple para manicuras y pequeños estudios de uñas. El
 
 ## Capa 7 — Caja diaria
 
-**En progreso.** La Capa 7A incorpora el backend privado de apertura y cierre de caja, gastos, aportes y retiros. Cada cobro nuevo se asocia automáticamente a la caja abierta de su propietaria; sin caja abierta se rechaza. El saldo teórico se calcula en servidor a partir de cobros vinculados y separa los ingresos informativos por método de pago del efectivo físico. Las cajas cerradas preservan su resumen de cierre y no admiten nuevas operaciones.
+**En progreso.** La Capa 7A backend incorpora apertura y cierre de caja, gastos, aportes y retiros. La Capa 7B frontend incorpora la pantalla de caja abierta, apertura, cierre, gastos, movimientos, historial, detalle, navegación, acceso desde Inicio e integración visual con Cobros. Cada cobro nuevo se asocia automáticamente a la caja abierta de su propietaria; sin caja abierta se rechaza. El saldo teórico se calcula en servidor a partir de cobros vinculados y separa los ingresos informativos por método de pago del efectivo físico. Las cajas cerradas preservan su resumen de cierre y no admiten nuevas operaciones.
 
-No se implementaron pantallas, reportes, conciliación, pagos parciales ni integraciones externas. La Capa 7 no está cerrada.
+La Capa 7B queda pendiente de validación final y la Capa 7C aún no se implementó. Reportes, conciliación, pagos parciales e integraciones externas siguen fuera de alcance. La Capa 7 no está cerrada.
 
 ## Capa 5 — Turnos
 

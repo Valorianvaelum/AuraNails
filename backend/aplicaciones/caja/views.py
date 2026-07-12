@@ -6,6 +6,7 @@ from rest_framework.viewsets import ModelViewSet
 from .models import Caja
 from .serializers import (
     AnularRegistroSerializer,
+    CajaDetailSerializer,
     CajaSerializer,
     CerrarCajaSerializer,
     GastoCajaSerializer,
@@ -24,6 +25,11 @@ class CajaViewSet(ModelViewSet):
     serializer_class = CajaSerializer
     permission_classes = [IsAuthenticated]
     http_method_names = ["get", "post", "head", "options"]
+
+    def get_serializer_class(self):
+        if self.action == "retrieve":
+            return CajaDetailSerializer
+        return CajaSerializer
 
     def get_queryset(self):
         queryset = Caja.objects.filter(propietaria=self.request.user)
