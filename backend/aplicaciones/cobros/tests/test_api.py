@@ -8,6 +8,7 @@ from django.utils import timezone
 from rest_framework.test import APIClient
 
 from aplicaciones.clientas.models import Clienta
+from aplicaciones.caja.models import Caja
 from aplicaciones.cobros.models import Cobro
 from aplicaciones.servicios.models import Servicio
 from aplicaciones.turnos.models import Turno, TurnoServicio
@@ -57,7 +58,12 @@ class CobrosApiTests(TestCase):
     def payload(turno, **overrides):
         return {"turno_id": turno.id, "metodo_pago": "efectivo", **overrides}
 
+    def abrir_caja(self):
+        return Caja.objects.create(propietaria=self.propietaria, saldo_inicial="0.00")
+
     def crear_cobro(self, turno, **overrides):
+        if not Caja.objects.filter(propietaria=self.propietaria, estado=Caja.Estado.ABIERTA).exists():
+            self.abrir_caja()
         response = self.client.post("/api/cobros/", self.payload(turno, **overrides), format="json")
         self.assertEqual(response.status_code, 201)
         return response
@@ -69,6 +75,8 @@ class CobrosApiTests(TestCase):
         cobro = Cobro.objects.get(pk=response.data["id"])
         self.assertEqual(cobro.propietaria, self.propietaria)
         self.assertEqual(cobro.turno, turno)
+        self.assertIsNotNone(cobro.caja_id)
+        self.assertEqual(response.data["caja_id"], cobro.caja_id)
         self.assertEqual(cobro.importe, Decimal("150.00"))
         self.assertEqual(cobro.clienta_nombre_historica, "Ana García")
         self.assertEqual(cobro.estado, Cobro.Estado.REGISTRADO)
@@ -100,6 +108,35 @@ class CobrosApiTests(TestCase):
         turno_ajeno = self.crear_turno(clienta=clienta_ajena, propietaria=self.otra_propietaria)
         self.client.force_authenticate(self.propietaria)
         self.assertEqual(self.client.post("/api/cobros/", self.payload(turno_ajeno), format="json").status_code, 404)
+
+    def test_requiere_caja_abierta_y_asocia_automaticamente_la_propia(self):
+        turno = self.crear_turno()
+        sin_caja = self.client.post("/api/cobros/", self.payload(turno), format="json")
+        self.assertEqual(sin_caja.status_code, 400)
+        self.assertEqual(sin_caja.data["detail"], "Debés abrir la caja antes de registrar un cobro.")
+
+        caja = self.abrir_caja()
+        creado = self.client.post("/api/cobros/", self.payload(turno), format="json")
+        self.assertEqual(creado.status_code, 201)
+        self.assertEqual(Cobro.objects.get(pk=creado.data["id"]).caja, caja)
+
+    def test_no_permite_elegir_caja_ajena_ni_cerrada(self):
+        caja_ajena = Caja.objects.create(propietaria=self.otra_propietaria, saldo_inicial="10.00")
+        turno = self.crear_turno()
+        sin_caja_propia = self.client.post("/api/cobros/", self.payload(turno, caja_id=caja_ajena.id), format="json")
+        self.assertEqual(sin_caja_propia.status_code, 400)
+        self.assertEqual(sin_caja_propia.data["detail"], "Debés abrir la caja antes de registrar un cobro.")
+
+        caja_propia = self.abrir_caja()
+        creado = self.client.post("/api/cobros/", self.payload(turno, caja_id=caja_ajena.id), format="json")
+        self.assertEqual(creado.status_code, 201)
+        self.assertEqual(Cobro.objects.get(pk=creado.data["id"]).caja, caja_propia)
+
+        Caja.objects.filter(pk=caja_propia.pk).update(estado=Caja.Estado.CERRADA)
+        otro_turno = self.crear_turno()
+        caja_cerrada = self.client.post("/api/cobros/", self.payload(otro_turno, caja_id=caja_propia.id), format="json")
+        self.assertEqual(caja_cerrada.status_code, 400)
+        self.assertEqual(caja_cerrada.data["detail"], "Debés abrir la caja antes de registrar un cobro.")
 
     def test_bloquea_duplicados_y_permite_nuevo_cobro_despues_de_anular(self):
         turno = self.crear_turno()

@@ -67,6 +67,21 @@ Correspondencia técnica actual de Capa 5:
 
 La integración visual con Turnos está implementada. Totales económicos y extensiones de caja siguen fuera del alcance de Capa 6.
 
+## Reglas de caja diaria
+
+### Reglas implementadas en Capa 7A — Caja
+
+1. Una propietaria puede tener una sola caja `abierta` a la vez. El saldo inicial debe ser mayor o igual que cero.
+2. Una caja puede estar `abierta` o `cerrada`. Una caja cerrada no admite gastos, aportes, retiros, anulaciones ni un nuevo cierre.
+3. Todo cobro nuevo requiere una caja propia `abierta` y queda vinculado a ella automáticamente. Si no existe, se rechaza con “Debés abrir la caja antes de registrar un cobro.” La propietaria no puede elegir ni cambiar la caja.
+4. El saldo físico teórico se calcula en backend: saldo inicial + cobros en efectivo + aportes - gastos en efectivo - retiros. Transferencia, tarjeta y otro se informan por método, pero no modifican el efectivo físico.
+5. Los gastos y movimientos manuales usan los estados `registrado` y `anulado`; la anulación conserva motivo, fecha y responsable. No hay eliminación física ni reactivación.
+6. Los movimientos manuales son `aporte` o `retiro`, requieren importe positivo y motivo, y solo pueden registrarse en una caja abierta.
+7. El cierre requiere saldo contado. La diferencia es saldo contado - saldo teórico; si no es cero, requiere observación.
+8. Al cerrar se conserva el resumen calculado para que el resultado histórico de la caja no cambie por anulaciones posteriores de cobros.
+9. Los totales consultan cobros `registrado` vinculados a la caja, no ventanas horarias. Los cobros históricos sin caja se conservan sin asignación arbitraria y no se incorporan a cajas nuevas.
+10. Cada propietaria solo puede consultar y operar sus propios registros; los recursos ajenos responden `404`.
+
 ## Reglas de productos
 
 1. Un producto debe tener nombre.

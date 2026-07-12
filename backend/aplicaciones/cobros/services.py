@@ -3,6 +3,7 @@ from django.utils import timezone
 from rest_framework.exceptions import NotFound, ValidationError
 
 from aplicaciones.turnos.models import Turno
+from aplicaciones.caja.models import Caja
 
 from .models import Cobro
 
@@ -23,11 +24,19 @@ def crear_cobro(*, propietaria, turno_id, metodo_pago, detalle_metodo=""):
             raise ValidationError({"turno_id": "El importe histórico del turno no es válido."})
         if Cobro.objects.filter(turno=turno, estado=Cobro.Estado.REGISTRADO).exists():
             raise ValidationError({"turno_id": "Este turno ya tiene un cobro activo."})
+        caja = (
+            Caja.objects.select_for_update()
+            .filter(propietaria=propietaria, estado=Caja.Estado.ABIERTA)
+            .first()
+        )
+        if not caja:
+            raise ValidationError({"detail": "Debés abrir la caja antes de registrar un cobro."})
 
         try:
             cobro = Cobro.objects.create(
                 propietaria=propietaria,
                 turno=turno,
+                caja=caja,
                 importe=turno.precio_estimado,
                 clienta_nombre_historica=str(turno.clienta),
                 metodo_pago=metodo_pago,

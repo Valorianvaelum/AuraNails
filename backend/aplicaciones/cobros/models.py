@@ -23,6 +23,13 @@ class Cobro(models.Model):
         related_name="cobros",
     )
     turno = models.ForeignKey(Turno, on_delete=models.PROTECT, related_name="cobros")
+    caja = models.ForeignKey(
+        "caja.Caja",
+        on_delete=models.PROTECT,
+        related_name="cobros",
+        null=True,
+        blank=True,
+    )
     importe = models.DecimalField(max_digits=10, decimal_places=2)
     clienta_nombre_historica = models.CharField(max_length=241)
     metodo_pago = models.CharField(max_length=20, choices=MetodoPago.choices)

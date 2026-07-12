@@ -47,6 +47,12 @@ cd backend
 
 No existe eliminación física de Clientas, Servicios, Turnos ni Cobros. Productos y Fotos siguen fuera de la implementación actual.
 
+## Caja diaria
+
+La Capa 7 está en progreso. La entrega 7A incorpora únicamente el backend privado de apertura, cierre, gastos y movimientos manuales de caja diaria; cada cobro nuevo exige y se vincula automáticamente a una caja abierta propia. Consultá [Capa 7](docs/capa-7-caja.md).
+
+No existe eliminación física de registros de Caja; las anulaciones conservan su historial. No se implementaron todavía pantallas de Caja.
+
 ## Estado de Cobros
 
 La Capa 6 está cerrada con validación técnica completa. El smoke test Docker y recorrido manual quedan pendientes por falta de acceso local al daemon; la configuración Compose fue validada.
