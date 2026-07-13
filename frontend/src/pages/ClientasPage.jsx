@@ -40,7 +40,7 @@ function ClientasPage() {
   return (
     <main className="min-h-screen bg-[#fff4f7] text-[#3d2f32]">
       <AppHeader />
-      <section className="mx-auto w-full max-w-5xl px-5 py-8 sm:px-8 sm:py-10">
+      <section className="mx-auto w-full max-w-6xl px-5 py-8 sm:px-8 sm:py-10">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#b76e79]">AuraNails</p>
@@ -97,7 +97,7 @@ function ClientasPage() {
               {clientas.map((clienta) => (
                 <li key={clienta.id}>
                   <Link
-                    className="block rounded-2xl border border-[#efdadd] bg-white p-5 transition hover:border-[#dcbfc5] focus:outline-none focus:ring-4 focus:ring-[#f4dce0]"
+                    className="block rounded-2xl border border-[#efdadd] border-l-4 border-l-[#c9aabd] bg-white p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-[#c9aabd] hover:shadow-md focus:outline-none focus:ring-4 focus:ring-[#f4dce0]"
                     to={`/clientas/${clienta.id}`}
                   >
                     <div className="flex items-start justify-between gap-4">

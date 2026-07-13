@@ -7,12 +7,27 @@
     Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
     sans-serif;
   color-scheme: light;
+  --aura-canvas: #ece7e6;
+  --aura-surface: #fbf9f8;
+  --aura-surface-soft: #f4eff0;
+  --aura-border: #dcd1d5;
+  --aura-plum: #765367;
+  --aura-plum-deep: #563947;
+  --aura-focus: #c9aabd;
+  --aura-shadow: 0 12px 30px rgba(80, 51, 66, 0.07);
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+  background-color: var(--aura-canvas);
 }
 
 body {
   margin: 0;
   min-width: 320px;
-  background: #fff4f7;
+  background: var(--aura-canvas);
 }
 
 button {
@@ -22,4 +37,156 @@ button {
 input,
 button {
   font: inherit;
+}
+
+select,
+textarea {
+  font: inherit;
+}
+
+button,
+a,
+input,
+select,
+textarea {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid #ad889e;
+  outline-offset: 3px;
+  border-radius: 0.5rem;
+}
+
+button:not([class]) {
+  border: 1px solid #efdadd;
+  border-radius: 0.75rem;
+  background: var(--aura-surface);
+  padding: 0.5rem 0.75rem;
+  font-weight: 600;
+  color: #7d4e57;
+  transition: background-color 150ms ease;
+}
+
+button:not([class]):hover:not(:disabled) {
+  background: var(--aura-canvas);
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+button:active:not(:disabled),
+[class*="bg-[#b76e79]"]:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 3px 8px rgba(86, 57, 71, 0.14);
+}
+
+/* Segunda ronda: superficies cálidas, acentos malva y transiciones discretas. */
+[class*="bg-[#fff4f7]"] {
+  background-color: transparent;
+}
+
+[class*="bg-[#fffafa]"],
+[class*="bg-[#fff8f7]"] {
+  background-color: var(--aura-surface-soft);
+}
+
+[class*="bg-[#fff0f1]"] {
+  background-color: #f3ebf0;
+}
+
+.bg-white {
+  background-color: var(--aura-surface);
+}
+
+#root {
+  background-image:
+    radial-gradient(72rem 40rem at 50% -18rem, rgba(255, 253, 252, 0.48), transparent 68%),
+    linear-gradient(180deg, #efebea 0%, var(--aura-canvas) 42%, #e9e3e3 100%);
+}
+
+[class*="border-[#f1dce4]"],
+[class*="border-[#efdadd]"] {
+  border-color: var(--aura-border);
+}
+
+input:not([type="checkbox"]):not([type="radio"]),
+select,
+textarea {
+  border-color: var(--aura-border);
+  background-color: var(--aura-surface);
+  color: #3f303a;
+  transition: border-color 160ms ease-out, box-shadow 160ms ease-out, background-color 160ms ease-out;
+}
+
+input:not([type="checkbox"]):not([type="radio"]):focus,
+select:focus,
+textarea:focus {
+  border-color: #a67b94;
+  box-shadow: 0 0 0 3px rgba(201, 170, 189, 0.28);
+}
+
+[class*="bg-[#b76e79]"] {
+  background-color: var(--aura-plum);
+  box-shadow: 0 7px 16px rgba(86, 57, 71, 0.15);
+  transition: transform 180ms ease-out, background-color 180ms ease-out, box-shadow 180ms ease-out;
+}
+
+[class*="bg-[#b76e79]"]:hover:not(:disabled) {
+  background-color: var(--aura-plum-deep);
+  box-shadow: 0 10px 20px rgba(86, 57, 71, 0.2);
+  transform: translateY(-1px);
+}
+
+article[class*="bg-white"],
+form[class*="bg-white"],
+section[class*="bg-white"],
+div[class*="bg-white"][class*="rounded-2xl"],
+div[class*="bg-white"][class*="rounded-3xl"] {
+  box-shadow: var(--aura-shadow);
+}
+
+a,
+button,
+article,
+[class*="rounded-2xl"] {
+  transition-duration: 180ms;
+  transition-timing-function: ease-out;
+}
+
+a.underline {
+  color: var(--aura-plum);
+  text-decoration-color: rgba(118, 83, 103, 0.45);
+  text-underline-offset: 0.22em;
+  transition: color 160ms ease-out, text-decoration-color 160ms ease-out;
+}
+
+a.underline:hover {
+  color: var(--aura-plum-deep);
+  text-decoration-color: currentColor;
+}
+
+main > section {
+  animation: aura-surface-in 240ms ease-out both;
+}
+
+@keyframes aura-surface-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
 }

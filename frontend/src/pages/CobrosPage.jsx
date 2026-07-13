@@ -59,9 +59,9 @@ export default function CobrosPage() {
   return (
     <main className="min-h-screen bg-[#fff4f7] text-[#3d2f32]">
       <AppHeader />
-      <section className="mx-auto max-w-4xl px-5 py-8">
+      <section className="mx-auto max-w-5xl px-5 py-8 sm:px-8">
         <h1 className="text-3xl font-semibold">Mis cobros</h1>
-        <div className="mt-5 grid gap-3 rounded-2xl border bg-white p-4 sm:grid-cols-2">
+        <div className="mt-5 grid gap-4 rounded-2xl border border-[#f1dce4] bg-white p-5 sm:grid-cols-2">
           <label className="grid gap-1 text-sm font-medium">
             Buscar clienta
             <input placeholder="Nombre de clienta" value={busqueda} onChange={(event) => setBusqueda(event.target.value)} />
@@ -96,18 +96,19 @@ export default function CobrosPage() {
         {!cargando && !error && (
           <div className="mt-5 grid gap-3">
             {cobros.map((cobro) => (
-              <article className="rounded-2xl border bg-white p-5" key={cobro.id}>
+              <article className="rounded-2xl border border-[#f1dce4] border-l-4 border-l-[#c9aabd] bg-white p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-[#c9aabd] hover:shadow-md" key={cobro.id}>
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
                     <h2 className="text-lg font-semibold">{cobro.clienta_nombre_historica}</h2>
-                    <p>{dinero(cobro.importe)} · {cobro.metodo_pago_display}</p>
+                    <p className="mt-1 text-lg font-semibold">{dinero(cobro.importe)}</p>
+                    <p className="text-sm text-[#6f5b60]">{cobro.metodo_pago_display}</p>
                     <p className="text-sm text-[#6f5b60]">Cobrado: {fechaHora(cobro.creado_en)} · Turno #{cobro.turno.id}</p>
                   </div>
                   <span className={claseEstado(cobro.estado)}>{cobro.estado_display}</span>
                 </div>
                 <div className="mt-4 flex flex-wrap gap-3">
-                  <Link className="font-semibold underline" to={`/cobros/${cobro.id}`}>Ver detalle</Link>
-                  <Link className="font-semibold underline" to={`/turnos/${cobro.turno.id}`}>Ver turno</Link>
+                  <Link className="font-semibold underline underline-offset-4" to={`/cobros/${cobro.id}`}>Ver detalle</Link>
+                  <Link className="font-semibold underline underline-offset-4" to={`/turnos/${cobro.turno.id}`}>Ver turno</Link>
                 </div>
               </article>
             ))}

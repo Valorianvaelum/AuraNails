@@ -68,22 +68,19 @@ export default function CobroDetailPage() {
   return (
     <main className="min-h-screen bg-[#fff8f7] text-[#3d2f32]">
       <AppHeader />
-      <section className="mx-auto max-w-3xl px-5 py-8">
-        <Link to="/cobros">Volver a mis cobros</Link>
+      <section className="mx-auto max-w-4xl px-5 py-8 sm:px-8">
+        <Link className="text-sm font-semibold underline underline-offset-4" to="/cobros">← Volver a mis cobros</Link>
         {mensajeExito && <p className="mt-4 rounded-xl bg-[#eef8f0] p-3 text-[#356640]">{mensajeExito}</p>}
-        <article className="mt-5 rounded-2xl border bg-white p-6">
+        <article className="mt-5 rounded-2xl border border-[#f1dce4] bg-white p-6 sm:p-8">
           <div className="flex flex-wrap items-start justify-between gap-3">
-            <div><h1 className="text-3xl font-semibold">Cobro de {cobro.clienta_nombre_historica}</h1><p>#{cobro.id}</p></div>
+            <div><h1 className="text-3xl font-semibold">Cobro de {cobro.clienta_nombre_historica}</h1><p className="mt-1 text-sm text-[#6f5b60]">Comprobante #{cobro.id}</p></div>
             <span className={cobro.estado === "anulado" ? "rounded-full bg-[#f1e4e6] px-3 py-1 font-semibold text-[#8b3f4c]" : "rounded-full bg-[#e7f5ea] px-3 py-1 font-semibold text-[#356640]"}>{cobro.estado_display}</span>
           </div>
-          <p className="mt-5 text-2xl font-semibold">{dinero(cobro.importe)}</p>
-          <p>{cobro.metodo_pago_display}{cobro.detalle_metodo ? ` · ${cobro.detalle_metodo}` : ""}</p>
-          <p className="mt-4">Registrado: {fechaHora(cobro.creado_en)}</p>
-          <p>Turno: {fechaHora(cobro.turno.inicio)} · {cobro.turno.duracion_total_minutos} min</p>
-          <p>{cobro.servicios.map((servicio) => servicio.nombre).join(", ")}</p>
+          <div className="mt-6 grid gap-4 sm:grid-cols-2"><div className="rounded-xl bg-[#faf6f8] p-4"><p className="text-sm text-[#6f5b60]">Importe</p><p className="mt-1 text-2xl font-semibold">{dinero(cobro.importe)}</p></div><div className="rounded-xl bg-[#faf6f8] p-4"><p className="text-sm text-[#6f5b60]">Método de pago</p><p className="mt-1 font-semibold">{cobro.metodo_pago_display}{cobro.detalle_metodo ? ` · ${cobro.detalle_metodo}` : ""}</p></div></div>
+          <section className="mt-5 rounded-xl border border-[#e5dce2] p-4"><p className="text-sm text-[#6f5b60]">Turno</p><p className="mt-1 font-semibold">{fechaHora(cobro.turno.inicio)} · {cobro.turno.duracion_total_minutos} min</p><p className="mt-2 text-sm">{cobro.servicios.map((servicio) => servicio.nombre).join(", ")}</p><p className="mt-3 text-xs text-[#6f5b60]">Registrado: {fechaHora(cobro.creado_en)}</p></section>
           {cobro.estado === "anulado" && <div className="mt-5 rounded-xl bg-[#fff4f5] p-4"><p className="font-semibold">Cobro anulado</p><p>{cobro.motivo_anulacion}</p><p className="text-sm">{fechaHora(cobro.anulado_en)}</p></div>}
           {error && <p className="mt-4 text-[#8b3f4c]">{error}</p>}
-          <div className="mt-6 flex flex-wrap gap-3"><Link className="font-semibold underline" to={`/turnos/${cobro.turno.id}`}>Ver turno relacionado</Link>{cobro.puede_anularse && !mostrarAnulacion && <button type="button" onClick={() => setMostrarAnulacion(true)}>Anular cobro</button>}</div>
+          <div className="mt-7 flex flex-wrap gap-3 border-t border-[#e5dce2] pt-5"><Link className="font-semibold underline underline-offset-4" to={`/turnos/${cobro.turno.id}`}>Ver turno relacionado</Link>{cobro.puede_anularse && !mostrarAnulacion && <button type="button" onClick={() => setMostrarAnulacion(true)}>Anular cobro</button>}</div>
           {cobro.puede_anularse && mostrarAnulacion && <form className="mt-5 space-y-3 rounded-xl border border-[#e7c5ca] p-4" onSubmit={confirmarAnulacion}><label className="grid gap-1">Motivo de anulación<textarea required value={motivo} onChange={(event) => setMotivo(event.target.value)} /></label><div className="flex gap-3"><button disabled={anulando} className="bg-[#8b3f4c] text-white" type="submit">{anulando ? "Anulando..." : "Confirmar anulación"}</button><button disabled={anulando} type="button" onClick={() => setMostrarAnulacion(false)}>Cancelar</button></div></form>}
         </article>
       </section>
