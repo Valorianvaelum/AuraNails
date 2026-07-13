@@ -1,28 +1,37 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 
 import { getCurrentUser, loginRequest } from "../api/auth.js";
 import { setSessionExpiredHandler } from "../api/client.js";
 import { clearSession, hasSession, saveSession } from "../api/session.js";
+import { useNotifications } from "../components/Notifications.jsx";
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
+  const { notify } = useNotifications();
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const sessionExpiredNotified = useRef(false);
 
-  const logout = useCallback(() => {
+  const logout = useCallback(({ expired = false } = {}) => {
     clearSession();
     setUser(null);
-  }, []);
+    if (expired && !sessionExpiredNotified.current) {
+      sessionExpiredNotified.current = true;
+      notify("Tu sesión venció. Iniciá sesión nuevamente.", "warning");
+    }
+  }, [notify]);
 
   const login = useCallback(async (email, password) => {
     const data = await loginRequest(email, password);
     saveSession(data);
+    sessionExpiredNotified.current = false;
     setUser(data.user);
+    notify("Sesión iniciada.", "info");
     return data.user;
-  }, []);
+  }, [notify]);
 
-  useEffect(() => setSessionExpiredHandler(logout), [logout]);
+  useEffect(() => setSessionExpiredHandler(() => logout({ expired: true })), [logout]);
 
   useEffect(() => {
     let isMounted = true;
