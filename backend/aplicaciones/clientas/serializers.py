@@ -1,7 +1,7 @@
 from django.utils import timezone
 from rest_framework import serializers
 
-from .models import Clienta, normalizar_email, normalizar_telefono
+from .models import Clienta, normalizar_email, normalizar_telefono, validar_telefono
 
 
 class ClientaSerializer(serializers.ModelSerializer):
@@ -13,7 +13,11 @@ class ClientaSerializer(serializers.ModelSerializer):
             "blank": "Ingresá el nombre de la clienta.",
         },
     )
-    email = serializers.EmailField(required=False, allow_blank=True)
+    email = serializers.EmailField(
+        required=False,
+        allow_blank=True,
+        error_messages={"invalid": "Ingresá un correo válido."},
+    )
 
     class Meta:
         model = Clienta
@@ -47,7 +51,10 @@ class ClientaSerializer(serializers.ModelSerializer):
         return value.strip()
 
     def validate_telefono(self, value):
-        return value.strip()
+        try:
+            return validar_telefono(value)
+        except ValueError as error:
+            raise serializers.ValidationError(str(error)) from error
 
     def validate_email(self, value):
         return normalizar_email(value)

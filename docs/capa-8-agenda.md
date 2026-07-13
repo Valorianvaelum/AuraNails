@@ -28,7 +28,7 @@ Los filtros opcionales `estado`, `search` y `clienta_id` se combinan por interse
 
 No incluye grilla horaria compleja, arrastrar y soltar, calendario mensual, Google Calendar, recordatorios, WhatsApp, múltiples profesionales, disponibilidad avanzada, turnos recurrentes, reservas públicas, notificaciones ni cambios a Caja o Cobros.
 
-La Capa 8A queda implementada. La Capa 8B y la Capa 8C quedan pendientes de sus etapas de validación; la Capa 8 completa no está cerrada.
+La Capa 8A quedó completada como fuente de datos de la Agenda.
 
 ## Capa 8B — Interfaz diaria y semanal
 
@@ -36,4 +36,41 @@ La interfaz incorpora la ruta privada `/agenda`, con selector Día/Semana, naveg
 
 La vista diaria muestra tarjetas completas y la semanal organiza de lunes a domingo en columnas adaptables. Desde la Agenda se abre el detalle, se permite editar o reprogramar turnos abiertos y se inicia el formulario existente con la fecha seleccionada. Las acciones sensibles y los cobros permanecen centralizados en el detalle.
 
-La Capa 8B está implementada y pendiente de validación final. La Capa 8C y el cierre total de Capa 8 siguen pendientes.
+La Capa 8B quedó completada con la interfaz diaria y semanal.
+
+## Correcciones detectadas durante 8C
+
+La creación de un turno del mismo día conserva la regla existente: se permite si su inicio no pasó y no se superpone con otro turno propio. El formulario ahora conserva los mensajes específicos enviados por backend, incluso cuando un error de campo llega como texto simple.
+
+Clientas valida en backend que un teléfono informado contenga entre 7 y 15 dígitos y solo use números, espacios, guiones, paréntesis y un `+` inicial. La normalización y unicidad por propietaria se conservan; los registros históricos no se alteran automáticamente y deberán corregirse al volver a editarse si no cumplen la nueva validación. El correo se recorta, normaliza y muestra mensajes claros ante formato inválido o duplicado.
+
+## Cierre de Capa 8
+
+**Estado: cerrada y estable.**
+
+Subcapas completadas:
+
+- Capa 8A — Datos y API de Agenda.
+- Capa 8B — Interfaz diaria y semanal.
+- Capa 8C — Validación manual, manejo de errores y cierre.
+
+Capacidades validadas:
+
+- consulta diaria y semanal de lunes a domingo;
+- navegación entre fechas y semanas, incluida la acción Hoy;
+- filtros por estado, clienta y búsqueda;
+- creación desde fecha seleccionada y precarga del formulario existente;
+- detalle, edición y reprogramación según corresponda;
+- estados visuales, cobro visible en turnos realizados y diseño responsive;
+- aislamiento por propietaria;
+- turnos del mismo día cuando son futuros y no se superponen;
+- mensajes específicos ante superposición, turno pasado y errores de formulario;
+- validación, normalización y detección de duplicados de teléfono y email.
+
+La Agenda muestra solamente turnos existentes. No afirma disponibilidad ni horarios libres porque todavía no existen horarios laborales configurados; la disponibilidad avanzada queda fuera del alcance de Capa 8.
+
+Commits de referencia:
+
+- `42607f5 feat: agregar api de agenda`;
+- `b1761ec feat: agregar agenda visual`;
+- el cierre documental final queda pendiente de commit.

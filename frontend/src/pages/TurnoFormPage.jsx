@@ -11,12 +11,14 @@ const hoy = () => new Date().toLocaleDateString("en-CA");
 
 function mensajeDeError(error, predeterminado) {
   const data = error.response?.data;
+  if (!error.response) return "No pudimos comunicarnos con el servidor.";
   if (typeof data?.detail === "string") return data.detail;
   for (const campo of ["inicio", "clienta_id", "servicios_ids", "non_field_errors"]) {
     const value = data?.[campo];
+    if (typeof value === "string") return value;
     if (Array.isArray(value) && typeof value[0] === "string") return value[0];
   }
-  return predeterminado;
+  return predeterminado || "Ocurrió un error inesperado.";
 }
 
 export default function TurnoFormPage() {

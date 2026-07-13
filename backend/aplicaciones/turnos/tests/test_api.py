@@ -1,4 +1,5 @@
 from datetime import datetime, time, timedelta
+from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
 from django.test import TestCase
@@ -384,3 +385,41 @@ class TurnosTests(TestCase):
         self.assertEqual([turno["id"] for turno in pasado.data["turnos"]], [turno_pasado.id])
         self.assertEqual(rango.status_code, 200)
         self.assertEqual(rango.data["modo"], "rango")
+
+    def test_turnos_del_mismo_dia_respetan_hora_actual_y_superposicion(self):
+        ahora = timezone.make_aware(datetime(2030, 7, 13, 8, 0))
+
+        with patch("aplicaciones.turnos.serializers.timezone.now", return_value=ahora):
+            futuro = self.client.post(
+                "/api/turnos/",
+                self.datos_turno(inicio="2030-07-13T09:00:00-03:00"),
+                format="json",
+            )
+            presente = self.client.post(
+                "/api/turnos/",
+                self.datos_turno(inicio="2030-07-13T08:00:00-03:00"),
+                format="json",
+            )
+            pasado = self.client.post(
+                "/api/turnos/",
+                self.datos_turno(inicio="2030-07-13T07:59:00-03:00"),
+                format="json",
+            )
+            superpuesto = self.client.post(
+                "/api/turnos/",
+                self.datos_turno(inicio="2030-07-13T09:30:00-03:00"),
+                format="json",
+            )
+            consecutivo = self.client.post(
+                "/api/turnos/",
+                self.datos_turno(inicio="2030-07-13T10:00:00-03:00"),
+                format="json",
+            )
+
+        self.assertEqual(futuro.status_code, 201)
+        self.assertEqual(presente.status_code, 201)
+        self.assertEqual(pasado.status_code, 400)
+        self.assertEqual(pasado.data["inicio"][0], "No podés crear un turno en el pasado.")
+        self.assertEqual(superpuesto.status_code, 400)
+        self.assertEqual(superpuesto.data["inicio"], "Ese horario se superpone con otro turno.")
+        self.assertEqual(consecutivo.status_code, 201)

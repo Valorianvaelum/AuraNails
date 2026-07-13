@@ -12,6 +12,18 @@ def normalizar_telefono(value):
     return re.sub(r"\D+", "", value)
 
 
+def validar_telefono(value):
+    telefono = value.strip()
+    if not telefono:
+        return telefono
+    if not re.fullmatch(r"\+?[\d\s()\-]+", telefono):
+        raise ValueError("El teléfono solo puede contener números, espacios, guiones, paréntesis y un + inicial.")
+    cantidad_digitos = len(normalizar_telefono(telefono))
+    if not 7 <= cantidad_digitos <= 15:
+        raise ValueError("El teléfono debe contener entre 7 y 15 dígitos.")
+    return telefono
+
+
 class Clienta(models.Model):
     propietaria = models.ForeignKey(
         settings.AUTH_USER_MODEL,

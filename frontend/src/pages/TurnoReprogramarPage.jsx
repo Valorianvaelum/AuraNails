@@ -6,9 +6,11 @@ import AppHeader from "../components/AppHeader.jsx";
 
 function mensajeDeError(error, predeterminado) {
   const data = error.response?.data;
+  if (!error.response) return "No pudimos comunicarnos con el servidor.";
   if (typeof data?.detail === "string") return data.detail;
+  if (typeof data?.inicio === "string") return data.inicio;
   if (typeof data?.inicio?.[0] === "string") return data.inicio[0];
-  return predeterminado;
+  return predeterminado || "Ocurrió un error inesperado.";
 }
 
 export default function TurnoReprogramarPage() {
