@@ -19,7 +19,7 @@ No se implementan turnos, servicios realizados, cobros, deudas, productos, fotos
 - `activa`, inicialmente en `True`.
 - `creada_en` y `actualizada_en`.
 
-El correo se normaliza a minúsculas si existe y la fecha de nacimiento no puede ser futura. No existe unicidad de teléfono ni correo, ya que dos clientas pueden compartir datos válidos. El orden de listado es activas primero, luego nombre y apellido.
+El correo se normaliza a minúsculas si existe y la fecha de nacimiento no puede ser futura. Por cada propietaria, un correo informado y un teléfono informado deben ser únicos: el correo se compara sin espacios ni mayúsculas y el teléfono solo por sus dígitos. Las claves normalizadas tienen constraints condicionales de base de datos. Los duplicados históricos previos a esta regla no se eliminan ni fusionan automáticamente; quedan sin clave normalizada cuando existe conflicto y el alta o edición posterior los sigue detectando. El orden de listado es activas primero, luego nombre y apellido.
 
 ## Aislamiento y reglas
 

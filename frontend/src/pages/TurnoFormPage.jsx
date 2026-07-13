@@ -12,7 +12,8 @@ const hoy = () => new Date().toLocaleDateString("en-CA");
 function mensajeDeError(error, predeterminado) {
   const data = error.response?.data;
   if (typeof data?.detail === "string") return data.detail;
-  for (const value of Object.values(data || {})) {
+  for (const campo of ["inicio", "clienta_id", "servicios_ids", "non_field_errors"]) {
+    const value = data?.[campo];
     if (Array.isArray(value) && typeof value[0] === "string") return value[0];
   }
   return predeterminado;
@@ -28,6 +29,7 @@ export default function TurnoFormPage() {
   const [guardando, setGuardando] = useState(false);
   const [errorCarga, setErrorCarga] = useState("");
   const [error, setError] = useState("");
+  const [erroresCampos, setErroresCampos] = useState({});
   const [estadoTurno, setEstadoTurno] = useState("");
   const [valores, setValores] = useState({
     clienta_id: "",
@@ -84,6 +86,7 @@ export default function TurnoFormPage() {
   const guardar = async (event) => {
     event.preventDefault();
     setError("");
+    setErroresCampos({});
     if (!valores.clienta_id || !valores.servicios_ids.length) {
       setError("Elegí una clienta y al menos un servicio.");
       return;
@@ -102,6 +105,8 @@ export default function TurnoFormPage() {
         : await crearTurno(payload);
       navigate(`/turnos/${turno.id}`);
     } catch (requestError) {
+      const erroresBackend = requestError.response?.data;
+      if (erroresBackend && typeof erroresBackend === "object") setErroresCampos(erroresBackend);
       setError(mensajeDeError(requestError, "No pudimos guardar el turno. Intentá nuevamente."));
     } finally {
       setGuardando(false);
@@ -118,7 +123,7 @@ export default function TurnoFormPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#fff8f7] text-[#3d2f32]">
+    <main className="min-h-screen bg-[#fff4f7] text-[#3d2f32]">
       <AppHeader />
       <section className="mx-auto max-w-3xl px-5 py-8">
         <Link to="/turnos">Volver</Link>
@@ -133,7 +138,7 @@ export default function TurnoFormPage() {
                 className="w-full rounded-xl border p-3"
                 required
                 value={valores.clienta_id}
-                onChange={(event) => setValores({ ...valores, clienta_id: event.target.value })}
+                onChange={(event) => { setValores({ ...valores, clienta_id: event.target.value }); setErroresCampos((actual) => ({ ...actual, clienta_id: undefined })); }}
               >
                 <option value="">Elegí una clienta</option>
                 {clientas.map((clienta) => (
@@ -142,6 +147,7 @@ export default function TurnoFormPage() {
                   </option>
                 ))}
               </select>
+              {Array.isArray(erroresCampos.clienta_id) && <p className="text-sm text-[#8b3f4c]">{erroresCampos.clienta_id[0]}</p>}
             </label>
             {!clientas.length && (
               <p>Primero necesitás agregar una clienta. <Link to="/clientas/nueva">Agregar clienta</Link></p>
@@ -149,13 +155,14 @@ export default function TurnoFormPage() {
             <div className="grid gap-3 sm:grid-cols-2">
               <label className="grid gap-1">
                 Fecha
-                <input className="rounded-xl border p-3" required type="date" value={valores.fecha} onChange={(event) => setValores({ ...valores, fecha: event.target.value })} />
+                <input className="rounded-xl border p-3" required type="date" value={valores.fecha} onChange={(event) => { setValores({ ...valores, fecha: event.target.value }); setErroresCampos((actual) => ({ ...actual, inicio: undefined })); }} />
               </label>
               <label className="grid gap-1">
                 Hora
-                <input className="rounded-xl border p-3" required type="time" value={valores.hora} onChange={(event) => setValores({ ...valores, hora: event.target.value })} />
+                <input className="rounded-xl border p-3" required type="time" value={valores.hora} onChange={(event) => { setValores({ ...valores, hora: event.target.value }); setErroresCampos((actual) => ({ ...actual, inicio: undefined })); }} />
               </label>
             </div>
+            {Array.isArray(erroresCampos.inicio) && <p className="text-sm text-[#8b3f4c]">{erroresCampos.inicio[0]}</p>}
             <fieldset>
               <legend>Servicios</legend>
               {!servicios.length && <p className="mt-2">No hay servicios disponibles para este turno.</p>}
@@ -168,6 +175,7 @@ export default function TurnoFormPage() {
                 </label>
               ))}
             </fieldset>
+            {Array.isArray(erroresCampos.servicios_ids) && <p className="text-sm text-[#8b3f4c]">{erroresCampos.servicios_ids[0]}</p>}
             <div className="rounded-xl bg-[#fff8f7] p-4">
               Duración estimada: {minutos} min<br />
               Precio estimado: {dinero(precio)}

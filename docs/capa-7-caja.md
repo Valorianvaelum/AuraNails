@@ -2,7 +2,9 @@
 
 ## Estado
 
-**Capa 7 en progreso.** La Capa 7A backend está implementada. La Capa 7B implementa frontend e integración visual con Cobros y queda pendiente de validación final. La Capa 7C sigue pendiente; esta capa no está cerrada.
+**Capa 7 en progreso.** Las Capas 7A backend y 7B frontend están implementadas. La Capa 7C confirmó validaciones técnicas, smoke runtime y regresión de Caja, Cobros y Turnos. El recorrido visual autenticado queda pendiente porque el navegador de validación no estuvo disponible en este entorno; esta capa no se declara cerrada plenamente en runtime.
+
+El ajuste posterior al recorrido manual mejora la visibilidad de acciones en el detalle de Turnos, el acceso al cobro y el resumen diario de Inicio; no altera reglas de Caja ni habilita operaciones nuevas.
 
 ## Alcance implementado
 

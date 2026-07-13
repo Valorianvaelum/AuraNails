@@ -8,7 +8,7 @@ const money = (value) => new Intl.NumberFormat("es-AR", { style: "currency", cur
 const initial = { nombre: "", descripcion: "", duracion_minutos: "60", precio: "", orden: "0" };
 
 function Page({ children }) {
-  return <main className="min-h-screen bg-[#fff8f7] text-[#3d2f32]"><AppHeader /><section className="mx-auto max-w-4xl px-5 py-8">{children}</section></main>;
+  return <main className="min-h-screen bg-[#fff4f7] text-[#3d2f32]"><AppHeader /><section className="mx-auto max-w-4xl px-5 py-8">{children}</section></main>;
 }
 
 function List() {

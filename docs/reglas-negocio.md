@@ -39,6 +39,7 @@ Correspondencia técnica actual de Capa 5:
 5. Una clienta puede tener historial de turnos.
 6. Una clienta puede tener deudas o saldos pendientes.
 7. No se debe borrar una clienta con historial importante; debe poder marcarse como inactiva.
+8. Para una misma propietaria, el correo y el teléfono informados deben ser únicos. El correo se compara sin espacios exteriores ni mayúsculas; el teléfono se compara solo por sus dígitos.
 
 ## Reglas de servicios
 

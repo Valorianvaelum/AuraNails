@@ -56,7 +56,7 @@ export default function TurnoReprogramarPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#fff8f7] text-[#3d2f32]">
+    <main className="min-h-screen bg-[#fff4f7] text-[#3d2f32]">
       <AppHeader />
       <section className="mx-auto max-w-xl px-5 py-8">
         <Link to={`/turnos/${id}`}>Volver</Link>

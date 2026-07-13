@@ -40,7 +40,7 @@ cd backend
 
 ## Módulos disponibles
 
-- Clientas: gestión privada por usuaria.
+- Clientas: gestión privada por usuaria, con correo y teléfono normalizados sin duplicados por propietaria.
 - Servicios: duración, precio, estado y posición en la lista.
 - Turnos: Capa 5 cerrada y estable. Incluye listado global, filtros opcionales, alta, detalle, edición, reprogramación y acciones de estado controladas. Consultá [Capa 5](docs/capa-5-turnos.md).
 - Cobros: Capa 6 cerrada y estable. Incluye registro desde turnos realizados, historial, anulación con motivo, listado global e integración con Turnos. Consultá [Capa 6](docs/capa-6-cobros.md).
@@ -51,7 +51,7 @@ No existe eliminación física de Clientas, Servicios, Turnos ni Cobros. Product
 
 La Capa 7 está en progreso. La Capa 7A incorpora el backend privado de apertura, cierre, gastos y movimientos manuales; la Capa 7B incorpora sus pantallas, historial e integración con Cobros e Inicio. Cada cobro nuevo exige y se vincula automáticamente a una caja abierta propia. Consultá [Capa 7](docs/capa-7-caja.md).
 
-No existe eliminación física de registros de Caja; las anulaciones conservan su historial. La Capa 7 completa sigue en progreso.
+No existe eliminación física de registros de Caja; las anulaciones conservan su historial. La Capa 7 completó validaciones técnicas y smoke runtime, pero sigue en progreso hasta realizar el recorrido visual autenticado pendiente.
 
 ## Estado de Cobros
 

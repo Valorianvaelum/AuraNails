@@ -65,7 +65,7 @@ function ListaTurnos() {
   };
 
   return (
-    <main className="min-h-screen bg-[#fff8f7] text-[#3d2f32]">
+    <main className="min-h-screen bg-[#fff4f7] text-[#3d2f32]">
       <AppHeader />
       <section className="mx-auto max-w-4xl px-5 py-8">
         <div className="flex flex-wrap items-center justify-between gap-3">
@@ -119,13 +119,7 @@ function ListaTurnos() {
                 <p>{turno.duracion_legible} · {dinero(turno.precio_estimado)} · <span className={claseEstado(turno.estado)}>{turno.estado_display}</span></p>
               </Link>
             ))}
-            {!turnos.length && (
-              <p>
-                {tieneFiltros
-                  ? "No encontramos turnos con los filtros seleccionados."
-                  : "Todavía no tenés turnos registrados."}
-              </p>
-            )}
+            {!turnos.length && <div className="rounded-2xl border border-dashed border-[#f1dce4] bg-white p-6 text-center"><p>{tieneFiltros ? "No encontramos turnos con los filtros seleccionados." : "Todavía no tenés turnos registrados."}</p>{!tieneFiltros && <Link className="mt-3 inline-block font-semibold underline" to="nuevo">Crear primer turno</Link>}</div>}
           </div>
         )}
       </section>

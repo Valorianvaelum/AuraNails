@@ -38,7 +38,7 @@ function ClientasPage() {
   const isSearching = Boolean(search.trim());
 
   return (
-    <main className="min-h-screen bg-[#fff8f7] text-[#3d2f32]">
+    <main className="min-h-screen bg-[#fff4f7] text-[#3d2f32]">
       <AppHeader />
       <section className="mx-auto w-full max-w-5xl px-5 py-8 sm:px-8 sm:py-10">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">

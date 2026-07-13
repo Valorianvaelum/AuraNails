@@ -57,7 +57,7 @@ export default function CobrosPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#fff8f7] text-[#3d2f32]">
+    <main className="min-h-screen bg-[#fff4f7] text-[#3d2f32]">
       <AppHeader />
       <section className="mx-auto max-w-4xl px-5 py-8">
         <h1 className="text-3xl font-semibold">Mis cobros</h1>
@@ -111,7 +111,7 @@ export default function CobrosPage() {
                 </div>
               </article>
             ))}
-            {!cobros.length && <p>{tieneFiltros ? "No encontramos cobros con los filtros seleccionados." : "Todavía no tenés cobros registrados."}</p>}
+            {!cobros.length && <div className="rounded-2xl border border-dashed border-[#f1dce4] bg-white p-6 text-center"><p>{tieneFiltros ? "No encontramos cobros con los filtros seleccionados." : "Todavía no tenés cobros registrados."}</p>{!tieneFiltros && <><p className="mt-2 text-sm text-[#6f5b60]">Los cobros se registran desde un turno marcado como realizado.</p><Link className="mt-3 inline-block font-semibold underline" to="/turnos">Ver turnos</Link></>}</div>}
           </div>
         )}
       </section>

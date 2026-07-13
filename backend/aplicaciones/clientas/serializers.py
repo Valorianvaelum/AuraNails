@@ -1,7 +1,7 @@
 from django.utils import timezone
 from rest_framework import serializers
 
-from .models import Clienta
+from .models import Clienta, normalizar_email, normalizar_telefono
 
 
 class ClientaSerializer(serializers.ModelSerializer):
@@ -50,7 +50,39 @@ class ClientaSerializer(serializers.ModelSerializer):
         return value.strip()
 
     def validate_email(self, value):
-        return value.strip().lower()
+        return normalizar_email(value)
+
+    def validate(self, attrs):
+        propietaria = self.instance.propietaria if self.instance else self.context["request"].user
+        email = attrs.get("email", self.instance.email if self.instance else "")
+        telefono = attrs.get("telefono", self.instance.telefono if self.instance else "")
+        email_normalizado = normalizar_email(email)
+        telefono_normalizado = normalizar_telefono(telefono)
+        existentes = Clienta.objects.filter(propietaria=propietaria)
+        if self.instance:
+            existentes = existentes.exclude(pk=self.instance.pk)
+
+        errors = {}
+        if email_normalizado:
+            email_duplicado = existentes.filter(email_normalizado=email_normalizado).exists() or any(
+                normalizar_email(clienta.email) == email_normalizado
+                for clienta in existentes.filter(email_normalizado="").only("email")
+            )
+            if email_duplicado:
+                errors["email"] = "Ya existe una clienta registrada con este correo."
+        if telefono_normalizado:
+            telefono_duplicado = existentes.filter(telefono_normalizado=telefono_normalizado).exists() or any(
+                normalizar_telefono(clienta.telefono) == telefono_normalizado
+                for clienta in existentes.filter(telefono_normalizado="").only("telefono")
+            )
+            if telefono_duplicado:
+                errors["telefono"] = "Ya existe una clienta registrada con este número de teléfono."
+        if errors:
+            raise serializers.ValidationError(errors)
+
+        attrs["email_normalizado"] = email_normalizado
+        attrs["telefono_normalizado"] = telefono_normalizado
+        return attrs
 
     def validate_color_favorito(self, value):
         return value.strip()

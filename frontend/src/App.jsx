@@ -20,7 +20,7 @@ function RedirectBySession() {
   const { isAuthenticated, isLoading } = useAuth();
 
   if (isLoading) {
-    return <main className="min-h-screen bg-[#fff8f7]" aria-label="Cargando sesión" />;
+    return <main className="min-h-screen bg-[#fff4f7]" aria-label="Cargando sesión" />;
   }
 
   return <Navigate to={isAuthenticated ? "/inicio" : "/login"} replace />;

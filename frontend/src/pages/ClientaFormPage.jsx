@@ -46,7 +46,7 @@ function ClientaFormPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#fff8f7] text-[#3d2f32]">
+    <main className="min-h-screen bg-[#fff4f7] text-[#3d2f32]">
       <AppHeader />
       <section className="mx-auto w-full max-w-3xl px-5 py-8 sm:px-8 sm:py-10">
         <Link className="text-sm font-semibold text-[#a85f6c] underline underline-offset-4" to={isEditing ? `/clientas/${id}` : "/clientas"}>
