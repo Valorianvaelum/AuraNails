@@ -1,5 +1,6 @@
 import { apiClient } from "./client.js";
 export const listarTurnos=async(p)=>(await apiClient.get("/turnos/",{params:p})).data;
+export const consultarAgenda=async(p)=>(await apiClient.get("/turnos/agenda/",{params:p})).data;
 export const obtenerTurno=async(id)=>(await apiClient.get(`/turnos/${id}/`)).data;
 export const crearTurno=async(p)=>(await apiClient.post("/turnos/",p)).data;
 export const actualizarTurno=async(id,p)=>(await apiClient.patch(`/turnos/${id}/`,p)).data;

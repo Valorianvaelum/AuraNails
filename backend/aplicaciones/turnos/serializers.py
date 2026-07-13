@@ -221,3 +221,42 @@ class TurnoSerializer(serializers.ModelSerializer):
 
 class ReprogramarTurnoSerializer(serializers.Serializer):
     inicio = serializers.DateTimeField()
+
+
+class AgendaConsultaSerializer(serializers.Serializer):
+    fecha = serializers.DateField(required=False)
+    semana = serializers.DateField(required=False)
+    desde = serializers.DateField(required=False)
+    hasta = serializers.DateField(required=False)
+    estado = serializers.CharField(required=False, trim_whitespace=True)
+    clienta_id = serializers.IntegerField(required=False, min_value=1)
+    search = serializers.CharField(required=False, trim_whitespace=True)
+
+    def validate_estado(self, value):
+        estados = [estado for estado in value.split(",") if estado]
+        estados_validos = {estado for estado, _ in Turno.Estado.choices}
+        if not estados or any(estado not in estados_validos for estado in estados):
+            raise serializers.ValidationError("Indicá uno o más estados válidos.")
+        return ",".join(estados)
+
+    def validate(self, attrs):
+        tiene_fecha = "fecha" in attrs
+        tiene_semana = "semana" in attrs
+        tiene_rango = "desde" in attrs or "hasta" in attrs
+
+        if sum((tiene_fecha, tiene_semana, tiene_rango)) != 1:
+            raise serializers.ValidationError(
+                "Indicá fecha, semana o el rango desde y hasta."
+            )
+
+        if tiene_rango:
+            if "desde" not in attrs or "hasta" not in attrs:
+                raise serializers.ValidationError("El rango requiere desde y hasta.")
+            if attrs["desde"] > attrs["hasta"]:
+                raise serializers.ValidationError("La fecha desde no puede ser posterior a hasta.")
+            if (attrs["hasta"] - attrs["desde"]).days > 6:
+                raise serializers.ValidationError(
+                    "La agenda admite rangos de hasta siete días."
+                )
+
+        return attrs
