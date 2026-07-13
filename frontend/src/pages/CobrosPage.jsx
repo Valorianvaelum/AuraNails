@@ -6,9 +6,7 @@ import AppHeader from "../components/AppHeader.jsx";
 
 const dinero = (value) => new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 2 }).format(value);
 const fechaHora = (value) => new Intl.DateTimeFormat("es-AR", { dateStyle: "medium", timeStyle: "short" }).format(new Date(value));
-const claseEstado = (estado) => estado === "anulado"
-  ? "rounded-full bg-[#f1e4e6] px-2 py-1 text-xs font-semibold text-[#8b3f4c]"
-  : "rounded-full bg-[#e7f5ea] px-2 py-1 text-xs font-semibold text-[#356640]";
+const claseEstado = (estado) => estado === "anulado" ? "rounded-full bg-[#f1e4e6] px-2 py-1 text-xs font-semibold text-[#8b3f4c]" : "rounded-full bg-[#e7f5ea] px-2 py-1 text-xs font-semibold text-[#356640]";
 
 function mensajeDeError(error, predeterminado) {
   const data = error.response?.data;
@@ -32,89 +30,32 @@ export default function CobrosPage() {
     if (metodoPago) params.metodo_pago = metodoPago;
     if (estado) params.estado = estado;
     if (busqueda.trim()) params.search = busqueda.trim();
-
     setCargando(true);
     setError("");
-    try {
-      setCobros(await listarCobros(params));
-    } catch (requestError) {
-      setCobros([]);
-      setError(mensajeDeError(requestError, "No pudimos cargar tus cobros. Intentá nuevamente."));
-    } finally {
-      setCargando(false);
-    }
+    try { setCobros(await listarCobros(params)); } catch (requestError) { setCobros([]); setError(mensajeDeError(requestError, "No pudimos cargar tus cobros. Intentá nuevamente.")); } finally { setCargando(false); }
   }, [busqueda, estado, fecha, metodoPago]);
 
-  useEffect(() => {
-    cargarCobros();
-  }, [cargarCobros]);
-
-  const limpiarFiltros = () => {
-    setFecha("");
-    setMetodoPago("");
-    setEstado("");
-    setBusqueda("");
-  };
+  useEffect(() => { cargarCobros(); }, [cargarCobros]);
+  const limpiarFiltros = () => { setFecha(""); setMetodoPago(""); setEstado(""); setBusqueda(""); };
 
   return (
     <main className="min-h-screen bg-[#fff4f7] text-[#3d2f32]">
       <AppHeader />
       <section className="mx-auto max-w-5xl px-5 py-8 sm:px-8">
-        <h1 className="text-3xl font-semibold">Mis cobros</h1>
+        <div><h1 className="text-3xl font-semibold">Mis cobros</h1><p className="mt-1 text-[#6f5b60]">Consultá los cobros registrados desde tus turnos realizados.</p></div>
         <div className="mt-5 grid gap-4 rounded-2xl border border-[#f1dce4] bg-white p-5 sm:grid-cols-2">
-          <label className="grid gap-1 text-sm font-medium">
-            Buscar clienta
-            <input placeholder="Nombre de clienta" value={busqueda} onChange={(event) => setBusqueda(event.target.value)} />
-          </label>
-          <label className="grid gap-1 text-sm font-medium">
-            Fecha de cobro
-            <input type="date" value={fecha} onChange={(event) => setFecha(event.target.value)} />
-          </label>
-          <label className="grid gap-1 text-sm font-medium">
-            Método de pago
-            <select value={metodoPago} onChange={(event) => setMetodoPago(event.target.value)}>
-              <option value="">Todos</option>
-              <option value="efectivo">Efectivo</option>
-              <option value="transferencia">Transferencia</option>
-              <option value="tarjeta">Tarjeta</option>
-              <option value="otro">Otro</option>
-            </select>
-          </label>
-          <label className="grid gap-1 text-sm font-medium">
-            Estado
-            <select value={estado} onChange={(event) => setEstado(event.target.value)}>
-              <option value="">Todos</option>
-              <option value="registrado">Registrados</option>
-              <option value="anulado">Anulados</option>
-            </select>
-          </label>
-          {tieneFiltros && <button className="justify-self-start" type="button" onClick={limpiarFiltros}>Limpiar filtros</button>}
+          <label className="grid gap-1 text-sm font-medium">Buscar clienta<input placeholder="Nombre de clienta" value={busqueda} onChange={(event) => setBusqueda(event.target.value)} /></label>
+          <label className="grid gap-1 text-sm font-medium">Fecha de cobro<input type="date" value={fecha} onChange={(event) => setFecha(event.target.value)} /></label>
+          <label className="grid gap-1 text-sm font-medium">Método de pago<select value={metodoPago} onChange={(event) => setMetodoPago(event.target.value)}><option value="">Todos</option><option value="efectivo">Efectivo</option><option value="transferencia">Transferencia</option><option value="tarjeta">Tarjeta</option><option value="otro">Otro</option></select></label>
+          <label className="grid gap-1 text-sm font-medium">Estado<select value={estado} onChange={(event) => setEstado(event.target.value)}><option value="">Todos</option><option value="registrado">Registrados</option><option value="anulado">Anulados</option></select></label>
+          {tieneFiltros && <button className="aura-action aura-action-contextual justify-self-start" type="button" onClick={limpiarFiltros}>Limpiar filtros</button>}
         </div>
-
         {cargando && <p className="mt-5">Cargando cobros...</p>}
-        {error && <div className="mt-5 rounded-xl border border-[#e7c5ca] bg-white p-4"><p className="text-[#8b3f4c]">{error}</p><button className="mt-3" type="button" onClick={cargarCobros}>Reintentar</button></div>}
-        {!cargando && !error && (
-          <div className="mt-5 grid gap-3">
-            {cobros.map((cobro) => (
-              <article className="rounded-2xl border border-[#f1dce4] border-l-4 border-l-[#c9aabd] bg-white p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-[#c9aabd] hover:shadow-md" key={cobro.id}>
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div>
-                    <h2 className="text-lg font-semibold">{cobro.clienta_nombre_historica}</h2>
-                    <p className="mt-1 text-lg font-semibold">{dinero(cobro.importe)}</p>
-                    <p className="text-sm text-[#6f5b60]">{cobro.metodo_pago_display}</p>
-                    <p className="text-sm text-[#6f5b60]">Cobrado: {fechaHora(cobro.creado_en)} · Turno #{cobro.turno.id}</p>
-                  </div>
-                  <span className={claseEstado(cobro.estado)}>{cobro.estado_display}</span>
-                </div>
-                <div className="mt-4 flex flex-wrap gap-3">
-                  <Link className="font-semibold underline underline-offset-4" to={`/cobros/${cobro.id}`}>Ver detalle</Link>
-                  <Link className="font-semibold underline underline-offset-4" to={`/turnos/${cobro.turno.id}`}>Ver turno</Link>
-                </div>
-              </article>
-            ))}
-            {!cobros.length && <div className="rounded-2xl border border-dashed border-[#f1dce4] bg-white p-6 text-center"><p>{tieneFiltros ? "No encontramos cobros con los filtros seleccionados." : "Todavía no tenés cobros registrados."}</p>{!tieneFiltros && <><p className="mt-2 text-sm text-[#6f5b60]">Los cobros se registran desde un turno marcado como realizado.</p><Link className="mt-3 inline-block font-semibold underline" to="/turnos">Ver turnos</Link></>}</div>}
-          </div>
-        )}
+        {error && <div className="mt-5 rounded-xl border border-[#e7c5ca] bg-white p-4"><p className="text-[#8b3f4c]">{error}</p><button className="mt-3 aura-action aura-action-secondary" type="button" onClick={cargarCobros}>Reintentar</button></div>}
+        {!cargando && !error && <div className="mt-5 grid gap-3">
+          {cobros.map((cobro) => <article className="aura-financial-card" key={cobro.id}><div className="flex flex-wrap items-start justify-between gap-4"><div className="min-w-0 flex-1"><h2 className="text-lg font-semibold">{cobro.clienta_nombre_historica}</h2><p className="mt-2 aura-amount-primary">{dinero(cobro.importe)}</p><p className="mt-2 text-sm font-medium text-[#654552]">{cobro.metodo_pago_display}</p><p className="mt-1 text-sm text-[#6f5b60]">Cobrado: {fechaHora(cobro.creado_en)} · Turno #{cobro.turno.id}</p></div><span className={claseEstado(cobro.estado)}>{cobro.estado_display}</span></div><div className="mt-5 flex flex-wrap gap-3 border-t border-[#e5dce2] pt-4"><Link className="aura-action aura-action-secondary" to={`/cobros/${cobro.id}`}>Ver detalle</Link><Link className="aura-action aura-action-secondary" to={`/turnos/${cobro.turno.id}`}>Ver turno</Link></div></article>)}
+          {!cobros.length && <div className="rounded-2xl border border-dashed border-[#f1dce4] bg-white p-6 text-center"><p>{tieneFiltros ? "No encontramos cobros con los filtros seleccionados." : "Todavía no tenés cobros registrados."}</p>{!tieneFiltros && <><p className="mt-2 text-sm text-[#6f5b60]">Los cobros se registran desde un turno marcado como realizado.</p><Link className="mt-4 aura-action aura-action-secondary" to="/turnos">Ver turnos</Link></>}</div>}
+        </div>}
       </section>
     </main>
   );

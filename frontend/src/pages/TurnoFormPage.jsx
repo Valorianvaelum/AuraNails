@@ -1,10 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 
 import { listClientas } from "../api/clientas.js";
 import { listServicios } from "../api/servicios.js";
 import { actualizarTurno, crearTurno, obtenerTurno } from "../api/turnos.js";
 import AppHeader from "../components/AppHeader.jsx";
+import FieldError from "../components/FieldError.jsx";
+import { focusFirstError, normalizeApiError } from "../utils/apiErrors.js";
 
 const dinero = (value) => new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 }).format(value);
 const hoy = () => new Date().toLocaleDateString("en-CA");
@@ -35,6 +37,11 @@ export default function TurnoFormPage() {
   const [errorCarga, setErrorCarga] = useState("");
   const [error, setError] = useState("");
   const [erroresCampos, setErroresCampos] = useState({});
+  const refs = {
+    clienta_id: useRef(null),
+    inicio: useRef(null),
+    servicios_ids: useRef(null),
+  };
   const [estadoTurno, setEstadoTurno] = useState("");
   const [valores, setValores] = useState({
     clienta_id: "",
@@ -92,8 +99,13 @@ export default function TurnoFormPage() {
     event.preventDefault();
     setError("");
     setErroresCampos({});
-    if (!valores.clienta_id || !valores.servicios_ids.length) {
-      setError("Elegí una clienta y al menos un servicio.");
+    const erroresLocales = {};
+    if (!valores.clienta_id) erroresLocales.clienta_id = "Elegí una clienta.";
+    if (!valores.fecha || !valores.hora) erroresLocales.inicio = "Indicá la fecha y la hora del turno.";
+    if (!valores.servicios_ids.length) erroresLocales.servicios_ids = "Elegí al menos un servicio.";
+    if (Object.keys(erroresLocales).length) {
+      setErroresCampos(erroresLocales);
+      focusFirstError(refs, erroresLocales);
       return;
     }
 
@@ -110,9 +122,18 @@ export default function TurnoFormPage() {
         : await crearTurno(payload);
       navigate(`/turnos/${turno.id}`);
     } catch (requestError) {
-      const erroresBackend = requestError.response?.data;
-      if (erroresBackend && typeof erroresBackend === "object") setErroresCampos(erroresBackend);
-      setError(mensajeDeError(requestError, "No pudimos guardar el turno. Intentá nuevamente."));
+      const errorApi = normalizeApiError(requestError, "No pudimos guardar el turno. Intentá nuevamente.");
+      const errores = {
+        clienta_id: errorApi.fields.clienta_id,
+        inicio: errorApi.fields.inicio,
+        servicios_ids: errorApi.fields.servicios_ids,
+      };
+      const hayErroresDeCampo = Object.values(errores).some(Boolean);
+      const mensajeInicio = errores.inicio || (!hayErroresDeCampo ? errorApi.formError : "");
+      const erroresFinales = { ...errores, inicio: mensajeInicio };
+      setErroresCampos(erroresFinales);
+      setError(mensajeInicio ? "" : errorApi.formError);
+      focusFirstError(refs, erroresFinales);
     } finally {
       setGuardando(false);
     }
@@ -140,7 +161,10 @@ export default function TurnoFormPage() {
             <label className="grid gap-1">
               Clienta
               <select
-                className="w-full rounded-xl border p-3"
+                ref={refs.clienta_id}
+                className={`w-full rounded-xl border p-3 ${erroresCampos.clienta_id ? "field-invalid" : ""}`}
+                aria-invalid={Boolean(erroresCampos.clienta_id)}
+                aria-describedby={erroresCampos.clienta_id ? "turno-clienta-error" : undefined}
                 required
                 value={valores.clienta_id}
                 onChange={(event) => { setValores({ ...valores, clienta_id: event.target.value }); setErroresCampos((actual) => ({ ...actual, clienta_id: undefined })); }}
@@ -152,7 +176,7 @@ export default function TurnoFormPage() {
                   </option>
                 ))}
               </select>
-              {Array.isArray(erroresCampos.clienta_id) && <p className="text-sm text-[#8b3f4c]">{erroresCampos.clienta_id[0]}</p>}
+              <FieldError id="turno-clienta-error" message={erroresCampos.clienta_id} />
             </label>
             {!clientas.length && (
               <p>Primero necesitás agregar una clienta. <Link to="/clientas/nueva">Agregar clienta</Link></p>
@@ -160,15 +184,15 @@ export default function TurnoFormPage() {
             <div className="grid gap-3 sm:grid-cols-2">
               <label className="grid gap-1">
                 Fecha
-                <input className="rounded-xl border p-3" required type="date" value={valores.fecha} onChange={(event) => { setValores({ ...valores, fecha: event.target.value }); setErroresCampos((actual) => ({ ...actual, inicio: undefined })); }} />
+                <input ref={refs.inicio} className={`rounded-xl border p-3 ${erroresCampos.inicio ? "field-invalid" : ""}`} aria-invalid={Boolean(erroresCampos.inicio)} aria-describedby={erroresCampos.inicio ? "turno-inicio-error" : undefined} required type="date" value={valores.fecha} onChange={(event) => { setValores({ ...valores, fecha: event.target.value }); setErroresCampos((actual) => ({ ...actual, inicio: undefined })); }} />
               </label>
               <label className="grid gap-1">
                 Hora
-                <input className="rounded-xl border p-3" required type="time" value={valores.hora} onChange={(event) => { setValores({ ...valores, hora: event.target.value }); setErroresCampos((actual) => ({ ...actual, inicio: undefined })); }} />
+                <input className={`rounded-xl border p-3 ${erroresCampos.inicio ? "field-invalid" : ""}`} aria-invalid={Boolean(erroresCampos.inicio)} aria-describedby={erroresCampos.inicio ? "turno-inicio-error" : undefined} required type="time" value={valores.hora} onChange={(event) => { setValores({ ...valores, hora: event.target.value }); setErroresCampos((actual) => ({ ...actual, inicio: undefined })); }} />
               </label>
             </div>
-            {Array.isArray(erroresCampos.inicio) && <p className="text-sm text-[#8b3f4c]">{erroresCampos.inicio[0]}</p>}
-            <fieldset>
+            <FieldError id="turno-inicio-error" message={erroresCampos.inicio} />
+            <fieldset ref={refs.servicios_ids} tabIndex="-1" className={erroresCampos.servicios_ids ? "field-invalid" : ""} aria-invalid={Boolean(erroresCampos.servicios_ids)} aria-describedby={erroresCampos.servicios_ids ? "turno-servicios-error" : undefined}>
               <legend>Servicios</legend>
               {!servicios.length && <p className="mt-2">No hay servicios disponibles para este turno.</p>}
               {servicios.map((servicio) => (
@@ -180,7 +204,7 @@ export default function TurnoFormPage() {
                 </label>
               ))}
             </fieldset>
-            {Array.isArray(erroresCampos.servicios_ids) && <p className="text-sm text-[#8b3f4c]">{erroresCampos.servicios_ids[0]}</p>}
+            <FieldError id="turno-servicios-error" message={erroresCampos.servicios_ids} />
             <div className="rounded-xl bg-[#fff8f7] p-4">
               Duración estimada: {minutos} min<br />
               Precio estimado: {dinero(precio)}

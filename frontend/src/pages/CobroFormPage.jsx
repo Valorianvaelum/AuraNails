@@ -1,10 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 
 import { registrarCobro } from "../api/cobros.js";
 import { obtenerCajaAbierta } from "../api/caja.js";
 import { obtenerTurno } from "../api/turnos.js";
 import AppHeader from "../components/AppHeader.jsx";
+import FieldError from "../components/FieldError.jsx";
+import { focusFirstError, normalizeApiError } from "../utils/apiErrors.js";
 
 const dinero = (value) => new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 2 }).format(value);
 const fechaHora = (value) => new Intl.DateTimeFormat("es-AR", { dateStyle: "long", timeStyle: "short" }).format(new Date(value));
@@ -29,6 +31,8 @@ export default function CobroFormPage() {
   const [guardando, setGuardando] = useState(false);
   const [error, setError] = useState("");
   const [cajaAbierta, setCajaAbierta] = useState(undefined);
+  const [erroresCampos, setErroresCampos] = useState({});
+  const refs = { metodo_pago: useRef(null), detalle_metodo: useRef(null) };
 
   useEffect(() => {
     if (!turnoId) {
@@ -59,16 +63,15 @@ export default function CobroFormPage() {
 
   const guardar = async (event) => {
     event.preventDefault();
-    setError("");
+    setError(""); setErroresCampos({});
     if (!puedeRegistrar) {
       setError("Este turno no está disponible para registrar un cobro.");
       return;
     }
     if (metodoPago === "otro" && !detalleMetodo.trim()) {
-      setError("Ingresá un detalle para el método de pago Otro.");
+      const errors = { detalle_metodo: "Ingresá un detalle para el método de pago Otro." }; setErroresCampos(errors); focusFirstError(refs, errors);
       return;
     }
-    if (!window.confirm(`Vas a registrar un cobro por ${dinero(turno.precio_estimado)} para este turno.`)) return;
 
     setGuardando(true);
     try {
@@ -79,7 +82,7 @@ export default function CobroFormPage() {
       });
       navigate(`/cobros/${cobro.id}`, { state: { message: "Cobro registrado correctamente." } });
     } catch (requestError) {
-      setError(mensajeDeError(requestError, "No pudimos registrar el cobro. Intentá nuevamente."));
+      const parsed = normalizeApiError(requestError, mensajeDeError(requestError, "No pudimos registrar el cobro. Intentá nuevamente.")); setErroresCampos(parsed.fields); setError(parsed.formError); focusFirstError(refs, parsed.fields);
     } finally {
       setGuardando(false);
     }
@@ -109,17 +112,19 @@ export default function CobroFormPage() {
             </div>
             <label className="grid gap-1">
               Método de pago
-              <select value={metodoPago} onChange={(event) => setMetodoPago(event.target.value)}>
+              <select aria-describedby={erroresCampos.metodo_pago ? "metodo-error" : undefined} aria-invalid={Boolean(erroresCampos.metodo_pago)} className={erroresCampos.metodo_pago ? "field-invalid" : ""} ref={refs.metodo_pago} value={metodoPago} onChange={(event) => setMetodoPago(event.target.value)}>
                 <option value="efectivo">Efectivo</option>
                 <option value="transferencia">Transferencia</option>
                 <option value="tarjeta">Tarjeta</option>
                 <option value="otro">Otro</option>
               </select>
             </label>
+            <FieldError id="metodo-error" message={erroresCampos.metodo_pago} />
             {metodoPago === "otro" && (
               <label className="grid gap-1">
                 Detalle del método
-                <input required value={detalleMetodo} onChange={(event) => setDetalleMetodo(event.target.value)} />
+                <input aria-describedby={erroresCampos.detalle_metodo ? "detalle-error" : undefined} aria-invalid={Boolean(erroresCampos.detalle_metodo)} className={erroresCampos.detalle_metodo ? "field-invalid" : ""} ref={refs.detalle_metodo} required value={detalleMetodo} onChange={(event) => setDetalleMetodo(event.target.value)} />
+                <FieldError id="detalle-error" message={erroresCampos.detalle_metodo} />
               </label>
             )}
             {error && <p className="text-[#8b3f4c]">{error}</p>}

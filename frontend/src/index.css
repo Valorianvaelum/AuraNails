@@ -189,6 +189,66 @@ main > section {
   to { opacity: 1; transform: translateY(0); }
 }
 
+.confirm-backdrop { position: fixed; inset: 0; z-index: 60; display: flex; align-items: end; justify-content: center; padding: 1rem; background: rgba(55, 38, 48, 0.42); }
+.confirm-dialog { width: min(100%, 30rem); border: 1px solid var(--aura-border); border-radius: 1.25rem; background: var(--aura-surface); padding: 1.5rem; box-shadow: 0 20px 45px rgba(55, 38, 48, 0.2); animation: aura-notification-in 180ms ease-out both; }
+.confirm-dialog h2 { font-size: 1.25rem; font-weight: 700; color: #3f303a; }
+.confirm-dialog p { margin-top: 0.75rem; color: #5f4a54; }
+.confirm-dialog-details { border-radius: 0.75rem; background: var(--aura-surface-soft); padding: 0.75rem; font-size: 0.875rem; }
+.confirm-dialog-actions { display: flex; flex-wrap: wrap; justify-content: end; gap: 0.75rem; margin-top: 1.5rem; }
+.confirm-dialog-confirm, .confirm-dialog-destructive { border-radius: 0.75rem; padding: 0.65rem 1rem; font-weight: 600; color: white; }
+.confirm-dialog-confirm { background: var(--aura-plum); }
+.confirm-dialog-destructive { background: #7b4654; }
+.field-error { margin-top: 0.4rem; color: #8b3f4c; font-size: 0.875rem; }
+.field-invalid { border-color: #b56b7b !important; box-shadow: 0 0 0 3px rgba(181, 107, 123, 0.16); }
+
+/* Sistema localizado para Caja y Cobros. */
+.aura-action {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  border-radius: 0.75rem;
+  padding: 0.625rem 1rem;
+  font-weight: 600;
+  line-height: 1.25;
+  transition: background-color 160ms ease-out, border-color 160ms ease-out, color 160ms ease-out, transform 160ms ease-out;
+}
+.aura-action:hover:not(:disabled) { transform: translateY(-1px); }
+.aura-action:disabled { opacity: 0.6; }
+.aura-action-primary { background: var(--aura-plum); color: white; }
+.aura-action-primary:hover:not(:disabled) { background: var(--aura-plum-deep); }
+.aura-action-secondary { border-color: var(--aura-border); background: var(--aura-surface); color: #654552; }
+.aura-action-secondary:hover:not(:disabled) { background: var(--aura-surface-soft); }
+.aura-action-warning { border-color: #dfc6ce; background: #fbf6f7; color: #7c4f5d; }
+.aura-action-warning:hover:not(:disabled) { background: #f5ebee; }
+.aura-action-destructive { background: #7b4654; color: white; }
+.aura-action-destructive:hover:not(:disabled) { background: #643744; }
+.aura-action-contextual { min-height: auto; padding: 0.25rem 0; color: var(--aura-plum); text-decoration: underline; text-underline-offset: 0.22em; }
+
+.aura-financial-card {
+  border: 1px solid var(--aura-border);
+  border-left: 3px solid #c9aabd;
+  border-radius: 1rem;
+  background: var(--aura-surface);
+  padding: 1rem;
+}
+.aura-financial-card:hover { border-color: #c9aabd; box-shadow: 0 7px 16px rgba(80, 51, 66, 0.06); }
+.aura-financial-summary { border: 1px solid var(--aura-border); border-radius: 1rem; background: var(--aura-surface); padding: 1rem; }
+.aura-financial-featured { border-color: #cbb2bf; background: #f5eff1; }
+.aura-financial-section { border-top: 1px solid var(--aura-border); padding-top: 1.5rem; }
+.aura-financial-empty { border: 1px dashed #d6c7ce; border-radius: 0.875rem; background: var(--aura-surface-soft); padding: 1rem; color: #6f5b60; }
+.aura-amount { font-size: 1.125rem; font-weight: 700; color: #34252c; }
+.aura-amount-primary { font-size: clamp(1.75rem, 4vw, 2.25rem); font-weight: 700; line-height: 1.1; color: #382a32; }
+.aura-dialog-header { border-bottom: 1px solid var(--aura-border); padding-bottom: 1rem; }
+.aura-dialog-footer { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 0.75rem; border-top: 1px solid var(--aura-border); padding-top: 1rem; }
+
+@media (max-width: 639px) {
+  .aura-action { width: 100%; }
+  .aura-dialog-footer .aura-action { flex: 1 1 100%; }
+}
+@media (min-width: 640px) { .confirm-backdrop { align-items: center; } }
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
