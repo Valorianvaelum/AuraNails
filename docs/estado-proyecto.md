@@ -6,6 +6,8 @@ AuraNails es una web app simple para manicuras y pequeños estudios de uñas. El
 
 La rama `pulido-ux-ui` reúne tres rondas de pulido visual y de textos sobre la interfaz existente; no constituye una nueva capa funcional y queda pendiente de recorrido manual.
 
+El pulido de experiencia de uso incorpora avisos globales y refuerzos de acceso sin constituir una nueva capa funcional; su revisión manual permanece pendiente.
+
 ## Capas
 
 - Capa 0 documental: completada.

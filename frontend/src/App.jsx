@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 
 import { AuthProvider, useAuth } from "./auth/AuthContext.jsx";
+import { NotificationsProvider } from "./components/Notifications.jsx";
 import ProtectedRoute from "./auth/ProtectedRoute.jsx";
 import AgendaPage from "./pages/AgendaPage.jsx";
 import InicioPage from "./pages/InicioPage.jsx";
@@ -88,9 +89,7 @@ function AppRoutes() {
 
 function App() {
   return (
-    <AuthProvider>
-      <AppRoutes />
-    </AuthProvider>
+    <NotificationsProvider><AuthProvider><AppRoutes /></AuthProvider></NotificationsProvider>
   );
 }
 
