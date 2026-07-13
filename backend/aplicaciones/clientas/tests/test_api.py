@@ -150,6 +150,43 @@ class ClientasApiTests(TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.data["telefono"][0], "Ya existe una clienta registrada con este número de teléfono.")
 
+    def test_valida_y_normaliza_telefono_internacional(self):
+        corto = self.client.post(
+            "/api/clientas/", {"nombre": "Siete", "telefono": "123 4567"}, format="json"
+        )
+        largo = self.client.post(
+            "/api/clientas/", {"nombre": "Quince", "telefono": "+54 (9) 123-456-789-012"}, format="json"
+        )
+
+        self.assertEqual(corto.status_code, 201)
+        self.assertEqual(largo.status_code, 201)
+        self.assertEqual(Clienta.objects.get(pk=corto.data["id"]).telefono_normalizado, "1234567")
+        self.assertEqual(Clienta.objects.get(pk=largo.data["id"]).telefono_normalizado, "549123456789012")
+
+    def test_rechaza_telefonos_invalidos(self):
+        casos = {
+            "123456": "El teléfono debe contener entre 7 y 15 dígitos.",
+            "1234567890123456": "El teléfono debe contener entre 7 y 15 dígitos.",
+            "387abc1234": "El teléfono solo puede contener números, espacios, guiones, paréntesis y un + inicial.",
+            "54+3874902": "El teléfono solo puede contener números, espacios, guiones, paréntesis y un + inicial.",
+        }
+
+        for telefono, mensaje in casos.items():
+            with self.subTest(telefono=telefono):
+                response = self.client.post(
+                    "/api/clientas/", {"nombre": f"Prueba {telefono}", "telefono": telefono}, format="json"
+                )
+                self.assertEqual(response.status_code, 400)
+                self.assertEqual(response.data["telefono"][0], mensaje)
+
+    def test_email_invalido_devuelve_mensaje_comprensible(self):
+        response = self.client.post(
+            "/api/clientas/", {"nombre": "Correo", "email": "correo-invalido"}, format="json"
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.data["email"][0], "Ingresá un correo válido.")
+
     def test_permite_contacto_igual_para_otra_propietaria(self):
         self.client.force_authenticate(self.otra_usuario)
 

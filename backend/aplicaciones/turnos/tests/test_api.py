@@ -1,4 +1,5 @@
-from datetime import timedelta
+from datetime import datetime, time, timedelta
+from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
 from django.test import TestCase
@@ -27,7 +28,9 @@ class TurnosTests(TestCase):
             precio="100.00",
         )
         self.client.force_authenticate(self.usuario)
-        self.inicio = timezone.now() + timedelta(days=1)
+        self.inicio = timezone.make_aware(
+            datetime.combine(timezone.localdate() + timedelta(days=1), time(10))
+        )
 
     def datos_turno(self, **overrides):
         return {
@@ -259,3 +262,164 @@ class TurnosTests(TestCase):
         luego_de_anular = self.client.get(f"/api/turnos/{turno.id}/")
         self.assertIsNone(luego_de_anular.data["cobro_activo"])
         self.assertTrue(luego_de_anular.data["puede_registrar_cobro"])
+
+    def test_agenda_diaria_ordena_y_expone_snapshots_historicos(self):
+        tarde = self.crear_turno(inicio=(self.inicio + timedelta(hours=2)).isoformat())
+        manana = self.crear_turno()
+        fuera_del_dia = self.crear_turno(inicio=(self.inicio + timedelta(days=1)).isoformat())
+
+        response = self.client.get("/api/turnos/agenda/", {"fecha": self.inicio.date().isoformat()})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["modo"], "dia")
+        self.assertEqual(
+            [turno["id"] for turno in response.data["turnos"]],
+            [manana["id"], tarde["id"]],
+        )
+        self.assertNotIn(fuera_del_dia["id"], [turno["id"] for turno in response.data["turnos"]])
+        turno = response.data["turnos"][0]
+        self.assertEqual(turno["duracion_total_minutos"], 60)
+        self.assertEqual(turno["precio_estimado"], "100.00")
+        self.assertEqual(turno["servicios"][0]["nombre"], "Kapping")
+        self.assertEqual(turno["clienta"]["id"], self.clienta.id)
+        self.assertEqual(turno["fin"], (self.inicio + timedelta(hours=1)).isoformat().replace("+00:00", "Z"))
+
+    def test_agenda_semanal_usa_lunes_a_domingo_y_aisla_propietaria(self):
+        lunes = timezone.localdate() + timedelta(days=14)
+        lunes -= timedelta(days=lunes.weekday())
+        inicio_lunes = timezone.make_aware(datetime.combine(lunes, time(10)))
+        inicio_domingo = timezone.make_aware(datetime.combine(lunes + timedelta(days=6), time(16)))
+        turno_lunes = self.crear_turno(inicio=inicio_lunes.isoformat())
+        turno_domingo = self.crear_turno(inicio=inicio_domingo.isoformat())
+        fuera = self.crear_turno(inicio=(inicio_domingo + timedelta(days=1)).isoformat())
+        ajeno = Turno.objects.create(
+            propietaria=self.otro_usuario,
+            clienta=Clienta.objects.create(propietaria=self.otro_usuario, nombre="Bea"),
+            inicio=inicio_lunes + timedelta(hours=1),
+            fin=inicio_lunes + timedelta(hours=2),
+            duracion_total_minutos=60,
+            precio_estimado="100.00",
+        )
+
+        response = self.client.get("/api/turnos/agenda/", {"semana": (lunes + timedelta(days=3)).isoformat()})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["modo"], "semana")
+        self.assertEqual(str(response.data["desde"]), lunes.isoformat())
+        self.assertEqual(str(response.data["hasta"]), (lunes + timedelta(days=6)).isoformat())
+        ids = [turno["id"] for turno in response.data["turnos"]]
+        self.assertEqual(ids, [turno_lunes["id"], turno_domingo["id"]])
+        self.assertNotIn(fuera["id"], ids)
+        self.assertNotIn(ajeno.id, ids)
+
+    def test_agenda_combina_filtros_y_no_expone_clienta_ajena(self):
+        confirmado = self.crear_turno()
+        self.client.post(f"/api/turnos/{confirmado['id']}/confirmar/")
+        otra_clienta = Clienta.objects.create(propietaria=self.usuario, nombre="Beatriz")
+        self.crear_turno(
+            clienta_id=otra_clienta.id,
+            inicio=(self.inicio + timedelta(hours=2)).isoformat(),
+        )
+        clienta_ajena = Clienta.objects.create(propietaria=self.otro_usuario, nombre="Clara")
+
+        response = self.client.get(
+            "/api/turnos/agenda/",
+            {
+                "fecha": self.inicio.date().isoformat(),
+                "estado": "confirmado",
+                "clienta_id": self.clienta.id,
+                "search": "anA",
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual([turno["id"] for turno in response.data["turnos"]], [confirmado["id"]])
+        self.assertEqual(
+            self.client.get(
+                "/api/turnos/agenda/",
+                {"fecha": self.inicio.date().isoformat(), "clienta_id": clienta_ajena.id},
+            ).status_code,
+            404,
+        )
+
+    def test_agenda_valida_fechas_y_requiere_autenticacion(self):
+        self.assertEqual(self.client.get("/api/turnos/agenda/", {"fecha": "invalida"}).status_code, 400)
+        self.assertEqual(
+            self.client.get(
+                "/api/turnos/agenda/",
+                {"desde": "2026-06-10", "hasta": "2026-06-09"},
+            ).status_code,
+            400,
+        )
+        self.assertEqual(
+            self.client.get(
+                "/api/turnos/agenda/",
+                {"desde": "2026-06-01", "hasta": "2026-06-08"},
+            ).status_code,
+            400,
+        )
+        self.client.force_authenticate(None)
+        self.assertEqual(
+            self.client.get("/api/turnos/agenda/", {"fecha": self.inicio.date().isoformat()}).status_code,
+            401,
+        )
+
+    def test_agenda_permite_consultar_dias_pasados_y_rangos_validos(self):
+        fecha_pasada = timezone.localdate() - timedelta(days=1)
+        inicio_pasado = timezone.make_aware(datetime.combine(fecha_pasada, time(10)))
+        turno_pasado = Turno.objects.create(
+            propietaria=self.usuario,
+            clienta=self.clienta,
+            inicio=inicio_pasado,
+            fin=inicio_pasado + timedelta(minutes=60),
+            duracion_total_minutos=60,
+            precio_estimado="100.00",
+        )
+
+        pasado = self.client.get("/api/turnos/agenda/", {"fecha": fecha_pasada.isoformat()})
+        rango = self.client.get(
+            "/api/turnos/agenda/",
+            {"desde": self.inicio.date().isoformat(), "hasta": self.inicio.date().isoformat()},
+        )
+
+        self.assertEqual([turno["id"] for turno in pasado.data["turnos"]], [turno_pasado.id])
+        self.assertEqual(rango.status_code, 200)
+        self.assertEqual(rango.data["modo"], "rango")
+
+    def test_turnos_del_mismo_dia_respetan_hora_actual_y_superposicion(self):
+        ahora = timezone.make_aware(datetime(2030, 7, 13, 8, 0))
+
+        with patch("aplicaciones.turnos.serializers.timezone.now", return_value=ahora):
+            futuro = self.client.post(
+                "/api/turnos/",
+                self.datos_turno(inicio="2030-07-13T09:00:00-03:00"),
+                format="json",
+            )
+            presente = self.client.post(
+                "/api/turnos/",
+                self.datos_turno(inicio="2030-07-13T08:00:00-03:00"),
+                format="json",
+            )
+            pasado = self.client.post(
+                "/api/turnos/",
+                self.datos_turno(inicio="2030-07-13T07:59:00-03:00"),
+                format="json",
+            )
+            superpuesto = self.client.post(
+                "/api/turnos/",
+                self.datos_turno(inicio="2030-07-13T09:30:00-03:00"),
+                format="json",
+            )
+            consecutivo = self.client.post(
+                "/api/turnos/",
+                self.datos_turno(inicio="2030-07-13T10:00:00-03:00"),
+                format="json",
+            )
+
+        self.assertEqual(futuro.status_code, 201)
+        self.assertEqual(presente.status_code, 201)
+        self.assertEqual(pasado.status_code, 400)
+        self.assertEqual(pasado.data["inicio"][0], "No podés crear un turno en el pasado.")
+        self.assertEqual(superpuesto.status_code, 400)
+        self.assertEqual(superpuesto.data["inicio"], "Ese horario se superpone con otro turno.")
+        self.assertEqual(consecutivo.status_code, 201)

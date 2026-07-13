@@ -1,14 +1,18 @@
+from datetime import timedelta
+
 from django.db.models import Case, IntegerField, Prefetch, Q, Value, When
 from django.utils import timezone
 from rest_framework.decorators import action
+from rest_framework.exceptions import NotFound
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
+from aplicaciones.clientas.models import Clienta
 from aplicaciones.cobros.models import Cobro
 
 from .models import Turno
-from .serializers import ReprogramarTurnoSerializer, TurnoSerializer
+from .serializers import AgendaConsultaSerializer, ReprogramarTurnoSerializer, TurnoSerializer
 
 
 class TurnoViewSet(ModelViewSet):
@@ -69,6 +73,40 @@ class TurnoViewSet(ModelViewSet):
         turno.estado = nuevo_estado
         turno.save(update_fields=["estado", "actualizado_en"])
         return Response(self.get_serializer(turno).data)
+
+    @action(detail=False, methods=["get"])
+    def agenda(self, request, *args, **kwargs):
+        consulta = AgendaConsultaSerializer(data=request.query_params)
+        consulta.is_valid(raise_exception=True)
+        datos = consulta.validated_data
+
+        if "fecha" in datos:
+            desde = hasta = datos["fecha"]
+            modo = "dia"
+        elif "semana" in datos:
+            desde = datos["semana"] - timedelta(days=datos["semana"].weekday())
+            hasta = desde + timedelta(days=6)
+            modo = "semana"
+        else:
+            desde = datos["desde"]
+            hasta = datos["hasta"]
+            modo = "rango"
+
+        queryset = self.get_queryset().filter(inicio__date__gte=desde, inicio__date__lte=hasta)
+
+        if clienta_id := datos.get("clienta_id"):
+            if not Clienta.objects.filter(pk=clienta_id, propietaria=request.user).exists():
+                raise NotFound()
+            queryset = queryset.filter(clienta_id=clienta_id)
+
+        return Response(
+            {
+                "modo": modo,
+                "desde": desde,
+                "hasta": hasta,
+                "turnos": self.get_serializer(queryset.order_by("inicio"), many=True).data,
+            }
+        )
 
     @staticmethod
     def _turno_ya_inicio(turno):

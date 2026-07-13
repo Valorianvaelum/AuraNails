@@ -44,6 +44,7 @@ cd backend
 - Servicios: duración, precio, estado y posición en la lista.
 - Turnos: Capa 5 cerrada y estable. Incluye listado global, filtros opcionales, alta, detalle, edición, reprogramación y acciones de estado controladas. Consultá [Capa 5](docs/capa-5-turnos.md).
 - Cobros: Capa 6 cerrada y estable. Incluye registro desde turnos realizados, historial, anulación con motivo, listado global e integración con Turnos. Consultá [Capa 6](docs/capa-6-cobros.md).
+- Agenda: Capa 8 cerrada y estable. Incluye API privada, vista diaria y semanal, navegación, filtros, creación desde fecha seleccionada, estados, cobro visible y validación final. Consultá [Capa 8](docs/capa-8-agenda.md).
 
 No existe eliminación física de Clientas, Servicios, Turnos ni Cobros. Productos y Fotos siguen fuera de la implementación actual.
 

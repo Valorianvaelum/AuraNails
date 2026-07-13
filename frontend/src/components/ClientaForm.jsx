@@ -16,6 +16,21 @@ function firstError(errors, field) {
   return Array.isArray(value) ? value[0] : value;
 }
 
+function validarTelefono(telefono) {
+  const valor = telefono.trim();
+  if (!valor) return "";
+  if (!/^\+?[\d\s()-]+$/.test(valor)) {
+    return "El teléfono solo puede contener números, espacios, guiones, paréntesis y un + inicial.";
+  }
+  const digitos = valor.replace(/\D/g, "").length;
+  return digitos < 7 || digitos > 15 ? "El teléfono debe contener entre 7 y 15 dígitos." : "";
+}
+
+function validarEmail(email) {
+  const valor = email.trim();
+  return valor && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(valor) ? "Ingresá un correo válido." : "";
+}
+
 function ClientaForm({ clienta, onSubmit, submitLabel }) {
   const [values, setValues] = useState({ ...initialValues, ...clienta });
   const [fieldErrors, setFieldErrors] = useState({});
@@ -37,10 +52,16 @@ function ClientaForm({ clienta, onSubmit, submitLabel }) {
       setFieldErrors({ nombre: "Ingresá el nombre de la clienta." });
       return;
     }
+    const errorTelefono = validarTelefono(values.telefono);
+    const errorEmail = validarEmail(values.email);
+    if (errorTelefono || errorEmail) {
+      setFieldErrors({ telefono: errorTelefono || undefined, email: errorEmail || undefined });
+      return;
+    }
 
     setIsSubmitting(true);
     try {
-      await onSubmit({ ...values, fecha_nacimiento: values.fecha_nacimiento || null });
+      await onSubmit({ ...values, telefono: values.telefono.trim(), email: values.email.trim(), fecha_nacimiento: values.fecha_nacimiento || null });
     } catch (error) {
       if (error.response?.data && typeof error.response.data === "object") {
         setFieldErrors(error.response.data);
@@ -80,7 +101,9 @@ function ClientaForm({ clienta, onSubmit, submitLabel }) {
               onChange={handleChange}
               disabled={isSubmitting}
               required={required}
+              maxLength={name === "telefono" ? 30 : undefined}
             />
+            {name === "telefono" && <p className="mt-1 text-xs text-[#6f5b60]">Podés usar +, espacios, guiones y paréntesis. Debe contener entre 7 y 15 dígitos.</p>}
             {firstError(fieldErrors, name) && <p className="mt-2 text-sm text-[#8b3f4c]">{firstError(fieldErrors, name)}</p>}
           </div>
         ))}

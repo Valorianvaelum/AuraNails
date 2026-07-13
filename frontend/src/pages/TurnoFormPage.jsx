@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 
 import { listClientas } from "../api/clientas.js";
 import { listServicios } from "../api/servicios.js";
@@ -11,18 +11,23 @@ const hoy = () => new Date().toLocaleDateString("en-CA");
 
 function mensajeDeError(error, predeterminado) {
   const data = error.response?.data;
+  if (!error.response) return "No pudimos comunicarnos con el servidor.";
   if (typeof data?.detail === "string") return data.detail;
   for (const campo of ["inicio", "clienta_id", "servicios_ids", "non_field_errors"]) {
     const value = data?.[campo];
+    if (typeof value === "string") return value;
     if (Array.isArray(value) && typeof value[0] === "string") return value[0];
   }
-  return predeterminado;
+  return predeterminado || "Ocurrió un error inesperado.";
 }
 
 export default function TurnoFormPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const editando = Boolean(id);
+  const fechaAgenda = searchParams.get("fecha");
+  const horaAgenda = searchParams.get("hora");
   const [clientas, setClientas] = useState([]);
   const [servicios, setServicios] = useState([]);
   const [cargando, setCargando] = useState(true);
@@ -33,8 +38,8 @@ export default function TurnoFormPage() {
   const [estadoTurno, setEstadoTurno] = useState("");
   const [valores, setValores] = useState({
     clienta_id: "",
-    fecha: hoy(),
-    hora: "09:00",
+    fecha: !editando && /^\d{4}-\d{2}-\d{2}$/.test(fechaAgenda || "") ? fechaAgenda : hoy(),
+    hora: !editando && /^\d{2}:\d{2}$/.test(horaAgenda || "") ? horaAgenda : "09:00",
     servicios_ids: [],
     notas: "",
   });
