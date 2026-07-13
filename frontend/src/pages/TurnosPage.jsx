@@ -10,9 +10,14 @@ import TurnoReprogramarPage from "./TurnoReprogramarPage.jsx";
 const hoy = () => new Date().toLocaleDateString("en-CA");
 const hora = (value) => new Intl.DateTimeFormat("es-AR", { hour: "2-digit", minute: "2-digit" }).format(new Date(value));
 const dinero = (value) => new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 }).format(value);
-const claseEstado = (estado) => estado === "no_vino"
-  ? "rounded-full bg-[#f9e5b8] px-2 py-1 text-xs font-semibold text-[#74520d]"
-  : "text-sm";
+const claseEstado = (estado) => ({
+  pendiente: "bg-[#f5ead7] text-[#76552e]",
+  confirmado: "bg-[#e4eef9] text-[#365f8c]",
+  reprogramado: "bg-[#eee7f8] text-[#674a88]",
+  realizado: "bg-[#e7f5ea] text-[#356640]",
+  cancelado: "bg-[#ece9ea] text-[#685d60]",
+  no_vino: "bg-[#f9e5b8] text-[#74520d]",
+}[estado] || "bg-[#f3ebf0] text-[#765367]");
 
 function ListaTurnos() {
   const [fecha, setFecha] = useState("");
@@ -67,7 +72,7 @@ function ListaTurnos() {
   return (
     <main className="min-h-screen bg-[#fff4f7] text-[#3d2f32]">
       <AppHeader />
-      <section className="mx-auto max-w-4xl px-5 py-8">
+      <section className="mx-auto max-w-4xl px-5 py-8 sm:px-8">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h1 className="text-3xl font-semibold">Mis turnos</h1>
           <Link className="rounded-xl bg-[#b76e79] px-4 py-2 font-semibold text-white" to="nuevo">
@@ -75,18 +80,18 @@ function ListaTurnos() {
           </Link>
         </div>
 
-        <div className="mt-5 grid gap-3 rounded-2xl border bg-white p-4 sm:grid-cols-2">
+        <div className="mt-5 grid gap-4 rounded-2xl border border-[#f1dce4] bg-white p-5 sm:grid-cols-2">
           <div className="flex flex-wrap items-end gap-2">
             <button type="button" onClick={() => moverDia(-1)}>Día anterior</button>
             <button type="button" onClick={() => setFecha(hoy())}>Hoy</button>
             <button type="button" onClick={() => moverDia(1)}>Día siguiente</button>
             {tieneFiltros && <button type="button" onClick={limpiarFiltros}>Limpiar filtros</button>}
           </div>
-          <label className="grid gap-1 text-sm font-medium">
+          <label className="grid gap-1 text-sm font-medium text-[#4e3b3f]">
             Fecha
             <input type="date" value={fecha} onChange={(event) => setFecha(event.target.value)} />
           </label>
-          <label className="grid gap-1 text-sm font-medium">
+          <label className="grid gap-1 text-sm font-medium text-[#4e3b3f]">
             Estado
             <select value={estado} onChange={(event) => setEstado(event.target.value)}>
               <option value="">Todos</option>
@@ -98,7 +103,7 @@ function ListaTurnos() {
               <option value="no_vino">No vinieron</option>
             </select>
           </label>
-          <label className="grid gap-1 text-sm font-medium">
+          <label className="grid gap-1 text-sm font-medium text-[#4e3b3f]">
             Buscar clienta
             <input
               placeholder="Nombre o teléfono"
@@ -113,10 +118,10 @@ function ListaTurnos() {
         {!cargando && !error && (
           <div className="mt-5 grid gap-3">
             {turnos.map((turno) => (
-              <Link className="rounded-xl border bg-white p-4" to={`${turno.id}`} key={turno.id}>
-                <b>{hora(turno.inicio)} – {hora(turno.fin)} · {turno.clienta.nombre_completo}</b>
-                <p>{turno.servicios.map((servicio) => servicio.nombre).join(", ")}</p>
-                <p>{turno.duracion_legible} · {dinero(turno.precio_estimado)} · <span className={claseEstado(turno.estado)}>{turno.estado_display}</span></p>
+              <Link className="rounded-2xl border border-[#f1dce4] bg-white p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-[#c9aabd] hover:shadow-md" to={`${turno.id}`} key={turno.id}>
+                <div className="flex flex-wrap items-start justify-between gap-3"><b>{hora(turno.inicio)} – {hora(turno.fin)} · {turno.clienta.nombre_completo}</b><span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${claseEstado(turno.estado)}`}>{turno.estado_display}</span></div>
+                <p className="mt-2 text-sm text-[#6f5b60]">{turno.servicios.map((servicio) => servicio.nombre).join(", ")}</p>
+                <p className="mt-2 text-sm">{turno.duracion_legible} · <strong>{dinero(turno.precio_estimado)}</strong></p>
               </Link>
             ))}
             {!turnos.length && <div className="rounded-2xl border border-dashed border-[#f1dce4] bg-white p-6 text-center"><p>{tieneFiltros ? "No encontramos turnos con los filtros seleccionados." : "Todavía no tenés turnos registrados."}</p>{!tieneFiltros && <Link className="mt-3 inline-block font-semibold underline" to="nuevo">Crear primer turno</Link>}</div>}

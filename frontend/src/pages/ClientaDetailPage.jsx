@@ -82,7 +82,7 @@ function ClientaDetailPage() {
     <main className="min-h-screen bg-[#fff4f7] text-[#3d2f32]">
       <AppHeader />
       <section className="mx-auto w-full max-w-3xl px-5 py-8 sm:px-8 sm:py-10">
-        <Link className="text-sm font-semibold text-[#a85f6c] underline underline-offset-4" to="/clientas">Volver a mis clientas</Link>
+        <Link className="text-sm font-semibold text-[#a85f6c] underline underline-offset-4" to="/clientas">← Volver a mis clientas</Link>
         {isLoading && <p className="mt-7 text-[#6f5b60]">Cargando datos...</p>}
         {error && <p className="mt-7 rounded-xl bg-[#fff0f1] px-4 py-3 text-[#8b3f4c]" role="alert">{error}</p>}
         {clienta && (
@@ -101,23 +101,23 @@ function ClientaDetailPage() {
                 Editar
               </Link>
             </div>
-            <dl className="mt-8 grid gap-5 sm:grid-cols-2">
+            <dl className="mt-8 grid gap-4 sm:grid-cols-2">
               {details.map(([label, value]) => (
-                <div key={label} className={label === "Notas" ? "sm:col-span-2" : ""}>
+                <div key={label} className={`rounded-xl bg-[#faf6f8] p-4 ${label === "Notas" ? "sm:col-span-2" : ""}`}>
                   <dt className="text-sm font-medium text-[#7d4e57]">{label}</dt>
                   <dd className="mt-1 whitespace-pre-wrap text-[#3d2f32]">{value}</dd>
                 </div>
               ))}
             </dl>
             {actionError && <p className="mt-6 rounded-xl bg-[#fff0f1] px-4 py-3 text-sm text-[#8b3f4c]" role="alert">{actionError}</p>}
-            <button
-              className="mt-8 rounded-xl border border-[#dcbfc5] px-5 py-3 font-semibold text-[#7d4e57] transition hover:bg-[#fff0f1] focus:outline-none focus:ring-4 focus:ring-[#f4dce0] disabled:cursor-not-allowed disabled:opacity-70"
+            <section className="mt-8 border-t border-[#e5dce2] pt-5"><h2 className="text-sm font-semibold text-[#765367]">Acciones</h2><button
+              className="mt-3 rounded-xl border border-[#dcbfc5] px-5 py-3 font-semibold text-[#7d4e57] transition hover:bg-[#fff0f1] focus:outline-none focus:ring-4 focus:ring-[#f4dce0] disabled:cursor-not-allowed disabled:opacity-70"
               type="button"
               disabled={isChangingStatus}
               onClick={handleStatusChange}
             >
               {isChangingStatus ? "Guardando..." : clienta.activa ? "Desactivar" : "Reactivar"}
-            </button>
+            </button></section>
           </div>
         )}
       </section>
