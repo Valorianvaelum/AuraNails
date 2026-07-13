@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
+import FieldError from "./FieldError.jsx";
+import { focusFirstError, normalizeApiError } from "../utils/apiErrors.js";
 
 const initialValues = {
   nombre: "",
@@ -36,6 +38,7 @@ function ClientaForm({ clienta, onSubmit, submitLabel }) {
   const [fieldErrors, setFieldErrors] = useState({});
   const [formError, setFormError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const refs = { nombre: useRef(null), telefono: useRef(null), email: useRef(null) };
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -49,13 +52,13 @@ function ClientaForm({ clienta, onSubmit, submitLabel }) {
     setFieldErrors({});
 
     if (!values.nombre.trim()) {
-      setFieldErrors({ nombre: "Ingresá el nombre de la clienta." });
+      const errors = { nombre: "Ingresá el nombre de la clienta." }; setFieldErrors(errors); focusFirstError(refs, errors);
       return;
     }
     const errorTelefono = validarTelefono(values.telefono);
     const errorEmail = validarEmail(values.email);
     if (errorTelefono || errorEmail) {
-      setFieldErrors({ telefono: errorTelefono || undefined, email: errorEmail || undefined });
+      const errors = { telefono: errorTelefono || undefined, email: errorEmail || undefined }; setFieldErrors(errors); focusFirstError(refs, errors);
       return;
     }
 
@@ -63,12 +66,7 @@ function ClientaForm({ clienta, onSubmit, submitLabel }) {
     try {
       await onSubmit({ ...values, telefono: values.telefono.trim(), email: values.email.trim(), fecha_nacimiento: values.fecha_nacimiento || null });
     } catch (error) {
-      if (error.response?.data && typeof error.response.data === "object") {
-        setFieldErrors(error.response.data);
-        setFormError("Revisá los campos marcados.");
-      } else {
-        setFormError("No pudimos guardar a la clienta. Intentá nuevamente.");
-      }
+      const parsed = normalizeApiError(error, "No pudimos guardar a la clienta. Intentá nuevamente."); setFieldErrors(parsed.fields); setFormError(parsed.formError); focusFirstError(refs, parsed.fields);
     } finally {
       setIsSubmitting(false);
     }
@@ -93,7 +91,9 @@ function ClientaForm({ clienta, onSubmit, submitLabel }) {
               {label}{required ? " *" : ""}
             </label>
             <input
-              className="w-full rounded-xl border border-[#dcbfc5] bg-white px-4 py-3 text-[#2f2528] outline-none transition focus:border-[#b76e79] focus:ring-4 focus:ring-[#f4dce0]"
+              className={`w-full rounded-xl border border-[#dcbfc5] bg-white px-4 py-3 text-[#2f2528] outline-none transition focus:border-[#b76e79] focus:ring-4 focus:ring-[#f4dce0] ${firstError(fieldErrors, name) ? "field-invalid" : ""}`}
+              aria-invalid={Boolean(firstError(fieldErrors, name))}
+              aria-describedby={firstError(fieldErrors, name) ? `${name}-error` : undefined}
               id={name}
               name={name}
               type={type}
@@ -102,9 +102,10 @@ function ClientaForm({ clienta, onSubmit, submitLabel }) {
               disabled={isSubmitting}
               required={required}
               maxLength={name === "telefono" ? 30 : undefined}
+              ref={refs[name]}
             />
             {name === "telefono" && <p className="mt-1 text-xs text-[#6f5b60]">Podés usar +, espacios, guiones y paréntesis. Debe contener entre 7 y 15 dígitos.</p>}
-            {firstError(fieldErrors, name) && <p className="mt-2 text-sm text-[#8b3f4c]">{firstError(fieldErrors, name)}</p>}
+            <FieldError id={`${name}-error`} message={firstError(fieldErrors, name)} />
           </div>
         ))}
       </div>

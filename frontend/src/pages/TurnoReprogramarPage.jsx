@@ -1,8 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
 import { obtenerTurno, reprogramarTurno } from "../api/turnos.js";
 import AppHeader from "../components/AppHeader.jsx";
+import FieldError from "../components/FieldError.jsx";
+import { focusFirstError, normalizeApiError } from "../utils/apiErrors.js";
 
 function mensajeDeError(error, predeterminado) {
   const data = error.response?.data;
@@ -22,6 +24,8 @@ export default function TurnoReprogramarPage() {
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
   const [guardando, setGuardando] = useState(false);
+  const [erroresCampos, setErroresCampos] = useState({});
+  const refs = { inicio: useRef(null) };
 
   useEffect(() => {
     let vigente = true;
@@ -45,13 +49,13 @@ export default function TurnoReprogramarPage() {
 
   const guardar = async (event) => {
     event.preventDefault();
-    setError("");
+    setError(""); setErroresCampos({});
     setGuardando(true);
     try {
       await reprogramarTurno(id, { inicio: `${fecha}T${hora}:00-03:00` });
       navigate(`/turnos/${id}`, { state: { message: "Turno reprogramado." } });
     } catch (requestError) {
-      setError(mensajeDeError(requestError, "No pudimos reprogramar el turno."));
+      const parsed = normalizeApiError(requestError, mensajeDeError(requestError, "No pudimos reprogramar el turno.")); const inicio = parsed.fields.inicio || parsed.formError; setErroresCampos({ inicio }); setError(parsed.fields.inicio ? "" : parsed.formError); focusFirstError(refs, { inicio });
     } finally {
       setGuardando(false);
     }
@@ -74,12 +78,13 @@ export default function TurnoReprogramarPage() {
             <p>Duración: {turno.duracion_legible}</p>
             <label className="grid gap-1">
               Nueva fecha
-              <input className="w-full rounded-xl border p-3" required type="date" value={fecha} onChange={(event) => setFecha(event.target.value)} />
+              <input aria-describedby={erroresCampos.inicio ? "inicio-error" : undefined} aria-invalid={Boolean(erroresCampos.inicio)} className={`w-full rounded-xl border p-3 ${erroresCampos.inicio ? "field-invalid" : ""}`} required type="date" ref={refs.inicio} value={fecha} onChange={(event) => setFecha(event.target.value)} />
             </label>
             <label className="grid gap-1">
               Nueva hora
-              <input className="w-full rounded-xl border p-3" required type="time" value={hora} onChange={(event) => setHora(event.target.value)} />
+              <input aria-describedby={erroresCampos.inicio ? "inicio-error" : undefined} aria-invalid={Boolean(erroresCampos.inicio)} className={`w-full rounded-xl border p-3 ${erroresCampos.inicio ? "field-invalid" : ""}`} required type="time" value={hora} onChange={(event) => setHora(event.target.value)} />
             </label>
+            <FieldError id="inicio-error" message={erroresCampos.inicio} />
             {error && <p className="text-[#8b3f4c]">{error}</p>}
             <button disabled={guardando} className="rounded-xl bg-[#b76e79] px-5 py-3 text-white">
               {guardando ? "Reprogramando..." : "Guardar nueva fecha"}

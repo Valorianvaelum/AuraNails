@@ -8,6 +8,8 @@ La rama `pulido-ux-ui` reúne tres rondas de pulido visual y de textos sobre la 
 
 El pulido de experiencia de uso incorpora avisos globales y refuerzos de acceso sin constituir una nueva capa funcional; su revisión manual permanece pendiente.
 
+La rama `auditoria-experiencia` incorpora confirmaciones accesibles, manejo consistente de errores por campo y una unificación visual localizada de Caja y Cobros: jerarquía financiera, botones y estados vacíos. No modifica reglas de negocio ni incluye cambios sin guardar. Su confirmación manual final permanece pendiente.
+
 ## Capas
 
 - Capa 0 documental: completada.

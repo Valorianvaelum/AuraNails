@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 
 import { changeClientaStatus, getClienta } from "../api/clientas.js";
 import AppHeader from "../components/AppHeader.jsx";
+import ConfirmDialog from "../components/ConfirmDialog.jsx";
 
 function formatDate(value) {
   if (!value) return "Sin datos";
@@ -16,6 +17,7 @@ function ClientaDetailPage() {
   const [error, setError] = useState("");
   const [actionError, setActionError] = useState("");
   const [isChangingStatus, setIsChangingStatus] = useState(false);
+  const [confirmingStatus, setConfirmingStatus] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -43,17 +45,7 @@ function ClientaDetailPage() {
     };
   }, [id]);
 
-  async function handleStatusChange() {
-    if (!clienta.activa) {
-      await updateStatus(true);
-      return;
-    }
-
-    const confirmed = window.confirm(
-      "La clienta dejará de aparecer entre las activas, pero conservarás toda su información.",
-    );
-    if (confirmed) await updateStatus(false);
-  }
+  async function handleStatusChange() { if (!clienta.activa) await updateStatus(true); else setConfirmingStatus(true); }
 
   async function updateStatus(activa) {
     setActionError("");
@@ -118,6 +110,7 @@ function ClientaDetailPage() {
             >
               {isChangingStatus ? "Guardando..." : clienta.activa ? "Desactivar" : "Reactivar"}
             </button></section>
+            <ConfirmDialog open={confirmingStatus} title="¿Desactivar esta clienta?" description="Dejará de aparecer entre las clientas activas, pero se conservará su historial." confirmLabel="Desactivar clienta" destructive isProcessing={isChangingStatus} onClose={() => setConfirmingStatus(false)} onConfirm={async () => { await updateStatus(false); setConfirmingStatus(false); }} />
           </div>
         )}
       </section>
