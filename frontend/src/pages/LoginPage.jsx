@@ -12,7 +12,7 @@ function LoginPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (isLoading) {
-    return <main className="min-h-screen bg-[#fff8f7]" aria-label="Cargando sesión" />;
+    return <main className="min-h-screen bg-[#fff4f7]" aria-label="Cargando sesión" />;
   }
 
   if (isAuthenticated) {
@@ -44,7 +44,7 @@ function LoginPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#fff8f7] px-5 py-10 text-[#3d2f32] sm:px-8">
+    <main className="min-h-screen bg-[#fff4f7] px-5 py-10 text-[#3d2f32] sm:px-8">
       <section className="mx-auto flex min-h-[calc(100vh-5rem)] max-w-md items-center">
         <div className="w-full rounded-3xl border border-[#efdadd] bg-white p-7 shadow-sm sm:p-9">
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#b76e79]">AuraNails</p>

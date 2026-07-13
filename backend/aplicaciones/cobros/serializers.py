@@ -7,6 +7,7 @@ from .services import crear_cobro
 class CobroSerializer(serializers.ModelSerializer):
     turno_id = serializers.IntegerField(write_only=True, required=True)
     turno = serializers.SerializerMethodField(read_only=True)
+    caja_id = serializers.IntegerField(read_only=True)
     servicios = serializers.SerializerMethodField(read_only=True)
     puede_anularse = serializers.SerializerMethodField(read_only=True)
     estado_display = serializers.CharField(source="get_estado_display", read_only=True)
@@ -18,6 +19,7 @@ class CobroSerializer(serializers.ModelSerializer):
             "id",
             "turno_id",
             "turno",
+            "caja_id",
             "clienta_nombre_historica",
             "servicios",
             "importe",
@@ -35,6 +37,7 @@ class CobroSerializer(serializers.ModelSerializer):
         read_only_fields = (
             "id",
             "turno",
+            "caja_id",
             "clienta_nombre_historica",
             "servicios",
             "importe",

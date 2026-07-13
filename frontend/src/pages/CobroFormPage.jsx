@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 
 import { registrarCobro } from "../api/cobros.js";
+import { obtenerCajaAbierta } from "../api/caja.js";
 import { obtenerTurno } from "../api/turnos.js";
 import AppHeader from "../components/AppHeader.jsx";
 
@@ -27,6 +28,7 @@ export default function CobroFormPage() {
   const [cargando, setCargando] = useState(true);
   const [guardando, setGuardando] = useState(false);
   const [error, setError] = useState("");
+  const [cajaAbierta, setCajaAbierta] = useState(undefined);
 
   useEffect(() => {
     if (!turnoId) {
@@ -35,12 +37,15 @@ export default function CobroFormPage() {
       return;
     }
     let vigente = true;
-    obtenerTurno(turnoId)
-      .then((data) => {
-        if (vigente) setTurno(data);
+    Promise.all([obtenerTurno(turnoId), obtenerCajaAbierta()])
+      .then(([turnoData, caja]) => {
+        if (vigente) {
+          setTurno(turnoData);
+          setCajaAbierta(caja);
+        }
       })
       .catch((requestError) => {
-        if (vigente) setError(requestError.response?.status === 404 ? "No encontramos este turno." : "No pudimos cargar el turno.");
+        if (vigente) setError(requestError.response?.status === 404 ? "No encontramos este turno." : "No pudimos cargar la información necesaria para el cobro.");
       })
       .finally(() => {
         if (vigente) setCargando(false);
@@ -50,7 +55,7 @@ export default function CobroFormPage() {
     };
   }, [turnoId]);
 
-  const puedeRegistrar = turno?.estado === "realizado" && turno?.puede_registrar_cobro;
+  const puedeRegistrar = turno?.estado === "realizado" && turno?.puede_registrar_cobro && Boolean(cajaAbierta);
 
   const guardar = async (event) => {
     event.preventDefault();
@@ -81,7 +86,7 @@ export default function CobroFormPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#fff8f7] text-[#3d2f32]">
+    <main className="min-h-screen bg-[#fff4f7] text-[#3d2f32]">
       <AppHeader />
       <section className="mx-auto max-w-3xl px-5 py-8">
         <Link to={turnoId ? `/turnos/${turnoId}` : "/turnos"}>Volver al turno</Link>
@@ -90,7 +95,7 @@ export default function CobroFormPage() {
         {!cargando && error && !turno && <p className="mt-5 text-[#8b3f4c]">{error}</p>}
         {!cargando && turno && !puedeRegistrar && (
           <div className="mt-5 rounded-2xl border bg-white p-6">
-            <p>El cobro solo está disponible para un turno realizado sin cobro activo.</p>
+            {!cajaAbierta && turno.estado === "realizado" && turno.puede_registrar_cobro ? <><p>Debés abrir la caja antes de registrar un cobro.</p><Link className="mt-3 inline-block font-semibold underline" to="/caja">Ir a Caja</Link></> : <p>El cobro solo está disponible para un turno realizado sin cobro activo.</p>}
             {turno.cobro_activo && <Link className="mt-3 inline-block font-semibold underline" to={`/cobros/${turno.cobro_activo.id}`}>Ver cobro activo</Link>}
           </div>
         )}

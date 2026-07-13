@@ -22,6 +22,7 @@ function AppHeader() {
           <NavLink className={linkClassName} to="/servicios">Servicios</NavLink>
           <NavLink className={linkClassName} to="/turnos">Turnos</NavLink>
           <NavLink className={linkClassName} to="/cobros">Cobros</NavLink>
+          <NavLink className={linkClassName} to="/caja">Caja</NavLink>
           <button
             className="rounded-lg px-3 py-2 text-sm font-semibold text-[#7d4e57] transition hover:bg-[#fff0f1] focus:outline-none focus:ring-4 focus:ring-[#f4dce0]"
             type="button"

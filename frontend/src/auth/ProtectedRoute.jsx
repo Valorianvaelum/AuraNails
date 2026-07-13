@@ -8,7 +8,7 @@ function ProtectedRoute({ children }) {
 
   if (isLoading) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-[#fff8f7] px-6 text-[#6f5b60]">
+      <main className="flex min-h-screen items-center justify-center bg-[#fff4f7] px-6 text-[#6f5b60]">
         Cargando tu espacio...
       </main>
     );

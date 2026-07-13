@@ -9,6 +9,9 @@ import ClientasPage from "./pages/ClientasPage.jsx";
 import CobroDetailPage from "./pages/CobroDetailPage.jsx";
 import CobroFormPage from "./pages/CobroFormPage.jsx";
 import CobrosPage from "./pages/CobrosPage.jsx";
+import CajaDetailPage from "./pages/CajaDetailPage.jsx";
+import CajaPage from "./pages/CajaPage.jsx";
+import CajasHistorialPage from "./pages/CajasHistorialPage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
 import ServiciosPage from "./pages/ServiciosPage.jsx";
 import TurnosPage from "./pages/TurnosPage.jsx";
@@ -17,7 +20,7 @@ function RedirectBySession() {
   const { isAuthenticated, isLoading } = useAuth();
 
   if (isLoading) {
-    return <main className="min-h-screen bg-[#fff8f7]" aria-label="Cargando sesión" />;
+    return <main className="min-h-screen bg-[#fff4f7]" aria-label="Cargando sesión" />;
   }
 
   return <Navigate to={isAuthenticated ? "/inicio" : "/login"} replace />;
@@ -41,6 +44,9 @@ function AppRoutes() {
       <Route path="/cobros" element={<ProtectedRoute><CobrosPage /></ProtectedRoute>} />
       <Route path="/cobros/nuevo" element={<ProtectedRoute><CobroFormPage /></ProtectedRoute>} />
       <Route path="/cobros/:id" element={<ProtectedRoute><CobroDetailPage /></ProtectedRoute>} />
+      <Route path="/caja" element={<ProtectedRoute><CajaPage /></ProtectedRoute>} />
+      <Route path="/caja/historial" element={<ProtectedRoute><CajasHistorialPage /></ProtectedRoute>} />
+      <Route path="/caja/:id" element={<ProtectedRoute><CajaDetailPage /></ProtectedRoute>} />
       <Route
         path="/clientas"
         element={

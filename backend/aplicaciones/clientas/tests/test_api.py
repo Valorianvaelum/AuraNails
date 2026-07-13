@@ -1,6 +1,7 @@
 from datetime import timedelta
 
 from django.contrib.auth import get_user_model
+from django.db import IntegrityError, transaction
 from django.test import TestCase
 from django.utils import timezone
 from rest_framework.test import APIClient
@@ -132,6 +133,53 @@ class ClientasApiTests(TestCase):
 
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data["email"], "")
+
+    def test_rechaza_email_duplicado_normalizado_de_la_misma_propietaria(self):
+        response = self.client.post(
+            "/api/clientas/", {"nombre": "Otra", "email": "  MARIA@EXAMPLE.COM  "}, format="json"
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.data["email"][0], "Ya existe una clienta registrada con este correo.")
+
+    def test_rechaza_telefono_duplicado_con_otro_formato(self):
+        response = self.client.post(
+            "/api/clientas/", {"nombre": "Otra", "telefono": "(54) 341-5551234"}, format="json"
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.data["telefono"][0], "Ya existe una clienta registrada con este número de teléfono.")
+
+    def test_permite_contacto_igual_para_otra_propietaria(self):
+        self.client.force_authenticate(self.otra_usuario)
+
+        response = self.client.post(
+            "/api/clientas/",
+            {"nombre": "María", "email": "MARIA@EXAMPLE.COM", "telefono": "543415551234"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, 201)
+
+    def test_bloquea_duplicados_en_edicion_y_permite_el_propio_registro(self):
+        otra = Clienta.objects.create(propietaria=self.propietaria, nombre="Bea", email="bea@example.com")
+        duplicado = self.client.patch(f"/api/clientas/{otra.id}/", {"email": "maria@example.com"}, format="json")
+        propio = self.client.patch(
+            f"/api/clientas/{self.clienta.id}/", {"email": "  MARIA@EXAMPLE.COM "}, format="json"
+        )
+
+        self.assertEqual(duplicado.status_code, 400)
+        self.assertIn("email", duplicado.data)
+        self.assertEqual(propio.status_code, 200)
+
+    def test_constraints_protegen_las_claves_normalizadas(self):
+        with self.assertRaises(IntegrityError):
+            with transaction.atomic():
+                Clienta.objects.create(
+                    propietaria=self.propietaria,
+                    nombre="Duplicada",
+                    email="MARIA@EXAMPLE.COM",
+                )
 
     def test_busqueda_por_nombre_y_telefono(self):
         por_nombre = self.client.get("/api/clientas/?search=mar")
