@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 
 import { AuthProvider, useAuth } from "./auth/AuthContext.jsx";
 import ProtectedRoute from "./auth/ProtectedRoute.jsx";
+import AgendaPage from "./pages/AgendaPage.jsx";
 import InicioPage from "./pages/InicioPage.jsx";
 import ClientaDetailPage from "./pages/ClientaDetailPage.jsx";
 import ClientaFormPage from "./pages/ClientaFormPage.jsx";
@@ -41,6 +42,7 @@ function AppRoutes() {
       />
       <Route path="/servicios/*" element={<ProtectedRoute><ServiciosPage /></ProtectedRoute>} />
       <Route path="/turnos/*" element={<ProtectedRoute><TurnosPage /></ProtectedRoute>} />
+      <Route path="/agenda" element={<ProtectedRoute><AgendaPage /></ProtectedRoute>} />
       <Route path="/cobros" element={<ProtectedRoute><CobrosPage /></ProtectedRoute>} />
       <Route path="/cobros/nuevo" element={<ProtectedRoute><CobroFormPage /></ProtectedRoute>} />
       <Route path="/cobros/:id" element={<ProtectedRoute><CobroDetailPage /></ProtectedRoute>} />

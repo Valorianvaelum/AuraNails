@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 
 import { listClientas } from "../api/clientas.js";
 import { listServicios } from "../api/servicios.js";
@@ -22,7 +22,10 @@ function mensajeDeError(error, predeterminado) {
 export default function TurnoFormPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const editando = Boolean(id);
+  const fechaAgenda = searchParams.get("fecha");
+  const horaAgenda = searchParams.get("hora");
   const [clientas, setClientas] = useState([]);
   const [servicios, setServicios] = useState([]);
   const [cargando, setCargando] = useState(true);
@@ -33,8 +36,8 @@ export default function TurnoFormPage() {
   const [estadoTurno, setEstadoTurno] = useState("");
   const [valores, setValores] = useState({
     clienta_id: "",
-    fecha: hoy(),
-    hora: "09:00",
+    fecha: !editando && /^\d{4}-\d{2}-\d{2}$/.test(fechaAgenda || "") ? fechaAgenda : hoy(),
+    hora: !editando && /^\d{2}:\d{2}$/.test(horaAgenda || "") ? horaAgenda : "09:00",
     servicios_ids: [],
     notas: "",
   });

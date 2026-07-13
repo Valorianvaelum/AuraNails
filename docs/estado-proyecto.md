@@ -13,7 +13,7 @@ AuraNails es una web app simple para manicuras y pequeños estudios de uñas. El
 - Capa 4 servicios: implementada.
 - Capa 5 — Turnos: **cerrada y estable**.
 - Capa 6 — Cobros: **cerrada y estable**.
-- Capa 8 — Agenda visual: **en progreso**. La Capa 8A incorpora una API privada de consulta diaria, semanal y por rango corto sobre los mismos turnos históricos. La interfaz diaria y semanal (8B) y el cierre (8C) siguen pendientes.
+- Capa 8 — Agenda visual: **en progreso**. Las Capas 8A y 8B están implementadas: la primera aporta la API privada de consulta y la segunda la vista diaria/semanal responsive, filtros y creación desde fecha. La validación final y cierre (8C) siguen pendientes.
 
 ## Capa 7 — Caja diaria
 

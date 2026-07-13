@@ -21,6 +21,7 @@ function AppHeader() {
           <NavLink className={linkClassName} to="/clientas">Clientas</NavLink>
           <NavLink className={linkClassName} to="/servicios">Servicios</NavLink>
           <NavLink className={linkClassName} to="/turnos">Turnos</NavLink>
+          <NavLink className={linkClassName} to="/agenda">Agenda</NavLink>
           <NavLink className={linkClassName} to="/cobros">Cobros</NavLink>
           <NavLink className={linkClassName} to="/caja">Caja</NavLink>
           <button
