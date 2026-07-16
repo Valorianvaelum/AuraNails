@@ -26,44 +26,48 @@ function InicioPage() {
     return () => { vigente = false; };
   }, []);
 
+  const proximosTurnos = resumen.turnos
+    .filter((turno) => ["pendiente", "confirmado", "reprogramado"].includes(turno.estado) && new Date(turno.inicio) > new Date())
+    .sort((a, b) => new Date(a.inicio) - new Date(b.inicio));
+
   return (
     <main className="min-h-screen bg-[#fff4f7] text-[#3d2f32]">
       <AppHeader />
       <section className="mx-auto max-w-6xl px-5 py-10 sm:px-8">
-        <div className="rounded-3xl border border-[#f1dce4] bg-white p-7 sm:p-10">
-          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#b76e79]">AuraNails</p>
+        <div className="ui-surface p-7 sm:p-10">
+          <p className="ui-eyebrow">AuraNails</p>
           <h1 className="mt-4 text-4xl font-semibold tracking-tight text-[#2f2528]">{nombre ? `Hola, ${nombre}` : "Hola"}</h1>
           <p className="mt-3 max-w-xl text-lg text-[#6f5b60]">Tu resumen simple para organizar el día.</p>
           {resumen.error && <p className="mt-4 rounded-xl bg-[#fff0f1] px-4 py-3 text-sm text-[#8b3f4c]">{resumen.error}</p>}
 
           <div className="mt-8 grid gap-4 md:grid-cols-3">
-            <article className="rounded-2xl border border-[#f1dce4] bg-[#fffafa] p-5 transition-all duration-180 hover:-translate-y-0.5 hover:shadow-md">
+            <article className="ui-card">
               <p className="font-semibold">{resumen.caja ? "Caja abierta" : "Caja cerrada"}</p>
               {resumen.caja ? <p className="mt-2 text-sm">Saldo esperado: {dinero(resumen.caja.resumen?.saldo_teorico)}</p> : <p className="mt-2 text-sm">Abrí la caja antes de registrar cobros.</p>}
-              <Link className="mt-4 inline-block text-sm font-semibold text-[#765367] underline underline-offset-4" to="/caja">{resumen.caja ? "Ver caja" : "Abrir caja"}</Link>
+              <Link className="mt-4 ui-button ui-button-ghost" to="/caja">{resumen.caja ? "Ver caja" : "Abrir caja"}</Link>
             </article>
-            <article className="rounded-2xl border border-[#f1dce4] bg-[#fffafa] p-5 transition-all duration-180 hover:-translate-y-0.5 hover:shadow-md">
+            <article className="ui-card">
               <p className="font-semibold">Turnos de hoy</p>
               <p className="mt-2 text-3xl font-semibold tracking-tight">{resumen.turnos.length}</p>
-              <Link className="mt-4 inline-block text-sm font-semibold text-[#765367] underline underline-offset-4" to={`/turnos?fecha=${hoy()}`}>Ver turnos</Link>
+              <Link className="mt-4 ui-button ui-button-ghost" to={`/turnos?fecha=${hoy()}`}>Ver turnos</Link>
             </article>
-            <article className="rounded-2xl border border-[#f1dce4] bg-[#fffafa] p-5 transition-all duration-180 hover:-translate-y-0.5 hover:shadow-md">
+            <article className="ui-card">
               <p className="font-semibold">Cobros de hoy</p>
               <p className="mt-2 text-3xl font-semibold tracking-tight">{resumen.cobros.length}</p>
-              <Link className="mt-4 inline-block text-sm font-semibold text-[#765367] underline underline-offset-4" to={`/cobros?fecha=${hoy()}`}>Ver cobros</Link>
+              <Link className="mt-4 ui-button ui-button-ghost" to={`/cobros?fecha=${hoy()}`}>Ver cobros</Link>
             </article>
           </div>
 
           <div className="mt-9 border-t border-[#e5dce2] pt-7">
             <h2 className="text-xl font-semibold">Próximos turnos de hoy</h2>
-            {resumen.turnos.length ? <div className="mt-4 grid gap-3">{resumen.turnos.slice(0, 3).map((turno) => <Link className="rounded-2xl border border-[#f1dce4] bg-white p-4 transition-all duration-180 hover:-translate-y-0.5 hover:border-[#c9aabd] hover:shadow-md" key={turno.id} to={`/turnos/${turno.id}`}><strong>{hora(turno.inicio)} · {turno.clienta.nombre_completo}</strong><span className="ml-2 text-sm text-[#6f5b60]">{turno.estado_display}</span></Link>)}</div> : <p className="mt-3 text-sm text-[#6f5b60]">No tenés turnos para hoy.</p>}
+            {proximosTurnos.length ? <div className="mt-4 grid gap-3">{proximosTurnos.slice(0, 3).map((turno) => <Link className="ui-card" key={turno.id} to={`/turnos/${turno.id}`}><strong>{hora(turno.inicio)} · {turno.clienta.nombre_completo}</strong><span className="ml-2 text-sm text-[#6f5b60]">{turno.estado_display}</span></Link>)}</div> : <p className="mt-3 text-sm text-[#6f5b60]">No tenés próximos turnos para hoy.</p>}
           </div>
 
           <div className="mt-8 flex flex-wrap gap-3 border-t border-[#e5dce2] pt-7">
-            <Link className="rounded-xl bg-[#b76e79] px-4 py-2 font-semibold text-white" to="/turnos/nuevo">Nuevo turno</Link>
-            <Link className="rounded-xl border border-[#f1dce4] bg-white px-4 py-2 font-semibold transition hover:bg-[#faf6f8]" to="/clientas/nueva">Nueva clienta</Link>
-            <Link className="rounded-xl border border-[#f1dce4] bg-white px-4 py-2 font-semibold transition hover:bg-[#faf6f8]" to="/caja">Ver caja</Link>
-            <Link className="rounded-xl border border-[#f1dce4] bg-white px-4 py-2 font-semibold transition hover:bg-[#faf6f8]" to="/cobros">Ver cobros</Link>
+            <Link className="ui-button ui-button-primary" to="/turnos/nuevo">Nuevo turno</Link>
+            <Link className="ui-button ui-button-secondary" to="/clientas/nueva">Nueva clienta</Link>
+            <Link className="ui-button ui-button-secondary" to="/caja">Ver caja</Link>
+            <Link className="ui-button ui-button-secondary" to="/cobros">Ver cobros</Link>
           </div>
         </div>
       </section>

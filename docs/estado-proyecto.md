@@ -10,6 +10,10 @@ El pulido de experiencia de uso incorpora avisos globales y refuerzos de acceso 
 
 La rama `auditoria-experiencia` incorpora confirmaciones accesibles, manejo consistente de errores por campo y una unificación visual localizada de Caja y Cobros: jerarquía financiera, botones y estados vacíos. No modifica reglas de negocio ni incluye cambios sin guardar. Su confirmación manual final permanece pendiente.
 
+La rama `rediseño-visual-sistemico` reorganiza el frontend alrededor de tokens, capas de superficie, acciones, badges y controles compartidos. No constituye una nueva capa funcional y requiere recorrido manual final.
+
+La auditoría UI/UX posterior aportó ajustes puntuales de estados, targets táctiles, acciones de Turnos, próximos turnos, contraste y navegación de Caja; su verificación manual final permanece pendiente.
+
 ## Capas
 
 - Capa 0 documental: completada.
