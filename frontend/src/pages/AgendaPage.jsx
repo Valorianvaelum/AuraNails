@@ -12,9 +12,9 @@ const ESTADOS = [
 ];
 
 const CLASES_ESTADO = {
-  pendiente: "bg-[#f5ead7] text-[#76552e]", confirmado: "bg-[#e4eef9] text-[#365f8c]",
-  reprogramado: "bg-[#eee7f8] text-[#674a88]", realizado: "bg-[#e7f5ea] text-[#356640]",
-  cancelado: "bg-[#ece9ea] text-[#685d60]", no_vino: "bg-[#f5e2e4] text-[#8b3f4c]",
+  pendiente: "ui-badge ui-badge-pending", confirmado: "ui-badge ui-badge-confirmed",
+  reprogramado: "ui-badge ui-badge-rescheduled", realizado: "ui-badge ui-badge-success",
+  cancelado: "ui-badge ui-badge-neutral", no_vino: "ui-badge ui-badge-no-show",
 };
 
 const hoy = () => new Date().toLocaleDateString("en-CA");
@@ -44,10 +44,10 @@ function mensajeError(error) {
 
 function TarjetaTurno({ turno, resumida = false }) {
   const abierto = ["pendiente", "confirmado", "reprogramado"].includes(turno.estado);
-  return <article className="rounded-2xl border border-[#f1dce4] bg-white p-4 transition-all duration-200 hover:border-[#c9aabd] hover:shadow-md">
-    <div className="flex flex-wrap items-start justify-between gap-2"><div><p className="font-semibold">{hora(turno.inicio)} – {hora(turno.fin)}</p><h3 className="mt-1 text-lg font-semibold">{turno.clienta.nombre_completo}</h3></div><span className={`rounded-full px-2 py-1 text-xs font-semibold ${CLASES_ESTADO[turno.estado]}`}>{turno.estado_display}</span></div>
+  return <article className="ui-card">
+    <div className="flex flex-wrap items-start justify-between gap-2"><div><p className="font-semibold">{hora(turno.inicio)} – {hora(turno.fin)}</p><h3 className="mt-1 text-lg font-semibold">{turno.clienta.nombre_completo}</h3></div><span className={CLASES_ESTADO[turno.estado]}>{turno.estado_display}</span></div>
     {!resumida && <><p className="mt-3 text-sm text-[#6f5b60]">{turno.servicios.map((servicio) => servicio.nombre).join(", ")}</p><p className="mt-2 text-sm">{turno.duracion_legible} · {dinero(turno.precio_estimado)}</p>{turno.estado === "realizado" && <p className={`mt-2 text-sm font-semibold ${turno.cobro_activo ? "text-[#356640]" : "text-[#76552e]"}`}>{turno.cobro_activo ? "Cobrado" : turno.puede_registrar_cobro ? "Pendiente de cobro" : "Estado de cobro no disponible"}</p>}</>}
-    <div className="mt-4 flex flex-wrap gap-3 text-sm font-semibold"><Link className="underline" to={`/turnos/${turno.id}`}>Ver detalle</Link>{abierto && <Link className="underline" to={`/turnos/${turno.id}/editar`}>Editar</Link>}{abierto && <Link className="underline" to={`/turnos/${turno.id}/reprogramar`}>Reprogramar</Link>}</div>
+    <div className="mt-4 flex flex-wrap gap-2"><Link className="ui-button ui-button-secondary ui-button-compact" to={`/turnos/${turno.id}`}>Ver detalle</Link>{abierto && <Link className="ui-button ui-button-secondary ui-button-compact" to={`/turnos/${turno.id}/editar`}>Editar</Link>}{abierto && <Link className="ui-button ui-button-secondary ui-button-compact" to={`/turnos/${turno.id}/reprogramar`}>Reprogramar</Link>}</div>
   </article>;
 }
 

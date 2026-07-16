@@ -28,5 +28,5 @@ Esta capa deja preparada la base técnica de AuraNails sin crear módulos de neg
 docker compose up --build
 ```
 
-- Backend: http://localhost:8000/api/health/
-- Frontend: http://localhost:5173
+- Backend: http://localhost:8001/api/health/
+- Frontend: http://localhost:5174

@@ -2,7 +2,7 @@ import axios from "axios";
 
 import { clearSession, getAccessToken, getRefreshToken, saveAccessToken } from "./session.js";
 
-const apiBaseUrl = (import.meta.env.VITE_API_URL || "http://localhost:8000/api").replace(/\/$/, "");
+const apiBaseUrl = (import.meta.env.VITE_API_URL || "http://localhost:8001/api").replace(/\/$/, "");
 
 export const apiClient = axios.create({
   baseURL: apiBaseUrl,

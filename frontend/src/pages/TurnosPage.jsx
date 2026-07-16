@@ -11,13 +11,13 @@ const hoy = () => new Date().toLocaleDateString("en-CA");
 const hora = (value) => new Intl.DateTimeFormat("es-AR", { hour: "2-digit", minute: "2-digit" }).format(new Date(value));
 const dinero = (value) => new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 }).format(value);
 const claseEstado = (estado) => ({
-  pendiente: "bg-[#f5ead7] text-[#76552e]",
-  confirmado: "bg-[#e4eef9] text-[#365f8c]",
-  reprogramado: "bg-[#eee7f8] text-[#674a88]",
-  realizado: "bg-[#e7f5ea] text-[#356640]",
-  cancelado: "bg-[#ece9ea] text-[#685d60]",
-  no_vino: "bg-[#f9e5b8] text-[#74520d]",
-}[estado] || "bg-[#f3ebf0] text-[#765367]");
+  pendiente: "ui-badge ui-badge-pending",
+  confirmado: "ui-badge ui-badge-confirmed",
+  reprogramado: "ui-badge ui-badge-rescheduled",
+  realizado: "ui-badge ui-badge-success",
+  cancelado: "ui-badge ui-badge-neutral",
+  no_vino: "ui-badge ui-badge-no-show",
+}[estado] || "ui-badge ui-badge-neutral");
 
 function ListaTurnos() {
   const [fecha, setFecha] = useState("");
@@ -75,12 +75,12 @@ function ListaTurnos() {
       <section className="mx-auto max-w-4xl px-5 py-8 sm:px-8">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h1 className="text-3xl font-semibold">Mis turnos</h1>
-          <Link className="rounded-xl bg-[#b76e79] px-4 py-2 font-semibold text-white" to="nuevo">
+          <Link className="ui-button ui-button-primary" to="nuevo">
             Nuevo turno
           </Link>
         </div>
 
-        <div className="mt-5 grid gap-4 rounded-2xl border border-[#f1dce4] bg-white p-5 sm:grid-cols-2">
+        <div className="ui-section mt-5 grid gap-4 sm:grid-cols-2">
           <div className="flex flex-wrap items-end gap-2">
             <button type="button" onClick={() => moverDia(-1)}>Día anterior</button>
             <button type="button" onClick={() => setFecha(hoy())}>Hoy</button>
@@ -118,13 +118,13 @@ function ListaTurnos() {
         {!cargando && !error && (
           <div className="mt-5 grid gap-3">
             {turnos.map((turno) => (
-              <Link className="rounded-2xl border border-[#f1dce4] bg-white p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-[#c9aabd] hover:shadow-md" to={`${turno.id}`} key={turno.id}>
-                <div className="flex flex-wrap items-start justify-between gap-3"><b>{hora(turno.inicio)} – {hora(turno.fin)} · {turno.clienta.nombre_completo}</b><span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${claseEstado(turno.estado)}`}>{turno.estado_display}</span></div>
+              <Link className="ui-card" to={`${turno.id}`} key={turno.id}>
+                <div className="flex flex-wrap items-start justify-between gap-3"><b>{hora(turno.inicio)} – {hora(turno.fin)} · {turno.clienta.nombre_completo}</b><span className={claseEstado(turno.estado)}>{turno.estado_display}</span></div>
                 <p className="mt-2 text-sm text-[#6f5b60]">{turno.servicios.map((servicio) => servicio.nombre).join(", ")}</p>
                 <p className="mt-2 text-sm">{turno.duracion_legible} · <strong>{dinero(turno.precio_estimado)}</strong></p>
               </Link>
             ))}
-            {!turnos.length && <div className="rounded-2xl border border-dashed border-[#f1dce4] bg-white p-6 text-center"><p>{tieneFiltros ? "No encontramos turnos con los filtros seleccionados." : "Todavía no tenés turnos registrados."}</p>{!tieneFiltros && <Link className="mt-3 inline-block font-semibold underline" to="nuevo">Crear primer turno</Link>}</div>}
+            {!turnos.length && <div className="ui-card-muted text-center"><p>{tieneFiltros ? "No encontramos turnos con los filtros seleccionados." : "Todavía no tenés turnos registrados."}</p>{!tieneFiltros && <Link className="mt-3 ui-button ui-button-secondary" to="nuevo">Crear primer turno</Link>}</div>}
           </div>
         )}
       </section>
