@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, Route, Routes, useNavigate, useParams } from "react-router-dom";
 
 import { estadoServicio, getServicio, listServicios, saveServicio } from "../api/servicios.js";
@@ -6,7 +6,9 @@ import AppHeader from "../components/AppHeader.jsx";
 import ConfirmDialog from "../components/ConfirmDialog.jsx";
 import FieldError from "../components/FieldError.jsx";
 import FormActions from "../components/FormActions.jsx";
-import { normalizeApiError } from "../utils/apiErrors.js";
+import { useUnsavedChanges } from "../hooks/useUnsavedChanges.js";
+import { focusFirstError, normalizeApiError } from "../utils/apiErrors.js";
+import { requiredText, validNumber } from "../utils/validators.js";
 
 const money = (value) => new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 }).format(value);
 const initial = { nombre: "", descripcion: "", duracion_minutos: "60", precio: "", orden: "0" };
@@ -34,48 +36,140 @@ function List() {
   );
 }
 
+function validateServicio(values) {
+  return {
+    nombre: requiredText(values.nombre, "El nombre"),
+    duracion_minutos: validNumber(values.duracion_minutos, { label: "La duración", min: 1, max: 1440, allowZero: false }),
+    precio: validNumber(values.precio, { label: "El precio", min: 0, max: 999999999 }),
+    orden: validNumber(values.orden, { label: "La posición", min: 0, max: 9999 }),
+  };
+}
+
 function Form() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [valores, setValores] = useState(initial);
+  const [baseline, setBaseline] = useState(initial);
   const [error, setError] = useState("");
   const [fieldErrors, setFieldErrors] = useState({});
   const [guardando, setGuardando] = useState(false);
+  const refs = { nombre: useRef(null), duracion_minutos: useRef(null), precio: useRef(null), orden: useRef(null) };
   const campos = [["nombre", "Nombre", "text"], ["descripcion", "Descripción", "text"], ["duracion_minutos", "Duración estimada (minutos)", "number"], ["precio", "Precio en pesos argentinos", "number"], ["orden", "Posición en la lista", "number"]];
 
-  useEffect(() => { if (id) getServicio(id).then(setValores).catch(() => setError("No encontramos este servicio.")); }, [id]);
+  useEffect(() => {
+    if (!id) return;
+    getServicio(id)
+      .then((servicio) => {
+        const normalized = {
+          nombre: servicio.nombre ?? "",
+          descripcion: servicio.descripcion ?? "",
+          duracion_minutos: String(servicio.duracion_minutos ?? "60"),
+          precio: String(servicio.precio ?? ""),
+          orden: String(servicio.orden ?? "0"),
+        };
+        setValores(normalized);
+        setBaseline(normalized);
+      })
+      .catch(() => setError("No encontramos este servicio."));
+  }, [id]);
+
+  const isDirty = useMemo(() => JSON.stringify(valores) !== JSON.stringify(baseline), [baseline, valores]);
+  const unsaved = useUnsavedChanges({ isDirty, isSubmitting: guardando });
+
+  const validateField = (name, value = valores[name]) => {
+    const errors = validateServicio({ ...valores, [name]: value });
+    setFieldErrors((current) => ({ ...current, [name]: errors[name] || undefined }));
+    return errors[name];
+  };
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setValores((current) => ({ ...current, [name]: value }));
+    if (fieldErrors[name]) setFieldErrors((current) => ({ ...current, [name]: undefined }));
+  };
 
   const submit = async (event) => {
     event.preventDefault();
     if (guardando) return;
-    setError(""); setFieldErrors({}); setGuardando(true);
-    try { const servicio = await saveServicio(id, { ...valores, duracion_minutos: Number(valores.duracion_minutos), orden: Number(valores.orden) }); navigate(`/servicios/${servicio.id}`); }
-    catch (requestError) { const parsed = normalizeApiError(requestError, "No pudimos guardar el servicio. Intentá nuevamente."); setFieldErrors(parsed.fields); setError(parsed.formError); }
-    finally { setGuardando(false); }
+    setError("");
+    const errors = validateServicio(valores);
+    const visibleErrors = Object.fromEntries(Object.entries(errors).filter(([, message]) => message));
+    if (Object.keys(visibleErrors).length) {
+      setFieldErrors(visibleErrors);
+      focusFirstError(refs, visibleErrors);
+      return;
+    }
+
+    setFieldErrors({});
+    setGuardando(true);
+    try {
+      const payload = {
+        nombre: valores.nombre.trim(),
+        descripcion: valores.descripcion.trim(),
+        duracion_minutos: Number(valores.duracion_minutos),
+        precio: Number(valores.precio),
+        orden: Number(valores.orden),
+      };
+      const servicio = await saveServicio(id, payload);
+      setBaseline(valores);
+      navigate(`/servicios/${servicio.id}`);
+    } catch (requestError) {
+      const parsed = normalizeApiError(requestError, "No pudimos guardar el servicio. Intentá nuevamente.");
+      setFieldErrors(parsed.fields);
+      setError(parsed.formError);
+      focusFirstError(refs, parsed.fields);
+    } finally {
+      setGuardando(false);
+    }
   };
 
   const cancelTo = id ? `/servicios/${id}` : "/servicios";
 
   return (
     <Page>
-      <Link className="text-sm font-semibold text-primary underline underline-offset-4" to={cancelTo}>Volver</Link>
+      <button className="text-sm font-semibold text-primary underline underline-offset-4" type="button" onClick={() => unsaved.requestNavigation(cancelTo)}>Volver</button>
       <h1 className="mt-4 text-3xl font-semibold">{id ? "Editar servicio" : "Nuevo servicio"}</h1>
       <p className="mt-2 text-muted-foreground">Definí la duración y el importe para ordenar mejor tus turnos.</p>
-      <form className="mt-6 rounded-xl border border-border bg-card p-5 shadow-sm sm:p-7" onSubmit={submit}>
+      <form className="mt-6 rounded-xl border border-border bg-card p-5 shadow-sm sm:p-7" onSubmit={submit} noValidate>
         <div className="grid gap-5 sm:grid-cols-2">
           {campos.map(([nombre, etiqueta, tipo]) => (
             <label className={nombre === "descripcion" ? "sm:col-span-2" : ""} key={nombre}>
-              <span className="block text-sm font-medium">{etiqueta}</span>
+              <span className="block text-sm font-medium">{etiqueta}{nombre !== "descripcion" ? " *" : ""}</span>
               {nombre === "orden" && <span className="mt-1 block text-sm text-muted-foreground">Los números más bajos se muestran primero.</span>}
-              <input aria-describedby={fieldErrors[nombre] ? `${nombre}-error` : undefined} aria-invalid={Boolean(fieldErrors[nombre])} required={nombre !== "descripcion"} min={tipo === "number" ? "0" : undefined} step={nombre === "precio" ? "0.01" : "1"} className={`mt-2 ${fieldErrors[nombre] ? "field-invalid" : ""}`} type={tipo} value={valores[nombre] ?? ""} onChange={(event) => setValores({ ...valores, [nombre]: event.target.value })} />
+              <input
+                aria-describedby={fieldErrors[nombre] ? `${nombre}-error` : undefined}
+                aria-invalid={Boolean(fieldErrors[nombre])}
+                className={`mt-2 ${fieldErrors[nombre] ? "field-invalid" : ""}`}
+                disabled={guardando}
+                id={nombre}
+                max={nombre === "duracion_minutos" ? "1440" : nombre === "orden" ? "9999" : undefined}
+                min={tipo === "number" ? (nombre === "duracion_minutos" ? "1" : "0") : undefined}
+                name={nombre}
+                onBlur={() => validateField(nombre)}
+                onChange={handleChange}
+                ref={refs[nombre]}
+                required={nombre !== "descripcion"}
+                step={nombre === "precio" ? "0.01" : "1"}
+                type={tipo}
+                value={valores[nombre] ?? ""}
+              />
               <FieldError id={`${nombre}-error`} message={fieldErrors[nombre]} />
             </label>
           ))}
         </div>
         <p className="mt-5 text-sm text-muted-foreground">Ejemplo: 90 minutos equivale a 1 h 30 min.</p>
-        {error && <p className="mt-5 rounded-lg bg-[var(--color-danger-soft)] px-4 py-3 text-destructive">{error}</p>}
-        <div className="mt-7"><FormActions cancelTo={cancelTo} isSubmitting={guardando} submitLabel={id ? "Guardar cambios" : "Guardar servicio"} /></div>
+        {error && <p className="mt-5 rounded-lg bg-[var(--color-danger-soft)] px-4 py-3 text-destructive" role="alert">{error}</p>}
+        <div className="mt-7"><FormActions isDirty={isDirty} isSubmitting={guardando} onCancel={() => unsaved.requestNavigation(cancelTo)} submitLabel={id ? "Guardar cambios" : "Guardar servicio"} /></div>
       </form>
+      <ConfirmDialog
+        open={unsaved.confirmOpen}
+        title="¿Descartar los cambios?"
+        description="Los datos modificados en este servicio no se guardarán."
+        confirmLabel="Descartar cambios"
+        destructive
+        onClose={unsaved.stay}
+        onConfirm={unsaved.discardAndLeave}
+      />
     </Page>
   );
 }
