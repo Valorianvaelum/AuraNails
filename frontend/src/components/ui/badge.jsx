@@ -3,9 +3,9 @@ import { forwardRef } from "react";
 import { cn } from "@/lib/utils";
 
 const variants = {
-  default: "border-primary/30 bg-primary text-primary-foreground",
+  default: "border-[var(--color-brand-hover)] bg-primary text-primary-foreground",
   secondary: "border-border bg-secondary text-secondary-foreground",
-  destructive: "border-destructive/30 bg-destructive text-destructive-foreground",
+  destructive: "border-[var(--color-danger)] bg-destructive text-destructive-foreground",
   outline: "border-border bg-transparent text-foreground",
   success: "border-[#c9ddce] bg-[var(--color-success-soft)] text-[var(--color-success)]",
   warning: "border-[#e3d2b7] bg-[var(--color-warning-soft)] text-[var(--color-warning)]",
