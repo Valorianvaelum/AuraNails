@@ -1,0 +1,48 @@
+:root {
+  --color-canvas: #d9d1cf;
+  --color-canvas-deep: #cfc5c3;
+  --color-surface: #eee9e6;
+  --color-surface-raised: #f4efec;
+  --color-surface-muted: #e4dcda;
+  --color-border: #c2b6b8;
+  --color-border-strong: #aa999f;
+  --color-text: #31272c;
+  --color-text-muted: #66585e;
+  --color-brand: #684457;
+  --color-brand-hover: #513442;
+  --color-brand-soft: #ddcfd5;
+  --shadow-hairline: 0 8px 20px rgba(50, 36, 43, 0.035);
+  --shadow-raised: 0 10px 24px rgba(50, 36, 43, 0.055);
+}
+
+body {
+  background: var(--color-canvas);
+}
+
+#root {
+  background:
+    radial-gradient(70rem 32rem at 50% -20rem, rgba(255, 255, 255, 0.2), transparent 70%),
+    linear-gradient(155deg, #ded7d4 0%, var(--color-canvas) 52%, var(--color-canvas-deep) 100%);
+}
+
+.ui-header {
+  background: rgba(238, 233, 230, 0.96);
+  border-bottom-color: var(--color-border);
+}
+
+.bg-white,
+.bg-card {
+  background-color: var(--color-surface-raised) !important;
+}
+
+input:not([type="checkbox"]):not([type="radio"]),
+select,
+textarea {
+  background-color: #f0eae7;
+}
+
+input:not([type="checkbox"]):not([type="radio"]):focus,
+select:focus,
+textarea:focus {
+  background-color: #f5f0ed;
+}
