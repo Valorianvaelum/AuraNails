@@ -6,4 +6,5 @@ export { Input } from "./input.jsx";
 export { Label } from "./label.jsx";
 export { Separator } from "./separator.jsx";
 export { Skeleton } from "./skeleton.jsx";
+export { Spinner } from "./spinner.jsx";
 export { Textarea } from "./textarea.jsx";
