@@ -84,7 +84,7 @@ function InicioPage() {
           </header>
 
           {resumen.error && (
-            <div className="rounded-lg border border-destructive/30 bg-[var(--color-danger-soft)] px-4 py-3 text-sm text-destructive" role="alert">
+            <div className="rounded-lg border border-[var(--color-danger)] bg-[var(--color-danger-soft)] px-4 py-3 text-sm text-destructive" role="alert">
               {resumen.error}
             </div>
           )}
@@ -146,7 +146,7 @@ function InicioPage() {
               <div className="mt-4 grid gap-3">
                 {proximosTurnos.slice(0, 3).map((turno) => (
                   <Link
-                    className="flex flex-col gap-3 rounded-lg border border-border bg-card p-4 transition-colors hover:border-[var(--color-border-strong)] hover:bg-secondary/60 sm:flex-row sm:items-center sm:justify-between"
+                    className="flex flex-col gap-3 rounded-lg border border-border bg-card p-4 transition-colors hover:border-[var(--color-border-strong)] hover:bg-secondary sm:flex-row sm:items-center sm:justify-between"
                     key={turno.id}
                     to={`/turnos/${turno.id}`}
                   >
@@ -159,7 +159,7 @@ function InicioPage() {
                 ))}
               </div>
             ) : (
-              <Card className="mt-4 border-dashed bg-secondary/50 shadow-none">
+              <Card className="mt-4 border-dashed bg-secondary shadow-none">
                 <CardContent className="py-8 text-center">
                   <p className="font-medium">No tenés próximos turnos para hoy.</p>
                   <p className="mt-1 text-sm text-muted-foreground">Podés crear uno nuevo desde el acceso principal.</p>
