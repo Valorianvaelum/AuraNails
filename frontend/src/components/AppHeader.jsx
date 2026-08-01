@@ -18,21 +18,21 @@ const linkClassName = ({ isActive }) =>
   cn(
     "inline-flex h-9 shrink-0 items-center rounded-md px-3 text-sm font-medium text-muted-foreground transition-colors",
     "hover:bg-secondary hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-    isActive && "bg-primary/10 text-primary",
+    isActive && "bg-[var(--color-brand-soft)] text-primary",
   );
 
 function AppHeader() {
   const { logout } = useAuth();
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border/90 bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/85">
+    <header className="sticky top-0 z-40 border-b border-border bg-card shadow-sm">
       <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center gap-x-5 gap-y-3 px-4 py-3 sm:px-6 lg:flex-nowrap lg:px-8">
         <NavLink
           className="flex shrink-0 items-center gap-3 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           to="/inicio"
           aria-label="Ir al inicio de AuraNails"
         >
-          <span className="grid h-9 w-9 place-items-center rounded-lg border border-primary/25 bg-primary/10 text-sm font-bold text-primary" aria-hidden="true">
+          <span className="grid h-9 w-9 place-items-center rounded-lg border border-[var(--color-border-strong)] bg-[var(--color-brand-soft)] text-sm font-bold text-primary" aria-hidden="true">
             AN
           </span>
           <span className="leading-tight">
