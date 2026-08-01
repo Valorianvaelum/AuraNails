@@ -1,35 +1,55 @@
-# Rework visual con shadcn/ui
+# Rework visual basado en shadcn/ui
 
 ## Objetivo
 
-Reemplazar progresivamente la capa visual heredada por componentes reutilizables inspirados en shadcn/ui, sin alterar reglas de negocio, rutas, API, permisos ni datos.
+Usar shadcn/ui como referencia de composición, jerarquía, estados y accesibilidad sin reemplazar el stack existente ni alterar reglas de negocio.
 
-## Estrategia técnica
+## Stack conservado
 
-- Mantener React 19, Vite 6, JavaScript y Tailwind CSS 3 durante el rework.
-- Conservar temporalmente los tokens existentes de AuraNails y exponerlos mediante nombres semánticos de Tailwind.
-- Incorporar componentes propios en `frontend/src/components/ui`.
-- Migrar pantallas por bloques verificables.
-- Evitar implementaciones caseras de componentes complejos de accesibilidad; Dialog, AlertDialog, Tooltip, Popover y similares deberán apoyarse en primitivas robustas cuando se incorporen.
+- React 19.
+- Vite 6.
+- JavaScript.
+- Tailwind CSS 3.4.
 
-## Bloque 1 — Fundaciones
+La migración a Tailwind 4 queda fuera de alcance. La integración se realiza manualmente para evitar sobrescribir el sistema visual previo de AuraNails.
 
-Incluye:
+## Fuente de verdad
 
-- alias `@/` para Vite y el editor;
-- `components.json` compatible con el proyecto JavaScript;
-- utilidad `cn`;
-- mapeo semántico de colores, radios y sombras;
-- Button, Card, Badge, Input, Label, Textarea, Separator y Skeleton.
+- Primitivas reutilizables: `frontend/src/components/ui`.
+- Composición de clases: `frontend/src/lib/utils.js`.
+- Tokens actuales: variables CSS de `frontend/src/index.css`, expuestas mediante `tailwind.config.js`.
+- Configuración shadcn: `frontend/components.json`.
 
-No incluye todavía:
+## Reglas de adopción
 
-- migración de pantallas;
-- cambio de identidad visual;
-- eliminación del CSS heredado;
-- incorporación de Dialog, AlertDialog, Tooltip, Popover o Sheet;
-- cambios en backend o reglas funcionales.
+1. Las pantallas migradas deben usar tokens semánticos y primitivas UI.
+2. No agregar nuevos colores hexadecimales locales salvo estados no cubiertos por tokens.
+3. El CSS `.ui-*` actual es una capa de compatibilidad temporal, no la solución final.
+4. No reemplazar confirmaciones accesibles por modales caseros.
+5. Dialog, AlertDialog, Sheet, Tooltip y similares deben incorporarse con primitivas accesibles robustas cuando el bloque funcional los necesite.
+6. Cada migración debe preservar rutas, API, permisos, validaciones y mensajes de negocio.
+7. Las clases de opacidad de Tailwind no deben aplicarse sobre tokens definidos como variables hexadecimales; usar tokens sólidos o variables específicas.
 
-## Criterio de cierre
+## Componentes iniciales
 
-El bloque se considera cerrado cuando build y lint pasan, el diff queda limitado a infraestructura visual y se verifica que ninguna pantalla existente cambió su comportamiento.
+Button, Card, Badge, Input, Label, Textarea, Field, Separator, Skeleton y Spinner.
+
+## Bloques
+
+### Bloque 1 — Fundaciones
+
+Configuración, tokens, utilidades y primitivas. Validado con lint y build de producción.
+
+### Bloque 2 — Estructura general e Inicio
+
+- `AppHeader` migrado a tokens y componentes del sistema.
+- Navegación adaptable con desplazamiento horizontal en anchos reducidos.
+- Inicio reorganizado en encabezado operativo, métricas, próximos turnos y accesos rápidos.
+- Estados de carga con Skeleton.
+- Estados de caja y turnos con Badge.
+- Eliminación de colores hexadecimales incrustados en la pantalla.
+- Consultas, filtros, rutas y reglas funcionales preservadas.
+
+## Validación visual requerida
+
+Revisar Inicio y navegación a 1440 px, 1024 px, 768 px y 390 px. Confirmar foco de teclado, desplazamiento de navegación, estados de carga, caja abierta/cerrada, próximos turnos y estado vacío.
