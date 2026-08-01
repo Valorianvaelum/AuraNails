@@ -1,18 +1,24 @@
 :root {
-  --color-canvas: #d9d1cf;
-  --color-canvas-deep: #cfc5c3;
-  --color-surface: #eee9e6;
-  --color-surface-raised: #f4efec;
-  --color-surface-muted: #e4dcda;
-  --color-border: #c2b6b8;
-  --color-border-strong: #aa999f;
-  --color-text: #31272c;
-  --color-text-muted: #66585e;
-  --color-brand: #684457;
-  --color-brand-hover: #513442;
-  --color-brand-soft: #ddcfd5;
-  --shadow-hairline: 0 8px 20px rgba(50, 36, 43, 0.035);
-  --shadow-raised: 0 10px 24px rgba(50, 36, 43, 0.055);
+  --color-canvas: #f3f2f5;
+  --color-canvas-deep: #eceaf0;
+  --color-surface: #fcfbfd;
+  --color-surface-raised: #ffffff;
+  --color-surface-muted: #f0edf3;
+  --color-border: #ddd9e2;
+  --color-border-strong: #c8c1ce;
+  --color-text: #29252d;
+  --color-text-muted: #68616d;
+  --color-brand: #74566f;
+  --color-brand-hover: #60465b;
+  --color-brand-soft: #eae1e8;
+  --color-success: #4f715e;
+  --color-success-soft: #e4efe8;
+  --color-warning: #8a6739;
+  --color-warning-soft: #f4ebdd;
+  --color-danger: #884d5a;
+  --color-danger-soft: #f3e4e7;
+  --shadow-hairline: 0 7px 18px rgba(53, 44, 58, 0.04);
+  --shadow-raised: 0 12px 28px rgba(53, 44, 58, 0.07);
 }
 
 body {
@@ -21,12 +27,12 @@ body {
 
 #root {
   background:
-    radial-gradient(70rem 32rem at 50% -20rem, rgba(255, 255, 255, 0.2), transparent 70%),
-    linear-gradient(155deg, #ded7d4 0%, var(--color-canvas) 52%, var(--color-canvas-deep) 100%);
+    radial-gradient(72rem 34rem at 50% -22rem, rgba(255, 255, 255, 0.72), transparent 72%),
+    linear-gradient(155deg, #f6f5f8 0%, var(--color-canvas) 54%, var(--color-canvas-deep) 100%);
 }
 
 .ui-header {
-  background: rgba(238, 233, 230, 0.96);
+  background: rgba(252, 251, 253, 0.96);
   border-bottom-color: var(--color-border);
 }
 
@@ -35,14 +41,37 @@ body {
   background-color: var(--color-surface-raised) !important;
 }
 
+.bg-secondary {
+  background-color: var(--color-surface-muted) !important;
+}
+
 input:not([type="checkbox"]):not([type="radio"]),
 select,
 textarea {
-  background-color: #f0eae7;
+  background-color: var(--color-surface);
 }
 
 input:not([type="checkbox"]):not([type="radio"]):focus,
 select:focus,
 textarea:focus {
-  background-color: #f5f0ed;
+  background-color: var(--color-surface-raised);
+}
+
+.ui-nav-link-active {
+  border-color: var(--color-border-strong);
+  background: var(--color-brand-soft);
+  color: var(--color-brand-hover);
+}
+
+.ui-card,
+.ui-section,
+.ui-surface,
+.aura-form-surface {
+  border-color: var(--color-border);
+  background-color: var(--color-surface);
+}
+
+.ui-card:hover {
+  border-color: var(--color-border-strong);
+  background-color: var(--color-surface-raised);
 }
