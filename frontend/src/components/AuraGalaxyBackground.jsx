@@ -1,6 +1,18 @@
 import { useEffect, useRef } from "react";
 
 const MAX_OFFSET = 18;
+const LAYERS = {
+  "--aura-stars-x": -0.18,
+  "--aura-stars-y": -0.18,
+  "--aura-violet-x": 0.72,
+  "--aura-violet-y": 0.72,
+  "--aura-rose-x": -0.48,
+  "--aura-rose-y": -0.48,
+  "--aura-blue-x": 0.3,
+  "--aura-blue-y": -0.3,
+  "--aura-glow-x": 0.95,
+  "--aura-glow-y": 0.95,
+};
 
 function AuraGalaxyBackground() {
   const frameRef = useRef(null);
@@ -12,15 +24,20 @@ function AuraGalaxyBackground() {
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     const finePointer = window.matchMedia("(pointer: fine)");
 
+    const setLayerOffsets = (x, y) => {
+      Object.entries(LAYERS).forEach(([property, factor]) => {
+        const value = property.endsWith("-x") ? x * factor : y * factor;
+        root.style.setProperty(property, `${value.toFixed(2)}px`);
+      });
+    };
+
     const render = () => {
       const current = currentRef.current;
       const target = targetRef.current;
 
       current.x += (target.x - current.x) * 0.08;
       current.y += (target.y - current.y) * 0.08;
-
-      root.style.setProperty("--aura-pointer-x", `${current.x.toFixed(2)}px`);
-      root.style.setProperty("--aura-pointer-y", `${current.y.toFixed(2)}px`);
+      setLayerOffsets(current.x, current.y);
 
       if (Math.abs(target.x - current.x) > 0.05 || Math.abs(target.y - current.y) > 0.05) {
         frameRef.current = window.requestAnimationFrame(render);
@@ -64,8 +81,7 @@ function AuraGalaxyBackground() {
       reducedMotion.removeEventListener("change", resetPointer);
       finePointer.removeEventListener("change", resetPointer);
       if (frameRef.current !== null) window.cancelAnimationFrame(frameRef.current);
-      root.style.removeProperty("--aura-pointer-x");
-      root.style.removeProperty("--aura-pointer-y");
+      Object.keys(LAYERS).forEach((property) => root.style.removeProperty(property));
     };
   }, []);
 
