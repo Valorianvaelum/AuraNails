@@ -1,4 +1,5 @@
-import { Navigate, Route, Routes } from "react-router-dom";
+import { useEffect } from "react";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 
 import { AuthProvider, useAuth } from "./auth/AuthContext.jsx";
 import ProtectedRoute from "./auth/ProtectedRoute.jsx";
@@ -19,6 +20,32 @@ import LoginPage from "./pages/LoginPage.jsx";
 import ServiciosPage from "./pages/ServiciosPage.jsx";
 import TurnosPage from "./pages/TurnosPage.jsx";
 
+function getModuleName(pathname) {
+  if (pathname === "/login") return "login";
+  if (pathname === "/inicio") return "inicio";
+  if (pathname.startsWith("/agenda")) return "agenda";
+  if (pathname.startsWith("/turnos")) return "turnos";
+  if (pathname.startsWith("/clientas")) return "clientas";
+  if (pathname.startsWith("/servicios")) return "servicios";
+  if (pathname.startsWith("/cobros")) return "cobros";
+  if (pathname.startsWith("/caja")) return "caja";
+  return "general";
+}
+
+function AuraRouteScope({ children }) {
+  const { pathname } = useLocation();
+  const moduleName = getModuleName(pathname);
+
+  useEffect(() => {
+    document.documentElement.dataset.auraModule = moduleName;
+    return () => {
+      delete document.documentElement.dataset.auraModule;
+    };
+  }, [moduleName]);
+
+  return <div className={`aura-module aura-module-${moduleName}`}>{children}</div>;
+}
+
 function RedirectBySession() {
   const { isAuthenticated, isLoading } = useAuth();
 
@@ -34,14 +61,7 @@ function AppRoutes() {
     <Routes>
       <Route path="/" element={<RedirectBySession />} />
       <Route path="/login" element={<LoginPage />} />
-      <Route
-        path="/inicio"
-        element={
-          <ProtectedRoute>
-            <InicioPage />
-          </ProtectedRoute>
-        }
-      />
+      <Route path="/inicio" element={<ProtectedRoute><InicioPage /></ProtectedRoute>} />
       <Route path="/servicios/*" element={<ProtectedRoute><ServiciosPage /></ProtectedRoute>} />
       <Route path="/turnos/*" element={<ProtectedRoute><TurnosPage /></ProtectedRoute>} />
       <Route path="/agenda" element={<ProtectedRoute><AgendaPage /></ProtectedRoute>} />
@@ -51,38 +71,10 @@ function AppRoutes() {
       <Route path="/caja" element={<ProtectedRoute><CajaPage /></ProtectedRoute>} />
       <Route path="/caja/historial" element={<ProtectedRoute><CajasHistorialPage /></ProtectedRoute>} />
       <Route path="/caja/:id" element={<ProtectedRoute><CajaDetailPage /></ProtectedRoute>} />
-      <Route
-        path="/clientas"
-        element={
-          <ProtectedRoute>
-            <ClientasPage />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/clientas/nueva"
-        element={
-          <ProtectedRoute>
-            <ClientaFormPage />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/clientas/:id"
-        element={
-          <ProtectedRoute>
-            <ClientaDetailPage />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/clientas/:id/editar"
-        element={
-          <ProtectedRoute>
-            <ClientaFormPage />
-          </ProtectedRoute>
-        }
-      />
+      <Route path="/clientas" element={<ProtectedRoute><ClientasPage /></ProtectedRoute>} />
+      <Route path="/clientas/nueva" element={<ProtectedRoute><ClientaFormPage /></ProtectedRoute>} />
+      <Route path="/clientas/:id" element={<ProtectedRoute><ClientaDetailPage /></ProtectedRoute>} />
+      <Route path="/clientas/:id/editar" element={<ProtectedRoute><ClientaFormPage /></ProtectedRoute>} />
       <Route path="*" element={<RedirectBySession />} />
     </Routes>
   );
@@ -95,7 +87,9 @@ function App() {
       <div className="aura-app-layer">
         <NotificationsProvider>
           <AuthProvider>
-            <AppRoutes />
+            <AuraRouteScope>
+              <AppRoutes />
+            </AuraRouteScope>
           </AuthProvider>
         </NotificationsProvider>
       </div>
