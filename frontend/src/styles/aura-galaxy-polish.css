@@ -1,0 +1,189 @@
+:root {
+  --aura-ink-on-galaxy: #fff9ff;
+  --aura-muted-on-galaxy: rgba(246, 236, 250, 0.78);
+  --aura-link-on-galaxy: #f2c8e5;
+  --aura-divider-on-galaxy: rgba(255, 255, 255, 0.34);
+  --aura-glass-panel: rgba(255, 252, 255, 0.84);
+  --aura-glass-panel-strong: rgba(255, 253, 255, 0.91);
+  --aura-glass-panel-soft: rgba(255, 250, 255, 0.68);
+}
+
+/* Contraste del contenido que vive directamente sobre la galaxia. */
+.aura-app-layer main > section > div:first-child h1,
+.aura-app-layer main > section > div:first-child h2,
+.aura-app-layer main > section > div:first-child h3,
+.aura-app-layer main > section > div:first-child p,
+.aura-app-layer main > section > div:first-child a,
+.aura-app-layer .ui-page-head h1,
+.aura-app-layer .ui-page-head h2,
+.aura-app-layer .ui-page-head h3,
+.aura-app-layer .ui-page-head p,
+.aura-app-layer .ui-page-head a,
+.aura-app-layer .ui-eyebrow,
+.aura-app-layer .ui-subtitle {
+  text-shadow: 0 1px 18px rgba(20, 10, 35, 0.42);
+}
+
+.aura-app-layer main > section > div:first-child h1,
+.aura-app-layer main > section > div:first-child h2,
+.aura-app-layer main > section > div:first-child h3,
+.aura-app-layer .ui-page-head h1,
+.aura-app-layer .ui-page-head h2,
+.aura-app-layer .ui-page-head h3 {
+  color: var(--aura-ink-on-galaxy) !important;
+}
+
+.aura-app-layer main > section > div:first-child p,
+.aura-app-layer .ui-page-head p,
+.aura-app-layer .ui-subtitle {
+  color: var(--aura-muted-on-galaxy) !important;
+}
+
+.aura-app-layer .ui-eyebrow,
+.aura-app-layer main > section > div:first-child a,
+.aura-app-layer .ui-page-head a,
+.aura-app-layer main > section > a,
+.aura-app-layer section > a:not(.ui-button):not(.aura-action) {
+  color: var(--aura-link-on-galaxy) !important;
+}
+
+.aura-app-layer hr,
+.aura-app-layer .ui-divider,
+.aura-app-layer [class*="border-t"],
+.aura-app-layer [class*="border-b"] {
+  border-color: var(--aura-divider-on-galaxy);
+}
+
+/* Header con vidrio real, manteniendo lectura y estabilidad. */
+.aura-app-layer header,
+.aura-app-layer .ui-header {
+  border-color: rgba(255, 255, 255, 0.34) !important;
+  background: linear-gradient(180deg, rgba(255, 252, 255, 0.82), rgba(245, 236, 250, 0.72)) !important;
+  box-shadow: 0 10px 38px rgba(26, 12, 45, 0.18), inset 0 -1px 0 rgba(255, 255, 255, 0.38) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(145%);
+  backdrop-filter: blur(24px) saturate(145%);
+}
+
+/* Niveles consistentes de superficie. */
+.aura-app-layer .ui-surface,
+.aura-app-layer .ui-section,
+.aura-app-layer form.bg-white,
+.aura-app-layer section.bg-white,
+.aura-app-layer div.bg-white.rounded-2xl,
+.aura-app-layer div.bg-white.rounded-3xl {
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.91), var(--aura-glass-panel)) !important;
+  border-color: rgba(255, 255, 255, 0.62) !important;
+  box-shadow: 0 24px 70px rgba(20, 10, 40, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.78) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(138%);
+  backdrop-filter: blur(24px) saturate(138%);
+}
+
+.aura-app-layer .ui-card,
+.aura-app-layer article.bg-white {
+  background: linear-gradient(150deg, rgba(255, 255, 255, 0.93), rgba(250, 245, 252, 0.82)) !important;
+  border-color: rgba(255, 255, 255, 0.64) !important;
+  box-shadow: 0 18px 48px rgba(23, 12, 43, 0.17), inset 0 1px 0 rgba(255, 255, 255, 0.76) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(132%);
+  backdrop-filter: blur(20px) saturate(132%);
+}
+
+.aura-app-layer .ui-card-muted,
+.aura-app-layer [class*="bg-secondary"] {
+  background: linear-gradient(145deg, rgba(244, 237, 248, 0.78), rgba(237, 227, 244, 0.64)) !important;
+  border-color: rgba(255, 255, 255, 0.44) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(125%);
+  backdrop-filter: blur(16px) saturate(125%);
+}
+
+/* Campos: sólidos para lectura, pero integrados al vidrio. */
+.aura-app-layer input:not([type="checkbox"]):not([type="radio"]),
+.aura-app-layer select,
+.aura-app-layer textarea {
+  background: rgba(255, 255, 255, 0.82) !important;
+  border-color: rgba(120, 87, 128, 0.16) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8), 0 8px 24px rgba(52, 31, 68, 0.07);
+}
+
+.aura-app-layer input:focus,
+.aura-app-layer select:focus,
+.aura-app-layer textarea:focus {
+  background: rgba(255, 255, 255, 0.94) !important;
+  border-color: rgba(145, 91, 142, 0.48) !important;
+  box-shadow: 0 0 0 3px rgba(199, 145, 193, 0.22), 0 10px 28px rgba(52, 31, 68, 0.1) !important;
+}
+
+/* Acciones primarias más visibles sin caer en neón. */
+.aura-app-layer .ui-button-primary,
+.aura-app-layer .aura-action-primary,
+.aura-app-layer .bg-\[\#b76e79\] {
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  background: linear-gradient(135deg, #8a5f88 0%, #68456f 100%) !important;
+  color: #fff !important;
+  box-shadow: 0 10px 28px rgba(48, 27, 67, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+}
+
+.aura-app-layer .ui-button-primary:hover:not(:disabled),
+.aura-app-layer .aura-action-primary:hover:not(:disabled),
+.aura-app-layer .bg-\[\#b76e79\]:hover {
+  background: linear-gradient(135deg, #956994 0%, #74507c 100%) !important;
+  box-shadow: 0 13px 32px rgba(48, 27, 67, 0.34), inset 0 1px 0 rgba(255, 255, 255, 0.24) !important;
+}
+
+.aura-app-layer .ui-button-secondary,
+.aura-app-layer .aura-action-secondary {
+  background: rgba(255, 255, 255, 0.78) !important;
+  border-color: rgba(255, 255, 255, 0.58) !important;
+  box-shadow: 0 8px 22px rgba(40, 22, 56, 0.11), inset 0 1px 0 rgba(255, 255, 255, 0.75);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
+
+/* Una base de lectura suave para páginas operativas sin tapar la galaxia. */
+.aura-app-layer main > section {
+  border-radius: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .aura-app-layer main > section {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.012));
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  }
+}
+
+@media (max-width: 767px) {
+  .aura-app-layer header,
+  .aura-app-layer .ui-header {
+    background: rgba(252, 247, 255, 0.86) !important;
+    -webkit-backdrop-filter: blur(18px) saturate(135%);
+    backdrop-filter: blur(18px) saturate(135%);
+  }
+
+  .aura-app-layer .ui-surface,
+  .aura-app-layer .ui-section,
+  .aura-app-layer form.bg-white,
+  .aura-app-layer section.bg-white,
+  .aura-app-layer div.bg-white.rounded-2xl,
+  .aura-app-layer div.bg-white.rounded-3xl {
+    background: rgba(255, 253, 255, 0.9) !important;
+    -webkit-backdrop-filter: blur(18px) saturate(128%);
+    backdrop-filter: blur(18px) saturate(128%);
+  }
+
+  .aura-app-layer main > section > div:first-child h1,
+  .aura-app-layer main > section > div:first-child h2,
+  .aura-app-layer main > section > div:first-child h3 {
+    text-shadow: 0 2px 20px rgba(17, 7, 31, 0.55);
+  }
+}
+
+@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  .aura-app-layer header,
+  .aura-app-layer .ui-header,
+  .aura-app-layer .ui-surface,
+  .aura-app-layer .ui-section,
+  .aura-app-layer .ui-card,
+  .aura-app-layer form.bg-white,
+  .aura-app-layer section.bg-white {
+    background: #fbf7fc !important;
+  }
+}
