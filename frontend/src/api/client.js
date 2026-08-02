@@ -1,6 +1,12 @@
 import axios from "axios";
 
-import { clearSession, getAccessToken, getRefreshToken, saveAccessToken } from "./session.js";
+import {
+  clearSession,
+  getAccessToken,
+  getRefreshToken,
+  saveAccessToken,
+  saveRefreshToken,
+} from "./session.js";
 
 const apiBaseUrl = (import.meta.env.VITE_API_URL || "http://localhost:8001/api").replace(/\/$/, "");
 
@@ -10,12 +16,40 @@ export const apiClient = axios.create({
 });
 
 let sessionExpiredHandler = () => {};
+let refreshPromise = null;
 
 export function setSessionExpiredHandler(handler) {
   sessionExpiredHandler = handler;
   return () => {
     sessionExpiredHandler = () => {};
   };
+}
+
+function expireSession() {
+  clearSession();
+  sessionExpiredHandler();
+}
+
+async function refreshAccessToken() {
+  const refreshToken = getRefreshToken();
+  if (!refreshToken) {
+    throw new Error("No hay un refresh token disponible.");
+  }
+
+  if (!refreshPromise) {
+    refreshPromise = axios
+      .post(`${apiBaseUrl}/auth/refresh/`, { refresh: refreshToken })
+      .then(({ data }) => {
+        saveAccessToken(data.access);
+        if (data.refresh) saveRefreshToken(data.refresh);
+        return data.access;
+      })
+      .finally(() => {
+        refreshPromise = null;
+      });
+  }
+
+  return refreshPromise;
 }
 
 apiClient.interceptors.request.use((config) => {
@@ -38,23 +72,20 @@ apiClient.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    const refreshToken = getRefreshToken();
-    if (!refreshToken) {
-      clearSession();
-      sessionExpiredHandler();
+    if (!getRefreshToken()) {
+      expireSession();
       return Promise.reject(error);
     }
 
     originalRequest._retry = true;
 
     try {
-      const response = await axios.post(`${apiBaseUrl}/auth/refresh/`, { refresh: refreshToken });
-      saveAccessToken(response.data.access);
-      originalRequest.headers.Authorization = `Bearer ${response.data.access}`;
+      const accessToken = await refreshAccessToken();
+      originalRequest.headers = originalRequest.headers || {};
+      originalRequest.headers.Authorization = `Bearer ${accessToken}`;
       return apiClient(originalRequest);
     } catch (refreshError) {
-      clearSession();
-      sessionExpiredHandler();
+      expireSession();
       return Promise.reject(refreshError);
     }
   },
