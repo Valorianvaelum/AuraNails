@@ -41,6 +41,16 @@ jobs:
       - name: Check Django configuration
         run: python manage.py check
 
+      - name: Check production security
+        env:
+          DJANGO_DEBUG: "false"
+          DJANGO_SECRET_KEY: "ci-only-production-check-secret-key-with-sufficient-length"
+          DJANGO_ALLOWED_HOSTS: "app.example.com"
+          DJANGO_CORS_ALLOWED_ORIGINS: "https://app.example.com"
+          DJANGO_CSRF_TRUSTED_ORIGINS: "https://app.example.com"
+          DJANGO_BEHIND_HTTPS_PROXY: "true"
+        run: python manage.py check --deploy --fail-level WARNING
+
       - name: Check pending migrations
         run: python manage.py makemigrations --check --dry-run
 
