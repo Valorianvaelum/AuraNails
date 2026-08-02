@@ -1,8 +1,9 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 
 import { AuthProvider, useAuth } from "./auth/AuthContext.jsx";
-import { NotificationsProvider } from "./components/Notifications.jsx";
 import ProtectedRoute from "./auth/ProtectedRoute.jsx";
+import AuraGalaxyBackground from "./components/AuraGalaxyBackground.jsx";
+import { NotificationsProvider } from "./components/Notifications.jsx";
 import AgendaPage from "./pages/AgendaPage.jsx";
 import InicioPage from "./pages/InicioPage.jsx";
 import ClientaDetailPage from "./pages/ClientaDetailPage.jsx";
@@ -89,7 +90,16 @@ function AppRoutes() {
 
 function App() {
   return (
-    <NotificationsProvider><AuthProvider><AppRoutes /></AuthProvider></NotificationsProvider>
+    <>
+      <AuraGalaxyBackground />
+      <div className="aura-app-layer">
+        <NotificationsProvider>
+          <AuthProvider>
+            <AppRoutes />
+          </AuthProvider>
+        </NotificationsProvider>
+      </div>
+    </>
   );
 }
 
