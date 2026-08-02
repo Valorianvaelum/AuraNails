@@ -9,24 +9,19 @@
   --aura-blue-y: 0px;
   --aura-glow-x: 0px;
   --aura-glow-y: 0px;
-  --aura-glass: rgba(255, 252, 255, 0.78);
-  --aura-glass-strong: rgba(255, 253, 255, 0.9);
-  --aura-glass-soft: rgba(255, 250, 255, 0.62);
-  --aura-glass-border: rgba(255, 255, 255, 0.58);
-  --aura-glass-shadow: 0 18px 50px rgba(38, 22, 58, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.7);
 }
 
 html,
-body {
-  background: #1b1029;
+body,
+#root {
+  min-height: 100%;
+  background: #160d25;
 }
 
 #root {
   isolation: isolate;
   position: relative;
-  min-height: 100vh;
   overflow-x: clip;
-  background: transparent;
 }
 
 .aura-app-layer {
@@ -37,47 +32,78 @@ body {
 
 .aura-galaxy {
   position: fixed;
-  inset: -7vmax;
+  inset: 0;
   z-index: 0;
   overflow: hidden;
   pointer-events: none;
   background:
-    radial-gradient(circle at 50% 18%, rgba(255, 217, 249, 0.22), transparent 24%),
+    radial-gradient(circle at 50% 14%, rgba(255, 220, 249, 0.16), transparent 25%),
     linear-gradient(145deg, #140c21 0%, #281235 42%, #14223f 72%, #1c1029 100%);
+}
+
+.aura-galaxy__fallback,
+.aura-galaxy__webgl,
+.aura-galaxy__veil {
+  position: absolute;
+  inset: 0;
+}
+
+.aura-galaxy__fallback {
+  inset: -7vmax;
+  opacity: 1;
+  transition: opacity 700ms ease;
+}
+
+.aura-galaxy__webgl {
+  opacity: 0;
+  transition: opacity 700ms ease;
+}
+
+.aura-galaxy.is-webgl-ready .aura-galaxy__fallback {
+  opacity: 0;
+}
+
+.aura-galaxy.is-webgl-ready .aura-galaxy__webgl {
+  opacity: 1;
+}
+
+.aura-galaxy__canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 .aura-galaxy__stars,
 .aura-galaxy__nebula,
-.aura-galaxy__glow,
-.aura-galaxy__veil {
+.aura-galaxy__glow {
   position: absolute;
   inset: 0;
   will-change: transform;
 }
 
 .aura-galaxy__stars {
-  opacity: 0.55;
+  opacity: 0.46;
   transform: translate3d(var(--aura-stars-x), var(--aura-stars-y), 0) scale(1.04);
   background-image:
-    radial-gradient(circle, rgba(255,255,255,.9) 0 1px, transparent 1.5px),
-    radial-gradient(circle, rgba(232,214,255,.7) 0 1px, transparent 1.5px),
-    radial-gradient(circle, rgba(194,224,255,.65) 0 1px, transparent 1.5px);
+    radial-gradient(circle, rgba(255, 255, 255, 0.82) 0 1px, transparent 1.5px),
+    radial-gradient(circle, rgba(232, 214, 255, 0.64) 0 1px, transparent 1.5px),
+    radial-gradient(circle, rgba(194, 224, 255, 0.58) 0 1px, transparent 1.5px);
   background-position: 12px 18px, 72px 46px, 38px 92px;
   background-size: 118px 118px, 164px 164px, 212px 212px;
-  mask-image: linear-gradient(to bottom, rgba(0,0,0,.8), transparent 92%);
+  mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.78), transparent 94%);
 }
 
 .aura-galaxy__nebula {
-  filter: blur(18px) saturate(118%);
-  opacity: 0.72;
+  filter: blur(20px) saturate(116%);
+  opacity: 0.68;
 }
 
 .aura-galaxy__nebula--violet {
   inset: -14%;
   transform: translate3d(var(--aura-violet-x), var(--aura-violet-y), 0) rotate(-8deg);
   background:
-    radial-gradient(ellipse at 25% 28%, rgba(188, 118, 255, 0.72), transparent 31%),
-    radial-gradient(ellipse at 68% 74%, rgba(102, 79, 210, 0.58), transparent 35%);
+    radial-gradient(ellipse at 25% 28%, rgba(188, 118, 255, 0.68), transparent 31%),
+    radial-gradient(ellipse at 68% 74%, rgba(102, 79, 210, 0.52), transparent 35%);
   animation: aura-nebula-drift-a 24s ease-in-out infinite alternate;
 }
 
@@ -85,8 +111,8 @@ body {
   inset: -18%;
   transform: translate3d(var(--aura-rose-x), var(--aura-rose-y), 0) rotate(12deg);
   background:
-    radial-gradient(ellipse at 76% 24%, rgba(255, 122, 193, 0.62), transparent 28%),
-    radial-gradient(ellipse at 36% 78%, rgba(236, 139, 206, 0.45), transparent 34%);
+    radial-gradient(ellipse at 76% 24%, rgba(255, 122, 193, 0.55), transparent 28%),
+    radial-gradient(ellipse at 36% 78%, rgba(236, 139, 206, 0.39), transparent 34%);
   animation: aura-nebula-drift-b 30s ease-in-out infinite alternate;
 }
 
@@ -94,21 +120,22 @@ body {
   inset: -12%;
   transform: translate3d(var(--aura-blue-x), var(--aura-blue-y), 0) rotate(-3deg);
   background:
-    radial-gradient(ellipse at 82% 66%, rgba(77, 183, 255, 0.52), transparent 29%),
-    radial-gradient(ellipse at 18% 62%, rgba(109, 140, 255, 0.38), transparent 34%);
+    radial-gradient(ellipse at 82% 66%, rgba(77, 183, 255, 0.48), transparent 29%),
+    radial-gradient(ellipse at 18% 62%, rgba(109, 140, 255, 0.34), transparent 34%);
   animation: aura-nebula-drift-c 36s ease-in-out infinite alternate;
 }
 
 .aura-galaxy__glow {
   transform: translate3d(var(--aura-glow-x), var(--aura-glow-y), 0);
-  background: radial-gradient(circle at 50% 50%, rgba(255, 235, 255, 0.16), transparent 19%);
+  background: radial-gradient(circle at 50% 50%, rgba(255, 235, 255, 0.13), transparent 20%);
   mix-blend-mode: screen;
 }
 
 .aura-galaxy__veil {
+  z-index: 2;
   background:
-    linear-gradient(to bottom, rgba(20, 11, 33, 0.08), rgba(20, 11, 33, 0.28)),
-    radial-gradient(ellipse at center, transparent 30%, rgba(14, 8, 26, 0.22) 100%);
+    linear-gradient(to bottom, rgba(20, 11, 33, 0.04), rgba(20, 11, 33, 0.22)),
+    radial-gradient(ellipse at center, transparent 30%, rgba(14, 8, 26, 0.20) 100%);
 }
 
 @keyframes aura-nebula-drift-a {
@@ -126,110 +153,32 @@ body {
   to { margin: -1% -1% 1.5% 1%; }
 }
 
-.ui-header,
-header.sticky {
-  border-color: rgba(255, 255, 255, 0.5) !important;
-  background: rgba(255, 251, 255, 0.74) !important;
-  box-shadow: 0 10px 38px rgba(29, 16, 45, 0.13), inset 0 1px 0 rgba(255, 255, 255, 0.72) !important;
-  -webkit-backdrop-filter: blur(22px) saturate(145%);
-  backdrop-filter: blur(22px) saturate(145%);
-}
-
-.ui-surface,
-.ui-section,
-.ui-card,
-.ui-card-muted,
-.aura-financial-card,
-.aura-financial-summary,
-.confirm-dialog,
-article.bg-white,
-form.bg-white,
-section.bg-white,
-div.bg-white.rounded-2xl,
-div.bg-white.rounded-3xl {
-  border-color: var(--aura-glass-border) !important;
-  background: var(--aura-glass) !important;
-  box-shadow: var(--aura-glass-shadow) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(135%);
-  backdrop-filter: blur(20px) saturate(135%);
-}
-
-.ui-card,
-.aura-financial-card {
-  border-left-color: rgba(125, 75, 145, 0.52) !important;
-}
-
-.ui-card:hover {
-  border-color: rgba(255, 255, 255, 0.78) !important;
-  background: var(--aura-glass-strong) !important;
-  box-shadow: 0 22px 56px rgba(31, 17, 48, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.82) !important;
-}
-
-input:not([type="checkbox"]):not([type="radio"]),
-select,
-textarea,
-.ui-button-secondary,
-.aura-action-secondary,
-button:not([class]) {
-  border-color: rgba(255, 255, 255, 0.62) !important;
-  background: rgba(255, 253, 255, 0.82) !important;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.82), 0 4px 14px rgba(48, 27, 64, 0.07);
-  -webkit-backdrop-filter: blur(14px) saturate(125%);
-  backdrop-filter: blur(14px) saturate(125%);
-}
-
-.bg-secondary,
-.bg-\[\#faf6f8\] {
-  background-color: rgba(246, 238, 248, 0.68) !important;
-}
-
-.confirm-backdrop {
-  background: rgba(14, 8, 25, 0.55) !important;
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
-}
-
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .ui-header,
-  header.sticky,
-  .ui-surface,
-  .ui-section,
-  .ui-card,
-  .ui-card-muted,
-  .aura-financial-card,
-  .aura-financial-summary,
-  .confirm-dialog,
-  article.bg-white,
-  form.bg-white,
-  section.bg-white,
-  div.bg-white.rounded-2xl,
-  div.bg-white.rounded-3xl {
-    background: rgba(255, 252, 255, 0.96) !important;
-  }
-}
-
-@media (max-width: 640px) {
-  .aura-galaxy {
+@media (max-width: 767px) {
+  .aura-galaxy__fallback {
     inset: -12vmax;
   }
 
   .aura-galaxy__stars {
-    opacity: 0.38;
+    opacity: 0.3;
   }
 
-  .ui-surface,
-  .ui-section,
-  .ui-card,
-  .ui-card-muted,
-  article.bg-white,
-  form.bg-white,
-  section.bg-white {
-    -webkit-backdrop-filter: blur(14px) saturate(125%);
-    backdrop-filter: blur(14px) saturate(125%);
+  .aura-galaxy__nebula {
+    opacity: 0.58;
+  }
+
+  .aura-galaxy__veil {
+    background:
+      linear-gradient(to bottom, rgba(20, 11, 33, 0.08), rgba(20, 11, 33, 0.26)),
+      radial-gradient(ellipse at center, transparent 24%, rgba(14, 8, 26, 0.24) 100%);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .aura-galaxy__fallback,
+  .aura-galaxy__webgl {
+    transition: none;
+  }
+
   .aura-galaxy__stars,
   .aura-galaxy__nebula,
   .aura-galaxy__glow {

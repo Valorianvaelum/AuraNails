@@ -1,24 +1,42 @@
-import { useEffect } from "react";
+import { Suspense, useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 
 import { AuthProvider, useAuth } from "./auth/AuthContext.jsx";
 import ProtectedRoute from "./auth/ProtectedRoute.jsx";
 import AuraGalaxyBackground from "./components/AuraGalaxyBackground.jsx";
+import AuraLoadingScreen from "./components/AuraLoadingScreen.jsx";
 import { NotificationsProvider } from "./components/Notifications.jsx";
-import AgendaPage from "./pages/AgendaPage.jsx";
-import InicioPage from "./pages/InicioPage.jsx";
-import ClientaDetailPage from "./pages/ClientaDetailPage.jsx";
-import ClientaFormPage from "./pages/ClientaFormPage.jsx";
-import ClientasPage from "./pages/ClientasPage.jsx";
-import CobroDetailPage from "./pages/CobroDetailPage.jsx";
-import CobroFormPage from "./pages/CobroFormPage.jsx";
-import CobrosPage from "./pages/CobrosPage.jsx";
-import CajaDetailPage from "./pages/CajaDetailPage.jsx";
-import CajaPage from "./pages/CajaPage.jsx";
-import CajasHistorialPage from "./pages/CajasHistorialPage.jsx";
-import LoginPage from "./pages/LoginPage.jsx";
-import ServiciosPage from "./pages/ServiciosPage.jsx";
-import TurnosPage from "./pages/TurnosPage.jsx";
+import { RoutePages } from "./routes/routeModules.js";
+
+
+const {
+  AgendaPage,
+  CajaDetailPage,
+  CajaPage,
+  CajasHistorialPage,
+  ClientaDetailPage,
+  ClientaFormPage,
+  ClientasPage,
+  CobroDetailPage,
+  CobroFormPage,
+  CobrosPage,
+  InicioPage,
+  LoginPage,
+  ServiciosPage,
+  TurnosPage,
+} = RoutePages;
+
+const MODULE_LABELS = {
+  login: "Iniciar sesión",
+  inicio: "Inicio",
+  agenda: "Agenda",
+  turnos: "Turnos",
+  clientas: "Clientas",
+  servicios: "Servicios",
+  cobros: "Cobros",
+  caja: "Caja",
+  general: "AuraNails",
+};
 
 function getModuleName(pathname) {
   if (pathname === "/login") return "login";
@@ -32,25 +50,75 @@ function getModuleName(pathname) {
   return "general";
 }
 
+function getRouteLabel(pathname, moduleName) {
+  if (pathname === "/turnos/nuevo") return "Nuevo turno";
+  if (pathname.endsWith("/reprogramar")) return "Reprogramar turno";
+  if (pathname === "/clientas/nueva") return "Nueva clienta";
+  if (pathname.endsWith("/editar") && pathname.startsWith("/clientas/")) return "Editar clienta";
+  if (pathname === "/cobros/nuevo") return "Registrar cobro";
+  if (pathname === "/caja/historial") return "Historial de cajas";
+  return MODULE_LABELS[moduleName] || MODULE_LABELS.general;
+}
+
 function AuraRouteScope({ children }) {
   const { pathname } = useLocation();
   const moduleName = getModuleName(pathname);
+  const routeLabel = useMemo(() => getRouteLabel(pathname, moduleName), [moduleName, pathname]);
+  const contentRef = useRef(null);
 
   useEffect(() => {
     document.documentElement.dataset.auraModule = moduleName;
+    document.title = routeLabel === "AuraNails" ? "AuraNails" : `${routeLabel} | AuraNails`;
+
     return () => {
       delete document.documentElement.dataset.auraModule;
     };
-  }, [moduleName]);
+  }, [moduleName, routeLabel]);
 
-  return <div className={`aura-module aura-module-${moduleName}`}>{children}</div>;
+  useEffect(() => {
+    const previousScrollRestoration = window.history.scrollRestoration;
+    window.history.scrollRestoration = "manual";
+
+    return () => {
+      window.history.scrollRestoration = previousScrollRestoration;
+    };
+  }, []);
+
+  useLayoutEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+
+    const frameId = window.requestAnimationFrame(() => {
+      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+      const content = contentRef.current;
+      const activeElement = document.activeElement;
+      if (content && !content.contains(activeElement)) {
+        content.focus({ preventScroll: true });
+      }
+    });
+
+    return () => window.cancelAnimationFrame(frameId);
+  }, [pathname]);
+
+  return (
+    <div
+      id="aura-main-content"
+      ref={contentRef}
+      className={`aura-module aura-module-${moduleName}`}
+      tabIndex="-1"
+    >
+      <p className="aura-route-announcer" aria-live="polite" aria-atomic="true">
+        {routeLabel}
+      </p>
+      {children}
+    </div>
+  );
 }
 
 function RedirectBySession() {
   const { isAuthenticated, isLoading } = useAuth();
 
   if (isLoading) {
-    return <main className="min-h-screen bg-[#fff4f7]" aria-label="Cargando sesión" />;
+    return <AuraLoadingScreen label="Comprobando tu sesión..." />;
   }
 
   return <Navigate to={isAuthenticated ? "/inicio" : "/login"} replace />;
@@ -58,7 +126,8 @@ function RedirectBySession() {
 
 function AppRoutes() {
   return (
-    <Routes>
+    <Suspense fallback={<AuraLoadingScreen label="Cargando módulo..." />}>
+      <Routes>
       <Route path="/" element={<RedirectBySession />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/inicio" element={<ProtectedRoute><InicioPage /></ProtectedRoute>} />
@@ -76,7 +145,8 @@ function AppRoutes() {
       <Route path="/clientas/:id" element={<ProtectedRoute><ClientaDetailPage /></ProtectedRoute>} />
       <Route path="/clientas/:id/editar" element={<ProtectedRoute><ClientaFormPage /></ProtectedRoute>} />
       <Route path="*" element={<RedirectBySession />} />
-    </Routes>
+      </Routes>
+    </Suspense>
   );
 }
 
@@ -85,6 +155,7 @@ function App() {
     <>
       <AuraGalaxyBackground />
       <div className="aura-app-layer">
+        <a className="aura-skip-link" href="#aura-main-content">Saltar al contenido principal</a>
         <NotificationsProvider>
           <AuthProvider>
             <AuraRouteScope>

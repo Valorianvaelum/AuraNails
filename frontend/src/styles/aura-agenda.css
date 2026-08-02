@@ -1,0 +1,813 @@
+/* Bloque 2: Agenda. Herramienta operativa con lectura temporal y densidad controlada. */
+
+.aura-module-agenda .aura-page {
+  color: var(--aura-text-on-glass);
+}
+
+.aura-agenda-stack {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.aura-agenda-hero {
+  padding-block: 1.3rem;
+}
+
+.aura-agenda-hero-note {
+  margin: 0.48rem 0 0;
+  color: rgba(249, 239, 251, 0.68);
+  font-size: 0.86rem;
+  line-height: 1.55;
+}
+
+/* Barra de navegación y filtros. */
+.aura-agenda-controls {
+  display: grid;
+  gap: 1rem;
+}
+
+.aura-agenda-controls-primary {
+  display: flex;
+  align-items: end;
+  gap: 0.65rem;
+}
+
+.aura-agenda-view-toggle {
+  display: inline-grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  flex: 0 0 auto;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 0.82rem;
+  background: rgba(7, 3, 17, 0.16);
+  padding: 0.25rem;
+}
+
+.aura-agenda-segment {
+  min-height: 2.55rem;
+  border: 1px solid transparent;
+  border-radius: 0.62rem;
+  background: transparent;
+  color: rgba(249, 239, 251, 0.66);
+  padding: 0.55rem 0.95rem;
+  font-size: 0.875rem;
+  font-weight: 720;
+  cursor: pointer;
+  transition: color 150ms ease, background 150ms ease, border-color 150ms ease;
+}
+
+.aura-agenda-segment:hover,
+.aura-agenda-segment[data-active="true"] {
+  border-color: rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.105);
+  color: #fffaff;
+}
+
+.aura-agenda-segment:focus-visible {
+  outline: 2px solid rgba(244, 202, 232, 0.82);
+  outline-offset: 2px;
+}
+
+.aura-agenda-date-navigation {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.aura-agenda-date-navigation .aura-button {
+  min-height: 2.7rem;
+  padding-inline: 0.85rem;
+}
+
+.aura-agenda-date-field,
+.aura-agenda-field {
+  display: grid;
+  min-width: 0;
+  gap: 0.38rem;
+  color: var(--aura-text-on-glass);
+  font-size: 0.8rem;
+  font-weight: 680;
+}
+
+.aura-agenda-date-field {
+  width: 11.25rem;
+  margin-left: auto;
+}
+
+.aura-agenda-control {
+  width: 100%;
+  min-height: 2.7rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0.72rem;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.125), rgba(255, 255, 255, 0.07));
+  color: var(--aura-text-on-glass);
+  padding: 0.62rem 0.78rem;
+  font-size: 0.9rem;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.065);
+  color-scheme: dark;
+  -webkit-backdrop-filter: blur(10px) saturate(112%);
+  backdrop-filter: blur(10px) saturate(112%);
+}
+
+.aura-agenda-control::placeholder {
+  color: rgba(249, 239, 251, 0.5);
+}
+
+.aura-agenda-control:focus {
+  outline: none;
+  border-color: rgba(241, 201, 230, 0.54);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.17), rgba(255, 255, 255, 0.09));
+  box-shadow: 0 0 0 3px rgba(228, 166, 215, 0.16);
+}
+
+.aura-agenda-control option {
+  background: #24132f;
+  color: #fffaff;
+}
+
+.aura-agenda-control::-webkit-calendar-picker-indicator {
+  filter: invert(1) opacity(0.76);
+}
+
+.aura-agenda-filters {
+  display: grid;
+  align-items: end;
+  gap: 0.8rem;
+  grid-template-columns: minmax(10rem, 0.75fr) minmax(13rem, 1fr) minmax(14rem, 1.4fr) auto;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  padding-top: 1rem;
+}
+
+.aura-agenda-filter-actions {
+  min-height: 2.7rem;
+}
+
+.aura-agenda-field-error {
+  color: #ffd5dd;
+  font-weight: 580;
+}
+
+.aura-agenda-filter-toggle {
+  display: none;
+}
+
+/* Contadores. */
+.aura-agenda-count,
+.aura-agenda-day-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.075);
+  color: var(--aura-text-on-glass-muted);
+  font-size: 0.76rem;
+  font-weight: 730;
+}
+
+.aura-agenda-count {
+  min-height: 2rem;
+  padding: 0.35rem 0.72rem;
+}
+
+.aura-agenda-day-count {
+  min-width: 1.8rem;
+  height: 1.8rem;
+  padding-inline: 0.42rem;
+}
+
+/* Vista Día: línea temporal. */
+.aura-agenda-day-panel,
+.aura-agenda-week-panel {
+  min-width: 0;
+}
+
+.aura-agenda-day-list {
+  position: relative;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.aura-agenda-day-list::before {
+  position: absolute;
+  top: 0.9rem;
+  bottom: 0.9rem;
+  left: 4.55rem;
+  width: 1px;
+  background: linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.2) 8%, rgba(255, 255, 255, 0.2) 92%, transparent);
+  content: "";
+}
+
+.aura-agenda-day-turn {
+  --agenda-state: rgba(230, 192, 220, 0.65);
+  position: relative;
+  display: grid;
+  min-width: 0;
+  grid-template-columns: 4.55rem minmax(0, 1fr);
+}
+
+.aura-agenda-day-turn[data-state="pendiente"],
+.aura-agenda-week-turn[data-state="pendiente"],
+.aura-agenda-status[data-state="pendiente"] { --agenda-state: #d7b071; }
+.aura-agenda-day-turn[data-state="confirmado"],
+.aura-agenda-week-turn[data-state="confirmado"],
+.aura-agenda-status[data-state="confirmado"] { --agenda-state: #9aa7eb; }
+.aura-agenda-day-turn[data-state="reprogramado"],
+.aura-agenda-week-turn[data-state="reprogramado"],
+.aura-agenda-status[data-state="reprogramado"] { --agenda-state: #c69ad5; }
+.aura-agenda-day-turn[data-state="realizado"],
+.aura-agenda-week-turn[data-state="realizado"],
+.aura-agenda-status[data-state="realizado"] { --agenda-state: #82bd92; }
+.aura-agenda-day-turn[data-state="cancelado"],
+.aura-agenda-week-turn[data-state="cancelado"],
+.aura-agenda-status[data-state="cancelado"] { --agenda-state: #a9a0ad; }
+.aura-agenda-day-turn[data-state="no_vino"],
+.aura-agenda-week-turn[data-state="no_vino"],
+.aura-agenda-status[data-state="no_vino"] { --agenda-state: #cf8290; }
+
+.aura-agenda-time-rail {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  align-content: start;
+  justify-items: start;
+  gap: 0.18rem;
+  padding: 1rem 0.72rem 0 0;
+  color: var(--aura-text-on-glass);
+}
+
+.aura-agenda-time-rail::after {
+  position: absolute;
+  top: 1.34rem;
+  right: -0.27rem;
+  width: 0.56rem;
+  height: 0.56rem;
+  border: 2px solid rgba(19, 8, 31, 0.7);
+  border-radius: 50%;
+  background: var(--agenda-state);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.055);
+  content: "";
+}
+
+.aura-agenda-time-rail strong {
+  font-size: 0.88rem;
+  font-weight: 760;
+}
+
+.aura-agenda-time-rail span {
+  color: var(--aura-text-on-glass-muted);
+  font-size: 0.75rem;
+}
+
+.aura-agenda-day-turn-body {
+  min-width: 0;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-left: 3px solid var(--agenda-state);
+  border-radius: 0.95rem;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.065), rgba(7, 3, 17, 0.13));
+  padding: 1rem;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.055);
+}
+
+.aura-agenda-turn-heading {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.aura-agenda-turn-heading h3 {
+  margin: 0;
+  color: var(--aura-text-on-glass);
+  font-size: 1.02rem;
+  font-weight: 720;
+}
+
+.aura-agenda-turn-heading p {
+  margin: 0.28rem 0 0;
+  color: var(--aura-text-on-glass-muted);
+  font-size: 0.84rem;
+  line-height: 1.5;
+}
+
+.aura-agenda-status {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  border: 1px solid color-mix(in srgb, var(--agenda-state) 52%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--agenda-state) 14%, transparent);
+  color: color-mix(in srgb, var(--agenda-state) 84%, white);
+  padding: 0.26rem 0.58rem;
+  font-size: 0.7rem;
+  font-weight: 760;
+}
+
+.aura-agenda-turn-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem 1rem;
+  margin-top: 0.8rem;
+  color: rgba(249, 239, 251, 0.73);
+  font-size: 0.8rem;
+}
+
+.aura-agenda-payment[data-paid="true"] {
+  color: #a9d9b4;
+}
+
+.aura-agenda-payment[data-paid="false"] {
+  color: #efd29e;
+}
+
+.aura-agenda-turn-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.85rem;
+}
+
+.aura-agenda-turn-actions .aura-button {
+  min-height: 2.45rem;
+  padding: 0.52rem 0.82rem;
+}
+
+/* Vista Semana. */
+.aura-agenda-week-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  padding: 0.1rem 0 0.65rem;
+  scrollbar-color: rgba(238, 195, 226, 0.36) rgba(7, 3, 17, 0.15);
+  scrollbar-width: thin;
+  scroll-snap-type: x proximity;
+}
+
+.aura-agenda-week-scroll:focus-visible {
+  outline: 2px solid rgba(244, 202, 232, 0.72);
+  outline-offset: 4px;
+  border-radius: 0.85rem;
+}
+
+.aura-agenda-week-grid {
+  display: grid;
+  grid-auto-columns: minmax(14.5rem, 38vw);
+  grid-auto-flow: column;
+  gap: 0.75rem;
+}
+
+.aura-agenda-week-day {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 0.95rem;
+  background: rgba(7, 3, 17, 0.12);
+  scroll-snap-align: start;
+}
+
+.aura-agenda-week-day[data-today="true"] {
+  border-color: rgba(240, 199, 229, 0.44);
+  box-shadow: 0 0 0 1px rgba(240, 199, 229, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+
+.aura-agenda-week-day-header {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.11);
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.085), rgba(7, 3, 17, 0.1));
+  padding: 0.78rem;
+  -webkit-backdrop-filter: blur(14px) saturate(115%);
+  backdrop-filter: blur(14px) saturate(115%);
+}
+
+.aura-agenda-week-day-header > div {
+  display: grid;
+  grid-template-columns: auto auto;
+  align-items: baseline;
+  column-gap: 0.42rem;
+}
+
+.aura-agenda-week-day-header span:first-child {
+  grid-column: 1 / -1;
+  color: var(--aura-text-on-glass-muted);
+  font-size: 0.72rem;
+  font-weight: 740;
+  text-transform: capitalize;
+}
+
+.aura-agenda-week-day-header strong {
+  color: var(--aura-text-on-glass);
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
+.aura-agenda-week-day-header small {
+  color: var(--aura-text-on-glass-muted);
+  font-size: 0.72rem;
+  text-transform: capitalize;
+}
+
+.aura-agenda-week-day-body {
+  display: grid;
+  align-content: start;
+  min-height: 12rem;
+  gap: 0.55rem;
+  padding: 0.65rem;
+}
+
+.aura-agenda-week-turn {
+  --agenda-state: rgba(230, 192, 220, 0.65);
+  display: grid;
+  min-width: 0;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.55rem 0.7rem;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-left: 3px solid var(--agenda-state);
+  border-radius: 0.8rem;
+  background: rgba(255, 255, 255, 0.055);
+  color: var(--aura-text-on-glass);
+  padding: 0.7rem;
+  text-decoration: none;
+  transition: background 150ms ease, border-color 150ms ease, transform 150ms ease;
+}
+
+.aura-agenda-week-turn:hover {
+  border-color: rgba(255, 255, 255, 0.26);
+  background: rgba(255, 255, 255, 0.09);
+  transform: translateY(-1px);
+}
+
+.aura-agenda-week-turn:focus-visible {
+  outline: 2px solid rgba(244, 202, 232, 0.76);
+  outline-offset: 2px;
+}
+
+.aura-agenda-week-turn-time {
+  display: grid;
+  align-content: start;
+  gap: 0.12rem;
+}
+
+.aura-agenda-week-turn-time strong {
+  font-size: 0.78rem;
+}
+
+.aura-agenda-week-turn-time span {
+  color: var(--aura-text-on-glass-muted);
+  font-size: 0.67rem;
+}
+
+.aura-agenda-week-turn-copy {
+  display: grid;
+  min-width: 0;
+  gap: 0.2rem;
+}
+
+.aura-agenda-week-turn-copy strong,
+.aura-agenda-week-turn-copy span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.aura-agenda-week-turn-copy strong {
+  font-size: 0.82rem;
+}
+
+.aura-agenda-week-turn-copy span {
+  color: var(--aura-text-on-glass-muted);
+  font-size: 0.7rem;
+}
+
+.aura-agenda-week-turn .aura-agenda-status {
+  grid-column: 1 / -1;
+  justify-self: start;
+}
+
+.aura-agenda-week-empty {
+  margin: auto;
+  color: rgba(249, 239, 251, 0.5);
+  font-size: 0.8rem;
+}
+
+/* Carga y error. */
+.aura-agenda-skeleton-list,
+.aura-agenda-skeleton-week {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.aura-agenda-skeleton-week {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.aura-agenda-skeleton {
+  min-height: 6rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.9rem;
+  background: linear-gradient(100deg, rgba(255, 255, 255, 0.04) 20%, rgba(255, 255, 255, 0.1) 40%, rgba(255, 255, 255, 0.04) 60%);
+  background-size: 200% 100%;
+  animation: aura-agenda-loading 1.4s ease-in-out infinite;
+}
+
+@keyframes aura-agenda-loading {
+  from { background-position: 100% 0; }
+  to { background-position: -100% 0; }
+}
+
+/* Escritorio amplio: tablero completo, sin comportamiento de carrusel. */
+@media (min-width: 1180px) {
+  .aura-agenda-week-scroll {
+    overflow-x: visible;
+    overscroll-behavior-inline: auto;
+    padding-bottom: 0;
+    scrollbar-width: none;
+    scroll-snap-type: none;
+  }
+
+  .aura-agenda-week-scroll::-webkit-scrollbar {
+    display: none;
+  }
+
+  .aura-agenda-week-grid {
+    grid-auto-columns: initial;
+    grid-auto-flow: row;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 0.55rem;
+    width: 100%;
+  }
+
+  .aura-agenda-week-day {
+    min-width: 0;
+    scroll-snap-align: none;
+  }
+
+  .aura-agenda-week-day-header {
+    padding: 0.68rem;
+  }
+
+  .aura-agenda-week-day-body {
+    min-height: 11rem;
+    padding: 0.55rem;
+  }
+
+  .aura-agenda-week-turn {
+    grid-template-columns: 1fr;
+    gap: 0.38rem;
+    padding: 0.62rem;
+  }
+
+  .aura-agenda-week-turn-time {
+    display: flex;
+    align-items: baseline;
+    gap: 0.3rem;
+  }
+
+  .aura-agenda-week-turn .aura-agenda-status {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 1023px) {
+  .aura-agenda-controls-primary {
+    flex-wrap: wrap;
+  }
+
+  .aura-agenda-date-field {
+    flex: 1 1 11rem;
+    width: auto;
+    margin-left: 0;
+  }
+
+  .aura-agenda-filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .aura-agenda-filter-actions {
+    align-self: end;
+  }
+}
+
+@media (max-width: 767px) {
+  .aura-agenda-stack {
+    gap: 1rem;
+  }
+
+  .aura-agenda-hero-note {
+    font-size: 0.82rem;
+  }
+
+  .aura-agenda-controls-primary {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: end;
+  }
+
+  .aura-agenda-view-toggle {
+    width: 100%;
+  }
+
+  .aura-agenda-date-navigation {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-row: 2;
+  }
+
+  .aura-agenda-date-navigation .aura-button {
+    min-width: 0;
+    padding-inline: 0.5rem;
+  }
+
+  .aura-agenda-date-field {
+    grid-column: 1 / -1;
+    grid-row: 3;
+  }
+
+  .aura-agenda-filter-toggle {
+    display: inline-flex;
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .aura-agenda-filters {
+    display: none;
+    grid-template-columns: 1fr;
+  }
+
+  .aura-agenda-filters[data-open="true"] {
+    display: grid;
+  }
+
+  .aura-agenda-filter-actions .aura-button {
+    width: 100%;
+  }
+
+  .aura-agenda-day-list::before {
+    left: 3.75rem;
+  }
+
+  .aura-agenda-day-turn {
+    grid-template-columns: 3.75rem minmax(0, 1fr);
+  }
+
+  .aura-agenda-time-rail {
+    padding-right: 0.55rem;
+  }
+
+  .aura-agenda-turn-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.55rem;
+  }
+
+  .aura-agenda-turn-actions .aura-button {
+    width: 100%;
+  }
+
+  .aura-agenda-week-grid {
+    grid-auto-columns: minmax(15rem, 88%);
+  }
+
+  .aura-agenda-skeleton-week {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 420px) {
+  .aura-agenda-controls-primary {
+    grid-template-columns: 1fr;
+  }
+
+  .aura-agenda-filter-toggle {
+    grid-column: 1;
+    grid-row: 4;
+    width: 100%;
+  }
+
+  .aura-agenda-day-list::before {
+    display: none;
+  }
+
+  .aura-agenda-day-turn {
+    display: block;
+  }
+
+  .aura-agenda-time-rail {
+    display: flex;
+    gap: 0.35rem;
+    padding: 0 0 0.45rem;
+  }
+
+  .aura-agenda-time-rail::after {
+    display: none;
+  }
+
+  .aura-agenda-day-turn-body {
+    border-left-width: 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aura-agenda-skeleton {
+    animation: none;
+  }
+
+  .aura-agenda-week-turn,
+  .aura-agenda-segment {
+    transition: none;
+  }
+}
+
+
+/* Ajustes de validación 2.2 */
+.aura-module-agenda .aura-agenda-control {
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.125), rgba(255, 255, 255, 0.07)) !important;
+  color: var(--aura-text-on-glass) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.065) !important;
+  color-scheme: dark;
+}
+
+.aura-module-agenda .aura-agenda-control::placeholder {
+  color: rgba(249, 239, 251, 0.5) !important;
+}
+
+.aura-module-agenda .aura-agenda-control:focus {
+  border-color: rgba(241, 201, 230, 0.54) !important;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.17), rgba(255, 255, 255, 0.09)) !important;
+  box-shadow: 0 0 0 3px rgba(228, 166, 215, 0.16) !important;
+}
+
+.aura-module-agenda .aura-agenda-control::-webkit-calendar-picker-indicator {
+  filter: invert(1) opacity(0.76);
+}
+
+.aura-agenda-week-notice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.85rem;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 0.85rem;
+  background: rgba(7, 3, 17, 0.1);
+  padding: 0.85rem 0.95rem;
+}
+
+.aura-agenda-week-notice-title {
+  margin: 0;
+  color: var(--aura-text-on-glass);
+  font-size: 0.88rem;
+  font-weight: 720;
+}
+
+.aura-agenda-week-notice-description {
+  margin: 0.2rem 0 0;
+  color: var(--aura-text-on-glass-muted);
+  font-size: 0.78rem;
+}
+
+.aura-agenda-week-empty {
+  display: grid;
+  min-height: 8.5rem;
+  place-content: center;
+  justify-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  color: rgba(249, 239, 251, 0.5);
+  font-size: 0.8rem;
+  text-align: center;
+}
+
+.aura-agenda-week-empty a {
+  color: var(--aura-link-on-glass);
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.aura-agenda-week-empty a:hover {
+  color: #fffaff;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+@media (min-width: 1024px) {
+  .aura-header-menu {
+    display: none !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .aura-agenda-week-notice {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .aura-agenda-week-notice .aura-button {
+    width: 100%;
+  }
+}

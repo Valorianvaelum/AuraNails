@@ -2,9 +2,9 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
 import { obtenerTurno, reprogramarTurno } from "../api/turnos.js";
-import AppHeader from "../components/AppHeader.jsx";
 import FieldError from "../components/FieldError.jsx";
 import FormActions from "../components/FormActions.jsx";
+import { AuraHero, AuraPage, AuraPanel } from "../components/visual";
 import { focusFirstError, normalizeApiError } from "../utils/apiErrors.js";
 
 function mensajeDeError(error, predeterminado) {
@@ -101,61 +101,58 @@ export default function TurnoReprogramarPage() {
   const turnoNoEditable = turno && ["cancelado", "realizado", "no_vino"].includes(turno.estado);
 
   return (
-    <main className="min-h-screen text-foreground">
-      <AppHeader />
-      <section className="mx-auto max-w-xl px-5 py-8">
-        <Link className="text-sm font-semibold text-primary underline underline-offset-4" to={cancelTo}>Volver</Link>
-        <h1 className="mt-4 text-3xl font-semibold">Reprogramar turno</h1>
-        {cargando && <p className="mt-5 text-muted-foreground">Cargando turno...</p>}
-        {!cargando && error && !turno && <p className="mt-5 text-destructive">{error}</p>}
-        {!cargando && turnoNoEditable && <p className="mt-5">Este turno ya no puede reprogramarse.</p>}
+    <AuraPage width="compact">
+      <div className="grid gap-5">
+        <AuraHero
+          eyebrow="Turnos"
+          title="Reprogramar turno"
+          description="Modificá la fecha y la hora sin perder el resto de la información del turno."
+          back={<Link className="aura-glass-link" to={cancelTo}>Volver al turno</Link>}
+        />
+        {cargando && <AuraPanel><p className="aura-form-status">Cargando turno...</p></AuraPanel>}
+        {!cargando && error && !turno && <AuraPanel><p className="text-destructive">{error}</p></AuraPanel>}
+        {!cargando && turnoNoEditable && <AuraPanel><p>Este turno ya no puede reprogramarse.</p></AuraPanel>}
         {!cargando && turno && !turnoNoEditable && (
-          <form className="mt-5 space-y-4 rounded-xl border border-border bg-card p-6 shadow-sm" onSubmit={guardar} noValidate>
-            <div className="rounded-lg bg-secondary p-4">
+          <AuraPanel as="form" className="aura-form-panel" onSubmit={guardar} noValidate>
+            <div className="aura-inset">
               <p className="font-semibold">{turno.clienta.nombre_completo}</p>
-              <p className="mt-1 text-sm text-muted-foreground">{turno.servicios.map((servicio) => servicio.nombre).join(", ")} · {turno.duracion_legible}</p>
+              <p className="mt-1 text-sm">{turno.servicios.map((servicio) => servicio.nombre).join(", ")} · {turno.duracion_legible}</p>
             </div>
-            <label className="grid gap-1">
-              Nueva fecha
+            <div className="aura-field">
+              <label className="aura-field-label mb-2 block" htmlFor="reprogramar-fecha">Nueva fecha</label>
               <input
+                id="reprogramar-fecha"
                 aria-describedby={erroresCampos.inicio ? "inicio-error" : undefined}
                 aria-invalid={Boolean(erroresCampos.inicio)}
-                className={erroresCampos.inicio ? "field-invalid" : ""}
+                className={`aura-control ${erroresCampos.inicio ? "field-invalid" : ""}`}
                 disabled={guardando}
                 required
                 type="date"
                 ref={refs.inicio}
                 value={fecha}
-                onChange={(event) => {
-                  setFecha(event.target.value);
-                  setErroresCampos({});
-                  setError("");
-                }}
+                onChange={(event) => { setFecha(event.target.value); setErroresCampos({}); setError(""); }}
               />
-            </label>
-            <label className="grid gap-1">
-              Nueva hora
+            </div>
+            <div className="aura-field">
+              <label className="aura-field-label mb-2 block" htmlFor="reprogramar-hora">Nueva hora</label>
               <input
+                id="reprogramar-hora"
                 aria-describedby={erroresCampos.inicio ? "inicio-error" : undefined}
                 aria-invalid={Boolean(erroresCampos.inicio)}
-                className={erroresCampos.inicio ? "field-invalid" : ""}
+                className={`aura-control ${erroresCampos.inicio ? "field-invalid" : ""}`}
                 disabled={guardando}
                 required
                 type="time"
                 value={hora}
-                onChange={(event) => {
-                  setHora(event.target.value);
-                  setErroresCampos({});
-                  setError("");
-                }}
+                onChange={(event) => { setHora(event.target.value); setErroresCampos({}); setError(""); }}
               />
-            </label>
+            </div>
             <FieldError id="inicio-error" message={erroresCampos.inicio} />
             {error && <p className="text-destructive" role="alert">{error}</p>}
             <FormActions cancelTo={cancelTo} isDirty={isDirty} isSubmitting={guardando} submitLabel="Guardar nueva fecha" submittingLabel="Reprogramando..." />
-          </form>
+          </AuraPanel>
         )}
-      </section>
-    </main>
+      </div>
+    </AuraPage>
   );
 }

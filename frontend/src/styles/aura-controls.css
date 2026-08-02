@@ -1,0 +1,457 @@
+/*
+ * Bloque 7.0 — Controles interactivos y formularios AuraNails.
+ * Unifica campos, selectores, fechas, checkboxes, radios y controles segmentados
+ * sin modificar lógica funcional ni reemplazar los <select> nativos.
+ */
+
+:root {
+  --aura-control-height: 2.9rem;
+  --aura-control-radius: 0.82rem;
+  --aura-control-border: rgba(255, 255, 255, 0.22);
+  --aura-control-border-hover: rgba(255, 255, 255, 0.34);
+  --aura-control-border-focus: rgba(244, 202, 232, 0.64);
+  --aura-control-bg-top: rgba(255, 255, 255, 0.145);
+  --aura-control-bg-bottom: rgba(255, 255, 255, 0.072);
+  --aura-control-bg-hover-top: rgba(255, 255, 255, 0.175);
+  --aura-control-bg-hover-bottom: rgba(255, 255, 255, 0.09);
+  --aura-control-bg-focus-top: rgba(255, 255, 255, 0.205);
+  --aura-control-bg-focus-bottom: rgba(255, 255, 255, 0.105);
+  --aura-control-ring: rgba(228, 166, 215, 0.18);
+  --aura-control-error: rgba(255, 174, 193, 0.76);
+  --aura-control-error-ring: rgba(196, 77, 108, 0.19);
+  --aura-control-transition: 170ms cubic-bezier(0.2, 0.75, 0.25, 1);
+}
+
+/* Etiquetas y grupos. */
+:where(.aura-page, .cash-dialog, .aura-login-card) :is(.aura-field, .cash-dialog-field, .aura-login-field) {
+  min-width: 0;
+}
+
+:where(.aura-page, .cash-dialog, .aura-login-card) :is(.aura-field-label, .cash-dialog-field > label, .aura-login-field > label),
+.aura-agenda-field,
+.aura-agenda-date-field {
+  color: rgba(255, 250, 255, 0.94) !important;
+  font-weight: 690;
+  letter-spacing: -0.006em;
+}
+
+:where(.aura-page, .cash-dialog, .aura-login-card) :is(.aura-field-help, .finance-field-meta, .cash-dialog-help, .aura-login-hint) {
+  color: rgba(249, 239, 251, 0.68) !important;
+}
+
+/* Superficie común de campos. */
+:where(.aura-page, .cash-dialog) :is(
+  .aura-control,
+  .aura-agenda-control,
+  input:not([type="checkbox"]):not([type="radio"]):not([type="button"]):not([type="submit"]),
+  select,
+  textarea
+),
+.aura-login-control,
+.aura-login-password {
+  border: 1px solid var(--aura-control-border) !important;
+  border-radius: var(--aura-control-radius) !important;
+  background:
+    linear-gradient(180deg, var(--aura-control-bg-top), var(--aura-control-bg-bottom)),
+    rgba(11, 5, 25, 0.25) !important;
+  color: #fffaff !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.095),
+    inset 0 -1px 0 rgba(4, 1, 12, 0.12),
+    0 8px 22px rgba(8, 3, 18, 0.12) !important;
+  color-scheme: dark;
+  transition:
+    border-color var(--aura-control-transition),
+    background var(--aura-control-transition),
+    box-shadow var(--aura-control-transition),
+    opacity var(--aura-control-transition),
+    transform var(--aura-control-transition);
+  -webkit-backdrop-filter: blur(11px) saturate(116%);
+  backdrop-filter: blur(11px) saturate(116%);
+}
+
+:where(.aura-page, .cash-dialog) :is(
+  .aura-control,
+  .aura-agenda-control,
+  input:not([type="checkbox"]):not([type="radio"]):not([type="button"]):not([type="submit"]),
+  select
+) {
+  min-height: var(--aura-control-height);
+}
+
+:where(.aura-page, .cash-dialog) textarea.aura-control,
+:where(.aura-page, .cash-dialog) textarea {
+  line-height: 1.55;
+  resize: vertical;
+}
+
+:where(.aura-page, .cash-dialog) :is(
+  .aura-control,
+  .aura-agenda-control,
+  input:not([type="checkbox"]):not([type="radio"]):not([type="button"]):not([type="submit"]),
+  select,
+  textarea
+):hover:not(:disabled):not([readonly]),
+.aura-login-control:hover:not(:disabled),
+.aura-login-password:hover {
+  border-color: var(--aura-control-border-hover) !important;
+  background:
+    linear-gradient(180deg, var(--aura-control-bg-hover-top), var(--aura-control-bg-hover-bottom)),
+    rgba(15, 7, 31, 0.28) !important;
+}
+
+:where(.aura-page, .cash-dialog) :is(
+  .aura-control,
+  .aura-agenda-control,
+  input:not([type="checkbox"]):not([type="radio"]):not([type="button"]):not([type="submit"]),
+  select,
+  textarea
+):is(:focus, :focus-visible),
+.aura-login-control:is(:focus, :focus-visible),
+.aura-login-password:focus-within {
+  outline: none !important;
+  border-color: var(--aura-control-border-focus) !important;
+  background:
+    linear-gradient(180deg, var(--aura-control-bg-focus-top), var(--aura-control-bg-focus-bottom)),
+    rgba(18, 8, 37, 0.31) !important;
+  box-shadow:
+    0 0 0 3px var(--aura-control-ring),
+    0 12px 30px rgba(10, 3, 22, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.13) !important;
+}
+
+:where(.aura-page, .cash-dialog, .aura-login-card) :is(
+  .aura-control,
+  .aura-agenda-control,
+  input,
+  select,
+  textarea,
+  .aura-login-control,
+  .aura-login-password
+):is(.field-invalid, [aria-invalid="true"]) {
+  border-color: var(--aura-control-error) !important;
+  box-shadow:
+    0 0 0 3px var(--aura-control-error-ring),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+}
+
+:where(.aura-page, .cash-dialog, .aura-login-card) .field-error,
+.aura-agenda-field-error,
+.finance-inline-error,
+.cash-dialog-error {
+  color: #ffd0da !important;
+  font-weight: 620;
+}
+
+:where(.aura-page, .cash-dialog) :is(
+  .aura-control,
+  .aura-agenda-control,
+  input,
+  select,
+  textarea
+):disabled,
+.aura-login-control:disabled,
+.aura-login-password:has(input:disabled) {
+  cursor: not-allowed;
+  opacity: 0.52;
+  filter: saturate(0.58);
+}
+
+:where(.aura-page, .cash-dialog) :is(input, textarea)[readonly] {
+  cursor: default;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.045)),
+    rgba(8, 4, 18, 0.27) !important;
+  color: rgba(249, 239, 251, 0.74) !important;
+}
+
+:where(.aura-page, .cash-dialog, .aura-login-card) :is(input, textarea)::placeholder {
+  color: rgba(249, 239, 251, 0.5) !important;
+  opacity: 1;
+}
+
+/* Evita superficies amarillas del autocompletado de Chromium. */
+:where(.aura-page, .cash-dialog, .aura-login-card) input:-webkit-autofill,
+:where(.aura-page, .cash-dialog, .aura-login-card) input:-webkit-autofill:hover {
+  -webkit-text-fill-color: #fffaff;
+  caret-color: #fffaff;
+  transition: background-color 9999s ease-out 0s;
+  box-shadow: 0 0 0 1000px rgba(42, 24, 59, 0.94) inset !important;
+}
+
+:where(.aura-page, .cash-dialog, .aura-login-card) input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #fffaff;
+  caret-color: #fffaff;
+  box-shadow:
+    0 0 0 1000px rgba(48, 27, 66, 0.96) inset,
+    0 0 0 3px var(--aura-control-ring) !important;
+}
+
+/* Indicadores nativos de fecha, hora y búsqueda. */
+:where(.aura-page, .cash-dialog) :is(input[type="date"], input[type="time"], input[type="datetime-local"])::-webkit-calendar-picker-indicator {
+  opacity: 0.76;
+  cursor: pointer;
+  filter: invert(1) saturate(0) brightness(1.35);
+  transition: opacity var(--aura-control-transition), transform var(--aura-control-transition);
+}
+
+:where(.aura-page, .cash-dialog) :is(input[type="date"], input[type="time"], input[type="datetime-local"]):hover::-webkit-calendar-picker-indicator {
+  opacity: 1;
+  transform: scale(1.04);
+}
+
+:where(.aura-page, .cash-dialog) input[type="search"]::-webkit-search-cancel-button {
+  opacity: 0.72;
+  cursor: pointer;
+  filter: invert(1) brightness(1.4);
+}
+
+/* Checkboxes y radios propios, manteniendo inputs nativos y accesibles. */
+:where(.aura-page, .cash-dialog) input[type="checkbox"],
+:where(.aura-page, .cash-dialog) input[type="radio"] {
+  appearance: none;
+  -webkit-appearance: none;
+  flex: 0 0 auto;
+  width: 1.15rem !important;
+  height: 1.15rem !important;
+  margin: 0;
+  border: 1px solid rgba(255, 255, 255, 0.34);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.13), rgba(255, 255, 255, 0.065));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 4px 12px rgba(5, 2, 13, 0.14);
+  cursor: pointer;
+  transition:
+    border-color var(--aura-control-transition),
+    background var(--aura-control-transition),
+    box-shadow var(--aura-control-transition),
+    transform 110ms ease;
+}
+
+:where(.aura-page, .cash-dialog) input[type="checkbox"] {
+  border-radius: 0.34rem;
+}
+
+:where(.aura-page, .cash-dialog) input[type="radio"] {
+  border-radius: 50%;
+}
+
+:where(.aura-page, .cash-dialog) input[type="checkbox"]:checked {
+  border-color: rgba(255, 231, 247, 0.62);
+  background-color: #9d6698;
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.2 8.2 6.4 11.2 12.9 4.7' fill='none' stroke='%23fffaff' stroke-width='2.15' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"),
+    linear-gradient(135deg, rgba(190, 120, 177, 0.98), rgba(100, 71, 145, 0.98));
+  background-position: center, center;
+  background-repeat: no-repeat;
+  background-size: 0.82rem, 100%;
+  box-shadow:
+    0 0 0 3px rgba(228, 166, 215, 0.11),
+    0 6px 16px rgba(59, 22, 72, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.24);
+}
+
+:where(.aura-page, .cash-dialog) input[type="checkbox"]:indeterminate {
+  border-color: rgba(255, 231, 247, 0.62);
+  background:
+    linear-gradient(#fffaff, #fffaff) center / 0.62rem 0.12rem no-repeat,
+    linear-gradient(135deg, rgba(190, 120, 177, 0.98), rgba(100, 71, 145, 0.98));
+}
+
+:where(.aura-page, .cash-dialog) input[type="radio"]:checked {
+  border-color: rgba(255, 231, 247, 0.72);
+  background:
+    radial-gradient(circle, #fffaff 0 31%, transparent 34%),
+    linear-gradient(135deg, rgba(190, 120, 177, 0.98), rgba(100, 71, 145, 0.98));
+  box-shadow:
+    0 0 0 3px rgba(228, 166, 215, 0.11),
+    0 6px 16px rgba(59, 22, 72, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22);
+}
+
+:where(.aura-page, .cash-dialog) :is(input[type="checkbox"], input[type="radio"]):hover:not(:disabled) {
+  border-color: rgba(255, 255, 255, 0.58);
+  transform: translateY(-1px);
+}
+
+:where(.aura-page, .cash-dialog) :is(input[type="checkbox"], input[type="radio"]):focus-visible {
+  outline: 2px solid rgba(244, 202, 232, 0.88);
+  outline-offset: 3px;
+}
+
+:where(.aura-page, .cash-dialog) :is(input[type="checkbox"], input[type="radio"]):active:not(:disabled) {
+  transform: scale(0.92);
+}
+
+:where(.aura-page, .cash-dialog) :is(input[type="checkbox"], input[type="radio"]):disabled {
+  cursor: not-allowed;
+  opacity: 0.46;
+  transform: none;
+}
+
+/* Tarjetas seleccionables. */
+.aura-choice,
+.finance-method-option,
+.cash-checkbox-card {
+  position: relative;
+  overflow: hidden;
+  transition:
+    transform 150ms cubic-bezier(0.2, 0.75, 0.25, 1),
+    border-color var(--aura-control-transition),
+    background var(--aura-control-transition),
+    box-shadow var(--aura-control-transition);
+}
+
+.aura-choice::before,
+.finance-method-option::before,
+.cash-checkbox-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.075), transparent 45%);
+  opacity: 0.65;
+  pointer-events: none;
+}
+
+.aura-choice:hover,
+.finance-method-option:hover,
+.cash-checkbox-card:hover {
+  border-color: rgba(255, 255, 255, 0.34);
+  background: rgba(255, 255, 255, 0.095);
+  transform: translateY(-1px);
+}
+
+.aura-choice:focus-within,
+.finance-method-option:focus-within,
+.cash-checkbox-card:focus-within {
+  outline: 2px solid rgba(244, 202, 232, 0.78);
+  outline-offset: 3px;
+}
+
+.aura-choice:has(input:checked),
+.finance-method-option.is-selected,
+.finance-method-option:has(input:checked),
+.cash-checkbox-card:has(input:checked) {
+  border-color: rgba(245, 210, 236, 0.5) !important;
+  background:
+    linear-gradient(145deg, rgba(184, 113, 170, 0.22), rgba(92, 72, 145, 0.16)),
+    rgba(255, 255, 255, 0.07) !important;
+  box-shadow:
+    0 0 0 2px rgba(228, 166, 215, 0.08),
+    0 12px 28px rgba(19, 6, 35, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+}
+
+/* Control segmentado de Agenda. */
+.aura-agenda-view-toggle {
+  position: relative;
+  border-color: rgba(255, 255, 255, 0.18) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.025)),
+    rgba(7, 3, 17, 0.24) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 8px 22px rgba(6, 2, 15, 0.13);
+  -webkit-backdrop-filter: blur(12px) saturate(116%);
+  backdrop-filter: blur(12px) saturate(116%);
+}
+
+.aura-agenda-segment {
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  color: rgba(249, 239, 251, 0.7);
+  transition:
+    color var(--aura-control-transition),
+    border-color var(--aura-control-transition),
+    background var(--aura-control-transition),
+    box-shadow var(--aura-control-transition),
+    transform 110ms ease;
+}
+
+.aura-agenda-segment:hover:not([data-active="true"]) {
+  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.055);
+  color: rgba(255, 250, 255, 0.94);
+}
+
+.aura-agenda-segment[data-active="true"] {
+  border-color: rgba(255, 255, 255, 0.24) !important;
+  background:
+    linear-gradient(145deg, rgba(177, 111, 167, 0.42), rgba(91, 73, 145, 0.34)),
+    rgba(255, 255, 255, 0.07) !important;
+  color: #fffaff !important;
+  box-shadow:
+    0 8px 20px rgba(26, 8, 41, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.17);
+}
+
+.aura-agenda-segment:active {
+  transform: scale(0.975);
+}
+
+/* Filtrado: el panel gana continuidad visual sin sumar peso. */
+:where(.finance-filter-panel, .cash-filter-panel, .aura-agenda-controls) {
+  box-shadow:
+    0 18px 46px rgba(5, 2, 16, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.075);
+}
+
+:where(.finance-filter-grid, .cash-filter-grid, .aura-agenda-filters) .aura-field:focus-within,
+.aura-agenda-field:focus-within,
+.aura-agenda-date-field:focus-within {
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 767px) {
+  :where(.aura-page, .cash-dialog) :is(
+    .aura-control,
+    .aura-agenda-control,
+    input:not([type="checkbox"]):not([type="radio"]):not([type="button"]):not([type="submit"]),
+    select,
+    textarea
+  ),
+  .aura-login-control,
+  .aura-login-password > input {
+    font-size: 1rem !important;
+  }
+
+  .aura-choice,
+  .finance-method-option,
+  .cash-checkbox-card {
+    min-height: 3.35rem;
+  }
+
+  :where(.aura-page, .cash-dialog) input[type="checkbox"],
+  :where(.aura-page, .cash-dialog) input[type="radio"] {
+    width: 1.22rem !important;
+    height: 1.22rem !important;
+  }
+}
+
+@media (hover: none) {
+  :where(.aura-page, .cash-dialog) :is(
+    .aura-control,
+    .aura-agenda-control,
+    input:not([type="checkbox"]):not([type="radio"]),
+    select,
+    textarea
+  ):hover:not(:disabled),
+  .aura-choice:hover,
+  .finance-method-option:hover,
+  .cash-checkbox-card:hover {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :where(.aura-page, .cash-dialog, .aura-login-card) :is(input, select, textarea),
+  .aura-choice,
+  .finance-method-option,
+  .cash-checkbox-card,
+  .aura-agenda-segment {
+    transition-duration: 0.01ms !important;
+  }
+}

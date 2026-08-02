@@ -1,5 +1,6 @@
 import { Navigate, useLocation } from "react-router-dom";
 
+import AuraLoadingScreen from "../components/AuraLoadingScreen.jsx";
 import { useAuth } from "./AuthContext.jsx";
 
 function ProtectedRoute({ children }) {
@@ -7,11 +8,7 @@ function ProtectedRoute({ children }) {
   const location = useLocation();
 
   if (isLoading) {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-[#fff4f7] px-6 text-[#6f5b60]">
-        Cargando tu espacio...
-      </main>
-    );
+    return <AuraLoadingScreen label="Cargando tu espacio..." />;
   }
 
   if (!isAuthenticated) {

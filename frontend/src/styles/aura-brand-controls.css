@@ -1,0 +1,88 @@
+/* Bloque 6.2: identidad visual y compatibilidad de controles nativos. */
+
+/* Marca */
+.aura-brand-mark,
+.aura-login-brand-mark,
+.aura-loading-mark {
+  overflow: hidden;
+  padding: 0.12rem;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.13), rgba(255, 255, 255, 0.045)),
+    rgba(9, 4, 19, 0.18);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    0 8px 22px rgba(8, 3, 18, 0.18),
+    0 0 18px rgba(215, 126, 190, 0.08);
+}
+
+.aura-brand-logo,
+.aura-login-brand-logo,
+.aura-loading-logo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  object-fit: cover;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.aura-login-brand-mark {
+  width: 3.1rem;
+  height: 3.1rem;
+  border-radius: 1rem;
+}
+
+.aura-loading-mark {
+  border-radius: 0.86rem;
+}
+
+/*
+ * Los menús de <select> se renderizan de forma nativa en Windows/Chromium.
+ * Algunos entornos ignoran el fondo oscuro de <option>, pero sí respetan
+ * el color del texto. Se prioriza contraste estable sobre fondo claro.
+ */
+select option,
+select optgroup {
+  background-color: #f6f0f7 !important;
+  color: #25152f !important;
+}
+
+select option:checked {
+  background-color: #d9c8dd !important;
+  color: #1f1028 !important;
+}
+
+select option:disabled {
+  color: #766b7a !important;
+}
+
+/* Evita que reglas de módulos anteriores devuelvan texto blanco al menú nativo. */
+.aura-module-clientas select :is(option, optgroup),
+.aura-module-servicios select :is(option, optgroup),
+.aura-module-turnos select :is(option, optgroup),
+.aura-module-cobros select :is(option, optgroup),
+.aura-module-caja select :is(option, optgroup),
+.cash-dialog select :is(option, optgroup) {
+  background-color: #f6f0f7 !important;
+  color: #25152f !important;
+}
+
+.aura-module-clientas select option:checked,
+.aura-module-servicios select option:checked,
+.aura-module-turnos select option:checked,
+.aura-module-cobros select option:checked,
+.aura-module-caja select option:checked,
+.cash-dialog select option:checked {
+  background-color: #d9c8dd !important;
+  color: #1f1028 !important;
+}
+
+.aura-module-clientas select option:disabled,
+.aura-module-servicios select option:disabled,
+.aura-module-turnos select option:disabled,
+.aura-module-cobros select option:disabled,
+.aura-module-caja select option:disabled,
+.cash-dialog select option:disabled {
+  color: #766b7a !important;
+}

@@ -1,0 +1,170 @@
+:root {
+  --color-canvas: #160d25;
+  --color-canvas-deep: #132543;
+  --color-surface: rgba(249, 246, 251, 0.88);
+  --color-surface-raised: rgba(255, 253, 255, 0.94);
+  --color-surface-muted: rgba(239, 232, 243, 0.86);
+  --color-border: rgba(116, 86, 111, 0.24);
+  --color-border-strong: rgba(116, 86, 111, 0.42);
+  --color-text: #332a36;
+  --color-text-muted: #6a5f70;
+  --color-brand: #7b5277;
+  --color-brand-hover: #61405f;
+  --color-brand-soft: #eadfea;
+  --shadow-hairline: 0 10px 30px rgba(20, 9, 35, 0.12);
+  --shadow-raised: 0 22px 60px rgba(20, 9, 35, 0.18);
+  --aura-on-dark: #fffaff;
+  --aura-on-dark-muted: rgba(249, 239, 251, 0.78);
+  --aura-on-dark-link: #f2c9e6;
+  --aura-glass-border: rgba(255, 255, 255, 0.24);
+}
+
+html, body, #root { min-height: 100%; background: #160d25; }
+body { color: var(--color-text); }
+#root { background: transparent !important; }
+.aura-app-layer, .aura-module, main { min-height: 100vh; }
+main { color: inherit; }
+
+/* Navegación */
+.aura-app-layer > .aura-module > main > header,
+.aura-app-layer .sticky.top-0.z-40 {
+  background: rgba(250, 245, 252, 0.82) !important;
+  border-color: rgba(255, 255, 255, 0.42) !important;
+  box-shadow: 0 10px 34px rgba(18, 8, 32, 0.16), inset 0 1px 0 rgba(255,255,255,.72) !important;
+  -webkit-backdrop-filter: blur(22px) saturate(140%);
+  backdrop-filter: blur(22px) saturate(140%);
+}
+
+/* Encabezados de página sobre la galaxia. Solo hijos directos del contenedor. */
+.aura-module main > section > h1,
+.aura-module main > section > h2,
+.aura-module main > section > p,
+.aura-module main > section > a,
+.aura-module main > section > div:first-child > h1,
+.aura-module main > section > div:first-child > h2,
+.aura-module main > section > div:first-child > p,
+.aura-module main > section > div:first-child > a {
+  text-shadow: 0 2px 18px rgba(13, 5, 25, 0.42);
+}
+.aura-module main > section > h1,
+.aura-module main > section > h2,
+.aura-module main > section > div:first-child > h1,
+.aura-module main > section > div:first-child > h2 { color: var(--aura-on-dark) !important; }
+.aura-module main > section > p,
+.aura-module main > section > div:first-child > p { color: var(--aura-on-dark-muted) !important; }
+.aura-module main > section > a,
+.aura-module main > section > div:first-child > a { color: var(--aura-on-dark-link) !important; }
+
+/* Superficies operativas */
+.aura-module :is(.bg-card, .bg-white, .ui-card, .ui-section, .ui-surface, .aura-financial-card, .aura-financial-summary, .confirm-dialog) {
+  color: var(--color-text) !important;
+  border-color: rgba(255,255,255,.56) !important;
+  background: linear-gradient(145deg, rgba(255,255,255,.95), rgba(247,241,249,.88)) !important;
+  box-shadow: var(--shadow-hairline) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(125%);
+  backdrop-filter: blur(20px) saturate(125%);
+}
+.aura-module :is(.bg-card, .bg-white, .ui-card, .ui-section, .ui-surface, .aura-financial-card, .aura-financial-summary, .confirm-dialog) :is(h1,h2,h3,h4,strong,label,.text-foreground) {
+  color: var(--color-text) !important;
+  text-shadow: none !important;
+}
+.aura-module :is(.bg-card, .bg-white, .ui-card, .ui-section, .ui-surface, .aura-financial-card, .aura-financial-summary, .confirm-dialog) :is(p,.text-muted-foreground) {
+  color: var(--color-text-muted) !important;
+  text-shadow: none !important;
+}
+.aura-module :is(.bg-card, .bg-white, .ui-card, .ui-section, .ui-surface, .aura-financial-card, .aura-financial-summary, .confirm-dialog) a:not(.ui-button):not(.aura-action) {
+  color: var(--color-brand) !important;
+}
+
+/* Controles */
+.aura-module input:not([type="checkbox"]):not([type="radio"]),
+.aura-module select,
+.aura-module textarea {
+  color: var(--color-text) !important;
+  background: rgba(255,255,255,.88) !important;
+  border-color: rgba(116,86,111,.22) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.9), 0 6px 18px rgba(41,23,55,.06);
+}
+.aura-module input:focus,
+.aura-module select:focus,
+.aura-module textarea:focus {
+  background: #fff !important;
+  border-color: rgba(123,82,119,.62) !important;
+  box-shadow: 0 0 0 3px rgba(177,123,169,.2), 0 8px 22px rgba(41,23,55,.08) !important;
+}
+
+/* Acciones */
+.aura-module :is(.ui-button-primary,.aura-action-primary,[class*="bg-primary"]) {
+  background: linear-gradient(135deg, #855d82, #684866) !important;
+  border-color: rgba(255,255,255,.18) !important;
+  color: #fff !important;
+  box-shadow: 0 10px 26px rgba(39,18,52,.24), inset 0 1px 0 rgba(255,255,255,.18) !important;
+}
+.aura-module :is(.ui-button-secondary,.aura-action-secondary,[class*="bg-card"][class*="text-foreground"]) {
+  background: rgba(255,253,255,.9) !important;
+  border-color: rgba(116,86,111,.24) !important;
+  color: #513d50 !important;
+}
+.aura-module :is(.ui-button-ghost,.aura-action-contextual,[class*="text-primary"]) { color: var(--color-brand) !important; }
+
+/* Inicio: el hero es la referencia visual principal. */
+.aura-home-hero {
+  border: 1px solid var(--aura-glass-border) !important;
+  border-radius: 1.25rem;
+  background: linear-gradient(145deg, rgba(255,255,255,.10), rgba(255,255,255,.035)) !important;
+  padding: 1.5rem;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 18px 44px rgba(18,8,32,.14);
+  -webkit-backdrop-filter: blur(14px) saturate(118%);
+  backdrop-filter: blur(14px) saturate(118%);
+}
+.aura-home-hero :is(h1,p) { color: var(--aura-on-dark) !important; text-shadow: none; }
+.aura-home-hero p.text-muted-foreground { color: var(--aura-on-dark-muted) !important; }
+.aura-home-hero .aura-home-secondary { color: #5b3e58 !important; background: rgba(255,252,255,.92) !important; }
+
+.aura-home-heading :is(h2) { color: var(--aura-on-dark) !important; }
+.aura-home-heading p { color: var(--aura-on-dark-muted) !important; }
+.aura-home-link { color: var(--aura-on-dark-link) !important; text-shadow: 0 1px 14px rgba(15,7,27,.35); }
+.aura-home-metric { min-height: 9.5rem; }
+.aura-home-metric a { color: var(--color-brand) !important; }
+.aura-home-empty {
+  background: rgba(245,239,248,.84) !important;
+  border-color: rgba(255,255,255,.48) !important;
+  color: var(--color-text) !important;
+}
+.aura-home-empty p { color: var(--color-text-muted) !important; }
+.aura-home-divider { background: rgba(255,255,255,.26) !important; }
+.aura-home-quick { color: #513d50 !important; background: rgba(255,253,255,.9) !important; }
+
+/* Formularios y listados: encabezado exterior claro, contenido interior claro. */
+.aura-module :is(form.bg-card, form.bg-white, div.bg-card, article.bg-card, section.bg-card) {
+  border-radius: 1rem;
+  box-shadow: var(--shadow-raised) !important;
+}
+.aura-module .border-dashed.bg-card { background: rgba(246,240,249,.86) !important; }
+
+/* Login */
+.aura-module-login main { background: transparent !important; }
+.aura-module-login main > section > div {
+  background: linear-gradient(145deg, rgba(255,255,255,.94), rgba(245,239,248,.87)) !important;
+  border-color: rgba(255,255,255,.56) !important;
+  box-shadow: 0 26px 70px rgba(18,8,32,.24), inset 0 1px 0 rgba(255,255,255,.78) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(130%);
+  backdrop-filter: blur(24px) saturate(130%);
+}
+.aura-module-login main > section > div :is(h1,p,label) { color: var(--color-text) !important; text-shadow: none !important; }
+.aura-module-login main > section > div > p:first-child { color: var(--color-brand) !important; }
+
+/* Respuesta móvil */
+@media (max-width: 767px) {
+  .aura-home-hero { padding: 1.25rem; }
+  .aura-module :is(.bg-card,.bg-white,.ui-card,.ui-section,.ui-surface,.aura-financial-card,.aura-financial-summary) {
+    background: rgba(255,253,255,.94) !important;
+    -webkit-backdrop-filter: blur(16px) saturate(120%);
+    backdrop-filter: blur(16px) saturate(120%);
+  }
+  .aura-module main > section { padding-left: 1rem !important; padding-right: 1rem !important; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aura-app-layer *, .aura-app-layer *::before, .aura-app-layer *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; }
+}

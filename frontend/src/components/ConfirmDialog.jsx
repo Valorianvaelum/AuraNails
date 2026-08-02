@@ -1,31 +1,75 @@
-import { useEffect, useRef } from "react";
+import { useId, useRef } from "react";
 
-function focusables(container) {
-  return [...container.querySelectorAll('button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])')];
-}
+import useDialogAccessibility from "../hooks/useDialogAccessibility.js";
 
-export default function ConfirmDialog({ open, title, description, details, confirmLabel, isProcessing = false, destructive = false, onConfirm, onClose }) {
+export default function ConfirmDialog({
+  open,
+  title,
+  description,
+  details,
+  confirmLabel,
+  isProcessing = false,
+  destructive = false,
+  onConfirm,
+  onClose,
+}) {
   const dialogRef = useRef(null);
   const cancelRef = useRef(null);
-  const previousFocus = useRef(null);
+  const titleId = useId();
+  const descriptionId = useId();
+  const detailsId = useId();
 
-  useEffect(() => {
-    if (!open) return undefined;
-    previousFocus.current = document.activeElement;
-    cancelRef.current?.focus();
-    const handleKeyDown = (event) => {
-      if (event.key === "Escape" && !isProcessing) { event.preventDefault(); onClose(); }
-      if (event.key !== "Tab") return;
-      const items = focusables(dialogRef.current);
-      if (!items.length) return;
-      const first = items[0]; const last = items[items.length - 1];
-      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
-      if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
-    };
-    document.addEventListener("keydown", handleKeyDown);
-    return () => { document.removeEventListener("keydown", handleKeyDown); previousFocus.current?.focus?.(); };
-  }, [isProcessing, onClose, open]);
+  useDialogAccessibility({
+    active: open,
+    containerRef: dialogRef,
+    initialFocusRef: cancelRef,
+    onEscape: () => {
+      if (!isProcessing) onClose();
+    },
+  });
 
   if (!open) return null;
-  return <div className="confirm-backdrop" role="presentation"><section aria-describedby="confirm-dialog-description" aria-labelledby="confirm-dialog-title" aria-modal="true" className="confirm-dialog" ref={dialogRef} role="dialog"><h2 id="confirm-dialog-title">{title}</h2><p id="confirm-dialog-description">{description}</p>{details && <p className="confirm-dialog-details">{details}</p>}<div className="confirm-dialog-actions"><button ref={cancelRef} disabled={isProcessing} type="button" onClick={onClose}>Volver</button><button className={destructive ? "confirm-dialog-destructive" : "confirm-dialog-confirm"} disabled={isProcessing} type="button" onClick={onConfirm}>{isProcessing ? "Procesando…" : confirmLabel}</button></div></section></div>;
+
+  const describedBy = [description ? descriptionId : null, details ? detailsId : null]
+    .filter(Boolean)
+    .join(" ") || undefined;
+
+  return (
+    <div className="confirm-backdrop" role="presentation">
+      <section
+        ref={dialogRef}
+        aria-busy={isProcessing || undefined}
+        aria-describedby={describedBy}
+        aria-labelledby={titleId}
+        aria-modal="true"
+        className="confirm-dialog"
+        role={destructive ? "alertdialog" : "dialog"}
+        tabIndex="-1"
+      >
+        <h2 id={titleId}>{title}</h2>
+        {description ? <p id={descriptionId}>{description}</p> : null}
+        {details ? <p className="confirm-dialog-details" id={detailsId}>{details}</p> : null}
+        <div className="confirm-dialog-actions">
+          <button
+            ref={cancelRef}
+            className="aura-button aura-button-secondary"
+            disabled={isProcessing}
+            type="button"
+            onClick={onClose}
+          >
+            Volver
+          </button>
+          <button
+            aria-busy={isProcessing || undefined}
+            className={`aura-button ${destructive ? "aura-button-danger confirm-dialog-destructive" : "aura-button-primary confirm-dialog-confirm"}`}
+            disabled={isProcessing}
+            type="button"
+            onClick={onConfirm}
+          >
+            {isProcessing ? "Procesando…" : confirmLabel}
+          </button>
+        </div>
+      </section>
+    </div>
+  );
 }

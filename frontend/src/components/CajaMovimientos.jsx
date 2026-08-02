@@ -1,28 +1,117 @@
 import { Link } from "react-router-dom";
 
+import { AuraEmptyState, AuraPanel, AuraPanelHeader } from "./visual";
 import { dinero, fechaHora } from "./CajaResumen.jsx";
 
-const estadoClass = (estado) => estado === "anulado" ? "bg-[#f1e4e6] text-[#8b3f4c]" : "bg-[#e7f5ea] text-[#356640]";
+function normalizar(caja) {
+  const cobros = (caja?.cobros || []).map((registro) => ({
+    id: `cobro-${registro.id}`,
+    original: registro,
+    tipo: "cobro",
+    titulo: registro.clienta_nombre_historica || "Cobro",
+    detalle: registro.metodo_pago_display,
+    fecha: registro.creado_en,
+    importe: Number(registro.importe || 0),
+    estado: registro.estado,
+    estadoDisplay: registro.estado_display,
+    anulacion: registro.motivo_anulacion,
+  }));
+  const gastos = (caja?.gastos || []).map((registro) => ({
+    id: `gasto-${registro.id}`,
+    original: registro,
+    tipo: "gasto",
+    titulo: registro.concepto,
+    detalle: registro.metodo_pago_display,
+    fecha: registro.registrado_en,
+    importe: -Number(registro.importe || 0),
+    estado: registro.estado,
+    estadoDisplay: registro.estado_display,
+    anulacion: registro.motivo_anulacion,
+  }));
+  const movimientos = (caja?.movimientos || []).map((registro) => ({
+    id: `movimiento-${registro.id}`,
+    original: registro,
+    tipo: registro.tipo,
+    titulo: registro.tipo === "aporte" ? "Aporte de efectivo" : "Retiro de efectivo",
+    detalle: registro.motivo,
+    fecha: registro.registrado_en,
+    importe: (registro.tipo === "aporte" ? 1 : -1) * Number(registro.importe || 0),
+    estado: registro.estado,
+    estadoDisplay: registro.estado_display,
+    anulacion: registro.motivo_anulacion,
+  }));
 
-function Registro({ children, estado, estadoDisplay, fecha, anulacion, accion }) {
-  return <article className={`aura-financial-card ${estado === "anulado" ? "border-l-[#bd7b88] bg-[#fcf8f9]" : ""}`}><div className="flex flex-wrap items-start justify-between gap-4"><div className="min-w-0 flex-1">{children}<p className="mt-2 text-sm text-[#6f5b60]">{fechaHora(fecha)}</p>{estado === "anulado" && <p className="mt-2 text-sm text-[#8b3f4c]">Anulado: {anulacion || "Sin motivo"}</p>}</div><div className="flex shrink-0 flex-col items-end gap-3"><span className={`rounded-full px-2 py-1 text-xs font-semibold ${estadoClass(estado)}`}>{estadoDisplay}</span>{accion}</div></div></article>;
+  return [...cobros, ...gastos, ...movimientos].sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
 }
 
-function SeccionFinanciera({ titulo, registros, vacio, render }) {
-  return <section className="aura-financial-section"><div className="flex items-center justify-between gap-3"><h2 className="text-xl font-semibold">{titulo}</h2><span className="rounded-full bg-[#f4eff0] px-2.5 py-1 text-sm font-semibold text-[#654552]">{registros.length}</span></div><div className="mt-3 grid gap-3">{registros.length ? registros.map(render) : <p className="aura-financial-empty text-sm">{vacio}</p>}</div></section>;
+function etiquetaTipo(tipo) {
+  return ({ cobro: "Cobro", gasto: "Gasto", aporte: "Aporte", retiro: "Retiro" })[tipo] || tipo;
+}
+
+function Movimiento({ item, onAnularGasto, onAnularMovimiento }) {
+  const anulado = item.estado === "anulado";
+  const positivo = item.importe >= 0;
+  const puedeAnular = item.original?.puede_anularse;
+  const anular = item.tipo === "gasto"
+    ? onAnularGasto
+    : ["aporte", "retiro"].includes(item.tipo)
+      ? onAnularMovimiento
+      : null;
+
+  return (
+    <article className={`cash-movement-row cash-movement-${item.tipo} ${anulado ? "is-cancelled" : ""}`}>
+      <time className="cash-movement-time" dateTime={item.fecha}>{fechaHora(item.fecha)}</time>
+      <div className="cash-movement-copy">
+        <div className="cash-movement-heading">
+          <span className="cash-movement-type">{etiquetaTipo(item.tipo)}</span>
+          <span className={`cash-movement-status ${anulado ? "is-cancelled" : "is-active"}`}>{item.estadoDisplay || (anulado ? "Anulado" : "Activo")}</span>
+        </div>
+        <h3>{item.titulo}</h3>
+        {item.detalle ? <p>{item.detalle}</p> : null}
+        {anulado ? <p className="cash-cancel-reason">Anulado: {item.anulacion || "Sin motivo"}</p> : null}
+      </div>
+      <strong className={`cash-movement-amount ${positivo ? "is-positive" : "is-negative"}`}>
+        {positivo ? "+ " : "− "}{dinero(Math.abs(item.importe))}
+      </strong>
+      <div className="cash-movement-actions">
+        {item.tipo === "cobro" ? <Link className="aura-button aura-button-secondary" to={`/cobros/${item.original.id}`}>Ver cobro</Link> : null}
+        {puedeAnular && anular ? (
+          <button className="cash-text-action" type="button" onClick={() => anular(item.original)}>
+            Anular
+          </button>
+        ) : null}
+      </div>
+    </article>
+  );
 }
 
 export default function CajaMovimientos({ caja, onAnularGasto, onAnularMovimiento }) {
-  const cobros = caja?.cobros || [];
-  const gastos = caja?.gastos || [];
-  const movimientos = caja?.movimientos || [];
-  const aportes = movimientos.filter((movimiento) => movimiento.tipo === "aporte");
-  const retiros = movimientos.filter((movimiento) => movimiento.tipo === "retiro");
+  const registros = normalizar(caja);
 
-  return <section className="mt-8 space-y-7" aria-label="Movimientos de caja">
-    <SeccionFinanciera titulo="Cobros" registros={cobros} vacio="Todavía no hay cobros registrados en esta caja." render={(cobro) => <Registro key={cobro.id} estado={cobro.estado} estadoDisplay={cobro.estado_display} fecha={cobro.creado_en} anulacion={cobro.motivo_anulacion}><p className="font-semibold">{cobro.clienta_nombre_historica}</p><p className="mt-1 aura-amount">{dinero(cobro.importe)}</p><p className="mt-1 text-sm text-[#6f5b60]">{cobro.metodo_pago_display}</p><Link className="mt-3 aura-action aura-action-contextual" to={`/cobros/${cobro.id}`}>Ver cobro</Link></Registro>} />
-    <SeccionFinanciera titulo="Gastos" registros={gastos} vacio="Todavía no hay gastos registrados en esta caja." render={(gasto) => <Registro key={gasto.id} estado={gasto.estado} estadoDisplay={gasto.estado_display} fecha={gasto.registrado_en} anulacion={gasto.motivo_anulacion} accion={gasto.puede_anularse && onAnularGasto && <button className="aura-action aura-action-contextual text-[#8b3f4c]" type="button" onClick={() => onAnularGasto(gasto)}>Anular gasto</button>}><p className="font-semibold">{gasto.concepto}</p><p className="mt-1 aura-amount">{dinero(gasto.importe)}</p><p className="mt-1 text-sm text-[#6f5b60]">{gasto.metodo_pago_display}</p></Registro>} />
-    <SeccionFinanciera titulo="Aportes" registros={aportes} vacio="Todavía no hay aportes registrados en esta caja." render={(movimiento) => <Registro key={movimiento.id} estado={movimiento.estado} estadoDisplay={movimiento.estado_display} fecha={movimiento.registrado_en} anulacion={movimiento.motivo_anulacion} accion={movimiento.puede_anularse && onAnularMovimiento && <button className="aura-action aura-action-contextual text-[#8b3f4c]" type="button" onClick={() => onAnularMovimiento(movimiento)}>Anular aporte</button>}><p className="font-semibold">Aporte de efectivo</p><p className="mt-1 aura-amount">{dinero(movimiento.importe)}</p><p className="mt-1 text-sm text-[#6f5b60]">{movimiento.motivo}</p></Registro>} />
-    <SeccionFinanciera titulo="Retiros" registros={retiros} vacio="Todavía no hay retiros registrados en esta caja." render={(movimiento) => <Registro key={movimiento.id} estado={movimiento.estado} estadoDisplay={movimiento.estado_display} fecha={movimiento.registrado_en} anulacion={movimiento.motivo_anulacion} accion={movimiento.puede_anularse && onAnularMovimiento && <button className="aura-action aura-action-contextual text-[#8b3f4c]" type="button" onClick={() => onAnularMovimiento(movimiento)}>Anular retiro</button>}><p className="font-semibold">Retiro de efectivo</p><p className="mt-1 aura-amount">{dinero(movimiento.importe)}</p><p className="mt-1 text-sm text-[#6f5b60]">{movimiento.motivo}</p></Registro>} />
-  </section>;
+  return (
+    <AuraPanel className="cash-movements-panel" aria-label="Movimientos de caja">
+      <AuraPanelHeader
+        title="Movimientos"
+        description="Cobros, gastos, aportes y retiros ordenados desde el más reciente."
+        action={<span className="cash-count-badge">{registros.length} {registros.length === 1 ? "movimiento" : "movimientos"}</span>}
+      />
+      {registros.length ? (
+        <div className="cash-movement-list">
+          {registros.map((item) => (
+            <Movimiento
+              item={item}
+              key={item.id}
+              onAnularGasto={onAnularGasto}
+              onAnularMovimiento={onAnularMovimiento}
+            />
+          ))}
+        </div>
+      ) : (
+        <AuraEmptyState
+          title="Todavía no hay movimientos en esta caja."
+          description="Los cobros y las operaciones de efectivo aparecerán aquí."
+        />
+      )}
+    </AuraPanel>
+  );
 }

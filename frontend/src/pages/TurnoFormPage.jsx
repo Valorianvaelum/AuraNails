@@ -4,9 +4,9 @@ import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom"
 import { listClientas } from "../api/clientas.js";
 import { listServicios } from "../api/servicios.js";
 import { actualizarTurno, crearTurno, obtenerTurno } from "../api/turnos.js";
-import AppHeader from "../components/AppHeader.jsx";
 import FieldError from "../components/FieldError.jsx";
 import FormActions from "../components/FormActions.jsx";
+import { AuraHero, AuraPage, AuraPanel } from "../components/visual";
 import { focusFirstError, normalizeApiError } from "../utils/apiErrors.js";
 
 const dinero = (value) => new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 }).format(value);
@@ -162,18 +162,25 @@ export default function TurnoFormPage() {
   const cancelTo = editando ? `/turnos/${id}` : "/turnos";
 
   return (
-    <main className="min-h-screen text-foreground">
-      <AppHeader />
-      <section className="mx-auto max-w-3xl px-5 py-8">
-        <Link className="text-sm font-semibold text-primary underline underline-offset-4" to={cancelTo}>Volver</Link>
-        <h1 className="mt-4 text-3xl font-semibold">{editando ? "Editar turno" : "Nuevo turno"}</h1>
-        {cargando ? <p className="mt-6 text-muted-foreground">Cargando datos del turno...</p> : !errorCarga && !turnoNoEditable ? (
-          <form className="mt-6 space-y-5 rounded-xl border border-border bg-card p-6 shadow-sm" onSubmit={guardar} noValidate>
-            <label className="grid gap-1">
-              Clienta
+    <AuraPage width="form">
+      <div className="grid gap-5">
+        <AuraHero
+          eyebrow="Agenda"
+          title={editando ? "Editar turno" : "Nuevo turno"}
+          description="Elegí la clienta, el horario y los servicios para dejar el turno listo en un solo paso."
+          back={<Link className="aura-glass-link" to={cancelTo}>Volver a turnos</Link>}
+        />
+
+        {cargando ? (
+          <AuraPanel><p className="aura-form-status">Cargando datos del turno...</p></AuraPanel>
+        ) : !errorCarga && !turnoNoEditable ? (
+          <AuraPanel as="form" className="aura-form-panel" onSubmit={guardar} noValidate>
+            <div className="aura-field">
+              <label className="aura-field-label mb-2 block" htmlFor="turno-clienta">Clienta</label>
               <select
+                id="turno-clienta"
                 ref={refs.clienta_id}
-                className={erroresCampos.clienta_id ? "field-invalid" : ""}
+                className={`aura-control ${erroresCampos.clienta_id ? "field-invalid" : ""}`}
                 aria-invalid={Boolean(erroresCampos.clienta_id)}
                 aria-describedby={erroresCampos.clienta_id ? "turno-clienta-error" : undefined}
                 value={valores.clienta_id}
@@ -187,14 +194,21 @@ export default function TurnoFormPage() {
                 {clientas.map((clienta) => <option value={clienta.id} key={clienta.id}>{clienta.nombre_completo}{clienta.telefono ? ` · ${clienta.telefono}` : ""}{!clienta.activa ? " (inactiva)" : ""}</option>)}
               </select>
               <FieldError id="turno-clienta-error" message={erroresCampos.clienta_id} />
-            </label>
-            {!clientas.length && <p>Primero necesitás agregar una clienta. <Link to="/clientas/nueva">Agregar clienta</Link></p>}
-            <div className="grid gap-3 sm:grid-cols-2">
-              <label className="grid gap-1">
-                Fecha
+            </div>
+
+            {!clientas.length && (
+              <div className="aura-inset">
+                <p>Primero necesitás agregar una clienta. <Link className="aura-glass-link" to="/clientas/nueva">Agregar clienta</Link></p>
+              </div>
+            )}
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="aura-field">
+                <label className="aura-field-label mb-2 block" htmlFor="turno-fecha">Fecha</label>
                 <input
+                  id="turno-fecha"
                   ref={refs.inicio}
-                  className={erroresCampos.inicio ? "field-invalid" : ""}
+                  className={`aura-control ${erroresCampos.inicio ? "field-invalid" : ""}`}
                   aria-invalid={Boolean(erroresCampos.inicio)}
                   aria-describedby={erroresCampos.inicio ? "turno-inicio-error" : undefined}
                   type="date"
@@ -209,11 +223,12 @@ export default function TurnoFormPage() {
                     setErroresCampos((actual) => ({ ...actual, inicio: undefined }));
                   }}
                 />
-              </label>
-              <label className="grid gap-1">
-                Hora
+              </div>
+              <div className="aura-field">
+                <label className="aura-field-label mb-2 block" htmlFor="turno-hora">Hora</label>
                 <input
-                  className={erroresCampos.inicio ? "field-invalid" : ""}
+                  id="turno-hora"
+                  className={`aura-control ${erroresCampos.inicio ? "field-invalid" : ""}`}
                   aria-invalid={Boolean(erroresCampos.inicio)}
                   aria-describedby={erroresCampos.inicio ? "turno-inicio-error" : undefined}
                   type="time"
@@ -228,39 +243,49 @@ export default function TurnoFormPage() {
                     setErroresCampos((actual) => ({ ...actual, inicio: undefined }));
                   }}
                 />
-              </label>
+              </div>
             </div>
             <FieldError id="turno-inicio-error" message={erroresCampos.inicio} />
+
             <fieldset
               ref={refs.servicios_ids}
               tabIndex="-1"
-              className={erroresCampos.servicios_ids ? "field-invalid" : ""}
+              className={`aura-inset ${erroresCampos.servicios_ids ? "field-invalid" : ""}`}
               aria-invalid={Boolean(erroresCampos.servicios_ids)}
               aria-describedby={erroresCampos.servicios_ids ? "turno-servicios-error" : undefined}
               disabled={guardando}
             >
-              <legend>Servicios</legend>
+              <legend className="px-1">Servicios</legend>
               {!servicios.length && <p className="mt-2">No hay servicios disponibles para este turno.</p>}
-              {servicios.map((servicio) => (
-                <label className="mt-2 flex gap-3 rounded-lg border border-border bg-secondary p-3" key={servicio.id}>
-                  <input type="checkbox" checked={valores.servicios_ids.includes(servicio.id)} onChange={() => cambiarServicio(servicio.id)} />
-                  <span>{servicio.nombre} · {servicio.duracion_legible} · {dinero(servicio.precio)} {!servicio.activo ? "(pausado)" : ""}</span>
-                </label>
-              ))}
+              <div className="mt-3 grid gap-2">
+                {servicios.map((servicio) => (
+                  <label className="aura-choice" key={servicio.id}>
+                    <input type="checkbox" checked={valores.servicios_ids.includes(servicio.id)} onChange={() => cambiarServicio(servicio.id)} />
+                    <span>{servicio.nombre} · {servicio.duracion_legible} · {dinero(servicio.precio)} {!servicio.activo ? "(pausado)" : ""}</span>
+                  </label>
+                ))}
+              </div>
             </fieldset>
             <FieldError id="turno-servicios-error" message={erroresCampos.servicios_ids} />
-            <div className="rounded-lg border border-border bg-secondary p-4">Duración estimada: {minutos} min<br />Precio estimado: {dinero(precio)}</div>
-            <label className="grid gap-1">
-              Notas
-              <textarea value={valores.notas} disabled={guardando} onChange={(event) => setValores({ ...valores, notas: event.target.value })} />
-            </label>
-            {error && <p className="text-destructive" role="alert">{error}</p>}
+
+            <div className="aura-inset aura-turn-summary">
+              <div><span>Duración estimada</span><strong>{minutos} min</strong></div>
+              <div><span>Precio estimado</span><strong>{dinero(precio)}</strong></div>
+            </div>
+
+            <div className="aura-field">
+              <label className="aura-field-label mb-2 block" htmlFor="turno-notas">Notas</label>
+              <textarea id="turno-notas" className="aura-control" value={valores.notas} disabled={guardando} onChange={(event) => setValores({ ...valores, notas: event.target.value })} />
+            </div>
+
+            {error && <p className="rounded-lg border border-destructive bg-[var(--color-danger-soft)] px-4 py-3 text-destructive" role="alert">{error}</p>}
             <FormActions cancelTo={cancelTo} isDirty={isDirty} isSubmitting={guardando} submitLabel={editando ? "Guardar cambios" : "Guardar turno"} />
-          </form>
+          </AuraPanel>
         ) : null}
-        {!cargando && errorCarga && <p className="mt-4 text-destructive">{errorCarga}</p>}
-        {!cargando && !errorCarga && turnoNoEditable && <p className="mt-4">Este turno ya no puede editarse.</p>}
-      </section>
-    </main>
+
+        {!cargando && errorCarga && <AuraPanel><p className="text-destructive">{errorCarga}</p></AuraPanel>}
+        {!cargando && !errorCarga && turnoNoEditable && <AuraPanel><p>Este turno ya no puede editarse.</p></AuraPanel>}
+      </div>
+    </AuraPage>
   );
 }

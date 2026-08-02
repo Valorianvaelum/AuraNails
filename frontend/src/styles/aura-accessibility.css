@@ -1,0 +1,139 @@
+/* Bloque 10 — accesibilidad, navegación por teclado y cierre de calidad. */
+
+.aura-sr-only,
+.aura-route-announcer {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+.aura-skip-link {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 120;
+  transform: translateY(calc(-100% - 1.5rem));
+  border: 1px solid rgba(255, 255, 255, 0.38);
+  border-radius: 0.8rem;
+  background: linear-gradient(145deg, rgba(70, 34, 82, 0.98), rgba(24, 20, 54, 0.98));
+  color: #fffaff;
+  padding: 0.72rem 1rem;
+  box-shadow: 0 16px 42px rgba(6, 2, 15, 0.42);
+  font-size: 0.9rem;
+  font-weight: 760;
+  text-decoration: none;
+  transition: transform 150ms ease;
+}
+
+.aura-skip-link:focus-visible {
+  transform: translateY(0);
+  outline: 3px solid rgba(250, 210, 239, 0.95);
+  outline-offset: 3px;
+}
+
+#aura-main-content:focus {
+  outline: none;
+}
+
+:where(
+  a,
+  button,
+  [role="button"],
+  [tabindex]:not([tabindex="-1"])
+):focus-visible {
+  outline: 2px solid rgba(247, 207, 238, 0.92);
+  outline-offset: 3px;
+}
+
+:where(button, [role="button"], a)[aria-disabled="true"] {
+  cursor: not-allowed;
+}
+
+[aria-busy="true"] {
+  cursor: progress;
+}
+
+.cash-dialog-close,
+.aura-notification-close {
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+}
+
+.confirm-dialog,
+.cash-dialog {
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+
+.confirm-dialog[aria-busy="true"],
+.cash-dialog[aria-busy="true"] {
+  pointer-events: none;
+}
+
+@media (prefers-contrast: more) {
+  :root {
+    --aura-text-on-glass-muted: rgba(255, 250, 255, 0.86);
+    --aura-link-on-glass: #ffe0f5;
+  }
+
+  .aura-glass,
+  .aura-panel,
+  .aura-record-card,
+  .aura-content-card,
+  .aura-light-card,
+  .confirm-dialog,
+  .cash-dialog,
+  .aura-notification {
+    border-color: rgba(255, 255, 255, 0.48) !important;
+  }
+
+  .aura-control,
+  .aura-login-control,
+  .aura-login-password {
+    border-color: rgba(255, 255, 255, 0.52) !important;
+  }
+}
+
+@media (forced-colors: active) {
+  .aura-skip-link,
+  .aura-button,
+  .aura-header-action,
+  .aura-nav-link,
+  .aura-mobile-nav-link,
+  .aura-control,
+  .aura-login-control,
+  .aura-login-password,
+  .aura-record-card,
+  .confirm-dialog,
+  .cash-dialog,
+  .aura-notification {
+    forced-color-adjust: auto;
+    border: 1px solid CanvasText !important;
+    background: Canvas !important;
+    color: CanvasText !important;
+    box-shadow: none !important;
+  }
+
+  :where(a, button, input, select, textarea, [tabindex]):focus-visible {
+    outline: 3px solid Highlight !important;
+    outline-offset: 3px !important;
+  }
+
+  .field-error,
+  .aura-login-error,
+  [role="alert"] {
+    color: LinkText !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aura-skip-link {
+    transition: none;
+  }
+}

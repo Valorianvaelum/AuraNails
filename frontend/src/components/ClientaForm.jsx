@@ -103,13 +103,13 @@ function ClientaForm({ cancelTo, clienta, onSubmit, submitLabel }) {
   ];
 
   return (
-    <form className="space-y-6" onSubmit={handleSubmit} noValidate>
+    <form className="aura-form-panel" onSubmit={handleSubmit} noValidate>
       <div className="grid gap-5 sm:grid-cols-2">
         {fields.map(([name, label, type, required]) => (
-          <div key={name} className={name === "email" || name === "fecha_nacimiento" ? "sm:col-span-2" : ""}>
-            <label className="mb-2 block text-sm font-medium text-foreground" htmlFor={name}>{label}{required ? " *" : ""}</label>
+          <div key={name} className={`aura-field ${name === "email" || name === "fecha_nacimiento" ? "sm:col-span-2" : ""}`}>
+            <label className="aura-field-label mb-2 block" htmlFor={name}>{label}{required ? " *" : ""}</label>
             <input
-              className={firstError(fieldErrors, name) ? "field-invalid" : ""}
+              className={`aura-control ${firstError(fieldErrors, name) ? "field-invalid" : ""}`}
               aria-invalid={Boolean(firstError(fieldErrors, name))}
               aria-describedby={firstError(fieldErrors, name) ? `${name}-error` : undefined}
               id={name}
@@ -123,14 +123,14 @@ function ClientaForm({ cancelTo, clienta, onSubmit, submitLabel }) {
               maxLength={name === "telefono" ? 30 : undefined}
               ref={refs[name]}
             />
-            {name === "telefono" && <p className="mt-1 text-xs text-muted-foreground">Podés usar +, espacios, guiones y paréntesis. Debe contener entre 7 y 15 dígitos.</p>}
+            {name === "telefono" && <p className="aura-field-help mt-1 text-xs">Podés usar +, espacios, guiones y paréntesis. Debe contener entre 7 y 15 dígitos.</p>}
             <FieldError id={`${name}-error`} message={firstError(fieldErrors, name)} />
           </div>
         ))}
       </div>
       <div>
-        <label className="mb-2 block text-sm font-medium text-foreground" htmlFor="notas">Notas</label>
-        <textarea id="notas" name="notas" value={values.notas || ""} onChange={handleChange} disabled={isSubmitting} />
+        <label className="aura-field-label mb-2 block" htmlFor="notas">Notas</label>
+        <textarea className="aura-control" id="notas" name="notas" value={values.notas || ""} onChange={handleChange} disabled={isSubmitting} />
         {firstError(fieldErrors, "notas") && <p className="mt-2 text-sm text-destructive">{firstError(fieldErrors, "notas")}</p>}
       </div>
       {formError && <p className="rounded-lg border border-destructive bg-[var(--color-danger-soft)] px-4 py-3 text-sm text-destructive" role="alert">{formError}</p>}
