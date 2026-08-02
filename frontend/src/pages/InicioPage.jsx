@@ -18,9 +18,9 @@ const actionClassName = cn(
   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
 );
 
-const primaryActionClassName = cn(actionClassName, "border-primary bg-primary text-primary-foreground hover:bg-[var(--color-brand-hover)]");
-const secondaryActionClassName = cn(actionClassName, "border-border bg-card text-foreground hover:border-[var(--color-border-strong)] hover:bg-secondary");
-const linkActionClassName = "inline-flex items-center text-sm font-semibold text-primary underline-offset-4 hover:underline";
+const primaryActionClassName = cn(actionClassName, "aura-home-action-primary border-primary bg-primary text-primary-foreground hover:bg-[var(--color-brand-hover)]");
+const secondaryActionClassName = cn(actionClassName, "aura-home-action-secondary border-border bg-card text-foreground hover:border-[var(--color-border-strong)] hover:bg-secondary");
+const linkActionClassName = "aura-home-link inline-flex items-center text-sm font-semibold underline-offset-4 hover:underline";
 
 const statusVariant = {
   confirmado: "success",
@@ -30,7 +30,7 @@ const statusVariant = {
 
 function MetricCard({ title, value, description, actionLabel, to, loading = false, badge }) {
   return (
-    <Card className="h-full">
+    <Card className="aura-home-metric h-full">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between gap-3">
           <CardDescription>{title}</CardDescription>
@@ -71,7 +71,7 @@ function InicioPage() {
       <AppHeader />
       <section className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
         <div className="space-y-8">
-          <header className="flex flex-col gap-5 border-b border-border pb-7 md:flex-row md:items-end md:justify-between">
+          <header className="aura-home-hero flex flex-col gap-5 border-b border-border pb-7 md:flex-row md:items-end md:justify-between">
             <div>
               <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary">Resumen diario</p>
               <h1 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">{nombre ? `Hola, ${nombre}` : "Hola"}</h1>
@@ -89,8 +89,8 @@ function InicioPage() {
             </div>
           )}
 
-          <section aria-labelledby="estado-hoy">
-            <div className="mb-4 flex items-center justify-between gap-3">
+          <section className="aura-home-section" aria-labelledby="estado-hoy">
+            <div className="aura-home-section-head mb-4 flex items-center justify-between gap-3">
               <div>
                 <h2 className="text-xl font-semibold" id="estado-hoy">Estado de hoy</h2>
                 <p className="mt-1 text-sm text-muted-foreground">Información operativa principal del estudio.</p>
@@ -127,10 +127,10 @@ function InicioPage() {
             </div>
           </section>
 
-          <Separator />
+          <Separator className="aura-home-separator" />
 
-          <section aria-labelledby="proximos-turnos">
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+          <section className="aura-home-section" aria-labelledby="proximos-turnos">
+            <div className="aura-home-section-head flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
               <div>
                 <h2 className="text-xl font-semibold" id="proximos-turnos">Próximos turnos</h2>
                 <p className="mt-1 text-sm text-muted-foreground">Los siguientes compromisos abiertos de hoy.</p>
@@ -146,7 +146,7 @@ function InicioPage() {
               <div className="mt-4 grid gap-3">
                 {proximosTurnos.slice(0, 3).map((turno) => (
                   <Link
-                    className="flex flex-col gap-3 rounded-lg border border-border bg-card p-4 transition-colors hover:border-[var(--color-border-strong)] hover:bg-secondary sm:flex-row sm:items-center sm:justify-between"
+                    className="aura-home-upcoming flex flex-col gap-3 rounded-lg border border-border bg-card p-4 transition-colors hover:border-[var(--color-border-strong)] hover:bg-secondary sm:flex-row sm:items-center sm:justify-between"
                     key={turno.id}
                     to={`/turnos/${turno.id}`}
                   >
@@ -159,7 +159,7 @@ function InicioPage() {
                 ))}
               </div>
             ) : (
-              <Card className="mt-4 border-dashed bg-secondary shadow-none">
+              <Card className="aura-home-empty mt-4 border-dashed shadow-none">
                 <CardContent className="py-8 text-center">
                   <p className="font-medium">No tenés próximos turnos para hoy.</p>
                   <p className="mt-1 text-sm text-muted-foreground">Podés crear uno nuevo desde el acceso principal.</p>
@@ -168,9 +168,9 @@ function InicioPage() {
             )}
           </section>
 
-          <Separator />
+          <Separator className="aura-home-separator" />
 
-          <section aria-labelledby="accesos-rapidos">
+          <section className="aura-home-section" aria-labelledby="accesos-rapidos">
             <h2 className="text-xl font-semibold" id="accesos-rapidos">Accesos rápidos</h2>
             <div className="mt-4 flex flex-wrap gap-3">
               <Link className={secondaryActionClassName} to="/agenda">Agenda</Link>
