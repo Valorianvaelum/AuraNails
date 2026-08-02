@@ -1,0 +1,198 @@
+:root {
+  --aura-on-galaxy: #fff9ff;
+  --aura-on-galaxy-muted: rgba(248, 239, 251, 0.82);
+  --aura-on-galaxy-link: #f1cce7;
+  --aura-panel: rgba(255, 253, 255, 0.9);
+  --aura-panel-soft: rgba(250, 245, 252, 0.78);
+  --aura-panel-border: rgba(255, 255, 255, 0.58);
+  --aura-panel-shadow: 0 20px 56px rgba(25, 12, 44, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.74);
+  --aura-panel-ink: #392d33;
+  --aura-panel-muted: #6e5d63;
+}
+
+.aura-module {
+  min-height: 100vh;
+}
+
+/* Encabezados de página: claros sobre galaxia, sin contaminar paneles internos. */
+.aura-module main > section > h1,
+.aura-module main > section > h2,
+.aura-module main > section > p,
+.aura-module main > section > a:not(.ui-button):not(.aura-action),
+.aura-module main > section > .ui-page-head h1,
+.aura-module main > section > .ui-page-head h2,
+.aura-module main > section > .ui-page-head p,
+.aura-module main > section > .ui-page-head a:not(.ui-button):not(.aura-action) {
+  text-shadow: 0 2px 18px rgba(17, 8, 30, 0.42);
+}
+
+.aura-module main > section > h1,
+.aura-module main > section > h2,
+.aura-module main > section > .ui-page-head h1,
+.aura-module main > section > .ui-page-head h2 {
+  color: var(--aura-on-galaxy) !important;
+}
+
+.aura-module main > section > p,
+.aura-module main > section > .ui-page-head p {
+  color: var(--aura-on-galaxy-muted) !important;
+}
+
+.aura-module main > section > a:not(.ui-button):not(.aura-action),
+.aura-module main > section > .ui-page-head a:not(.ui-button):not(.aura-action) {
+  color: var(--aura-on-galaxy-link) !important;
+}
+
+/* Toda superficie operativa conserva tinta oscura y lectura estable. */
+.aura-module :is(.ui-surface, .ui-section, .ui-card, .ui-card-muted, .aura-financial-card, .aura-financial-summary, .confirm-dialog, article.bg-white, form.bg-white, section.bg-white, div.bg-white.rounded-2xl, div.bg-white.rounded-3xl, [class*="bg-card"]) {
+  color: var(--aura-panel-ink);
+}
+
+.aura-module :is(.ui-surface, .ui-section, .ui-card, .ui-card-muted, .aura-financial-card, .aura-financial-summary, .confirm-dialog, article.bg-white, form.bg-white, section.bg-white, div.bg-white.rounded-2xl, div.bg-white.rounded-3xl, [class*="bg-card"]) :is(h1, h2, h3, h4, p, label, span, strong) {
+  text-shadow: none;
+}
+
+.aura-module :is(.ui-surface, .ui-section, .ui-card, .ui-card-muted, .aura-financial-card, .aura-financial-summary, .confirm-dialog, article.bg-white, form.bg-white, section.bg-white, div.bg-white.rounded-2xl, div.bg-white.rounded-3xl, [class*="bg-card"]) :is(h1, h2, h3, h4, .text-foreground) {
+  color: var(--aura-panel-ink) !important;
+}
+
+.aura-module :is(.ui-surface, .ui-section, .ui-card, .ui-card-muted, .aura-financial-card, .aura-financial-summary, .confirm-dialog, article.bg-white, form.bg-white, section.bg-white, div.bg-white.rounded-2xl, div.bg-white.rounded-3xl, [class*="bg-card"]) :is(.text-muted-foreground, p) {
+  color: var(--aura-panel-muted);
+}
+
+.aura-module :is(.ui-surface, .ui-section, .ui-card, .ui-card-muted, .aura-financial-card, .aura-financial-summary, .confirm-dialog, article.bg-white, form.bg-white, section.bg-white, div.bg-white.rounded-2xl, div.bg-white.rounded-3xl, [class*="bg-card"]) a:not(.ui-button):not(.aura-action) {
+  color: var(--color-brand) !important;
+}
+
+/* Inicio: hero sutil y métricas coherentes. */
+.aura-module-inicio main > section > .space-y-8 > header {
+  border: 1px solid rgba(255, 255, 255, 0.26) !important;
+  border-radius: 1.25rem;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.04)) !important;
+  padding: 1.5rem;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.13), 0 18px 44px rgba(20, 10, 38, 0.12);
+  -webkit-backdrop-filter: blur(12px) saturate(118%);
+  backdrop-filter: blur(12px) saturate(118%);
+}
+
+.aura-module-inicio main > section > .space-y-8 > header :is(h1, p) {
+  color: var(--aura-on-galaxy) !important;
+}
+
+.aura-module-inicio main > section > .space-y-8 > header p.text-muted-foreground {
+  color: var(--aura-on-galaxy-muted) !important;
+}
+
+.aura-module-inicio main > section > .space-y-8 > section > div:first-child :is(h2, p) {
+  color: var(--aura-on-galaxy) !important;
+}
+
+.aura-module-inicio main > section > .space-y-8 > section > div:first-child p {
+  color: var(--aura-on-galaxy-muted) !important;
+}
+
+.aura-module-inicio main > section > .space-y-8 > section > div:first-child a {
+  color: var(--aura-on-galaxy-link) !important;
+}
+
+.aura-module-inicio .grid > .ui-card,
+.aura-module-inicio .grid > [class*="bg-card"] {
+  background: var(--aura-panel) !important;
+  border-color: var(--aura-panel-border) !important;
+  box-shadow: var(--aura-panel-shadow) !important;
+}
+
+.aura-module-inicio .grid > .ui-card a,
+.aura-module-inicio .grid > [class*="bg-card"] a {
+  color: var(--color-brand) !important;
+}
+
+.aura-module-inicio .border-dashed {
+  background: rgba(249, 244, 251, 0.82) !important;
+  color: var(--aura-panel-ink) !important;
+  border-color: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* Agenda y Turnos: controles compactos, paneles claros y acciones legibles. */
+.aura-module-agenda main > section > div:first-child :is(h1, p),
+.aura-module-turnos main > section > div:first-child :is(h1, p) {
+  color: var(--aura-on-galaxy) !important;
+}
+
+.aura-module-agenda main > section > div:first-child p,
+.aura-module-turnos main > section > div:first-child p {
+  color: var(--aura-on-galaxy-muted) !important;
+}
+
+.aura-module-agenda main > section > div:first-child a,
+.aura-module-turnos main > section > div:first-child a {
+  color: var(--aura-on-galaxy-link) !important;
+}
+
+.aura-module-agenda :is(section.bg-white, .ui-surface, .ui-section),
+.aura-module-turnos :is(section.bg-white, .ui-surface, .ui-section) {
+  background: var(--aura-panel) !important;
+  border-color: var(--aura-panel-border) !important;
+  box-shadow: var(--aura-panel-shadow) !important;
+}
+
+/* Formularios y detalles: panel estable, encabezado exterior claro. */
+.aura-module-clientas main > section > h1,
+.aura-module-servicios main > section > h1,
+.aura-module-turnos main > section > h1,
+.aura-module-cobros main > section > h1,
+.aura-module-caja main > section > h1 {
+  color: var(--aura-on-galaxy) !important;
+}
+
+.aura-module-clientas main > section > p,
+.aura-module-servicios main > section > p,
+.aura-module-turnos main > section > p,
+.aura-module-cobros main > section > p,
+.aura-module-caja main > section > p {
+  color: var(--aura-on-galaxy-muted) !important;
+}
+
+.aura-module-clientas main > section > div[class*="bg-card"],
+.aura-module-servicios main > section > div[class*="bg-card"],
+.aura-module-turnos main > section > div[class*="bg-card"],
+.aura-module-cobros main > section > div[class*="bg-card"],
+.aura-module-caja main > section > div[class*="bg-card"] {
+  background: var(--aura-panel) !important;
+  border-color: var(--aura-panel-border) !important;
+  box-shadow: var(--aura-panel-shadow) !important;
+}
+
+/* Login: una sola tarjeta, sin panel fantasma. */
+.aura-module-login main > div:first-child,
+.aura-module-login main > section:first-child {
+  background: transparent !important;
+  box-shadow: none !important;
+  border-color: transparent !important;
+}
+
+.aura-module-login form,
+.aura-module-login [class*="rounded-3xl"],
+.aura-module-login [class*="rounded-2xl"] {
+  color: var(--aura-panel-ink);
+}
+
+/* Acciones secundarias: texto oscuro consistente. */
+.aura-module .ui-button-secondary,
+.aura-module .aura-action-secondary,
+.aura-module a[class*="bg-card"],
+.aura-module button[class*="bg-card"] {
+  color: #523b46 !important;
+}
+
+/* Mobile: menor transparencia, misma jerarquía. */
+@media (max-width: 767px) {
+  .aura-module-inicio main > section > .space-y-8 > header {
+    padding: 1.25rem;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.13), rgba(255, 255, 255, 0.055)) !important;
+  }
+
+  .aura-module :is(.ui-surface, .ui-section, .ui-card, .ui-card-muted, article.bg-white, form.bg-white, section.bg-white, div.bg-white.rounded-2xl, div.bg-white.rounded-3xl, [class*="bg-card"]) {
+    background: rgba(255, 253, 255, 0.93) !important;
+  }
+}
