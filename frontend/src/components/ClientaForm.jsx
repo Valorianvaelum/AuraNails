@@ -1,6 +1,9 @@
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
+
 import FieldError from "./FieldError.jsx";
+import FormActions from "./FormActions.jsx";
 import { focusFirstError, normalizeApiError } from "../utils/apiErrors.js";
+import { requiredText, validEmail, validPhone } from "../utils/validators.js";
 
 const initialValues = {
   nombre: "",
@@ -18,27 +21,35 @@ function firstError(errors, field) {
   return Array.isArray(value) ? value[0] : value;
 }
 
-function validarTelefono(telefono) {
-  const valor = telefono.trim();
-  if (!valor) return "";
-  if (!/^\+?[\d\s()-]+$/.test(valor)) {
-    return "El teléfono solo puede contener números, espacios, guiones, paréntesis y un + inicial.";
-  }
-  const digitos = valor.replace(/\D/g, "").length;
-  return digitos < 7 || digitos > 15 ? "El teléfono debe contener entre 7 y 15 dígitos." : "";
+function normalizeValues(values) {
+  return {
+    ...values,
+    nombre: String(values.nombre ?? "").trim(),
+    apellido: String(values.apellido ?? "").trim(),
+    telefono: String(values.telefono ?? "").trim(),
+    email: String(values.email ?? "").trim(),
+    color_favorito: String(values.color_favorito ?? "").trim(),
+    estilo_favorito: String(values.estilo_favorito ?? "").trim(),
+    notas: String(values.notas ?? "").trim(),
+    fecha_nacimiento: values.fecha_nacimiento || "",
+  };
 }
 
-function validarEmail(email) {
-  const valor = email.trim();
-  return valor && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(valor) ? "Ingresá un correo válido." : "";
+function validateField(name, value) {
+  if (name === "nombre") return requiredText(value, "El nombre");
+  if (name === "telefono") return validPhone(value);
+  if (name === "email") return validEmail(value);
+  return "";
 }
 
-function ClientaForm({ clienta, onSubmit, submitLabel }) {
+function ClientaForm({ cancelTo, clienta, onSubmit, submitLabel }) {
+  const baseline = useMemo(() => normalizeValues({ ...initialValues, ...clienta }), [clienta]);
   const [values, setValues] = useState({ ...initialValues, ...clienta });
   const [fieldErrors, setFieldErrors] = useState({});
   const [formError, setFormError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const refs = { nombre: useRef(null), telefono: useRef(null), email: useRef(null) };
+  const isDirty = JSON.stringify(normalizeValues(values)) !== JSON.stringify(baseline);
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -46,27 +57,36 @@ function ClientaForm({ clienta, onSubmit, submitLabel }) {
     setFieldErrors((current) => ({ ...current, [name]: undefined }));
   }
 
+  function handleBlur(event) {
+    const { name, value } = event.target;
+    const message = validateField(name, value);
+    setFieldErrors((current) => ({ ...current, [name]: message || undefined }));
+  }
+
   async function handleSubmit(event) {
     event.preventDefault();
     setFormError("");
-    setFieldErrors({});
 
-    if (!values.nombre.trim()) {
-      const errors = { nombre: "Ingresá el nombre de la clienta." }; setFieldErrors(errors); focusFirstError(refs, errors);
-      return;
-    }
-    const errorTelefono = validarTelefono(values.telefono);
-    const errorEmail = validarEmail(values.email);
-    if (errorTelefono || errorEmail) {
-      const errors = { telefono: errorTelefono || undefined, email: errorEmail || undefined }; setFieldErrors(errors); focusFirstError(refs, errors);
+    const errors = {
+      nombre: validateField("nombre", values.nombre) || undefined,
+      telefono: validateField("telefono", values.telefono) || undefined,
+      email: validateField("email", values.email) || undefined,
+    };
+    setFieldErrors(errors);
+    if (Object.values(errors).some(Boolean)) {
+      focusFirstError(refs, errors);
       return;
     }
 
     setIsSubmitting(true);
     try {
-      await onSubmit({ ...values, telefono: values.telefono.trim(), email: values.email.trim(), fecha_nacimiento: values.fecha_nacimiento || null });
+      const normalized = normalizeValues(values);
+      await onSubmit({ ...normalized, fecha_nacimiento: normalized.fecha_nacimiento || null });
     } catch (error) {
-      const parsed = normalizeApiError(error, "No pudimos guardar a la clienta. Intentá nuevamente."); setFieldErrors(parsed.fields); setFormError(parsed.formError); focusFirstError(refs, parsed.fields);
+      const parsed = normalizeApiError(error, "No pudimos guardar a la clienta. Intentá nuevamente.");
+      setFieldErrors(parsed.fields);
+      setFormError(parsed.formError);
+      focusFirstError(refs, parsed.fields);
     } finally {
       setIsSubmitting(false);
     }
@@ -87,48 +107,34 @@ function ClientaForm({ clienta, onSubmit, submitLabel }) {
       <div className="grid gap-5 sm:grid-cols-2">
         {fields.map(([name, label, type, required]) => (
           <div key={name} className={name === "email" || name === "fecha_nacimiento" ? "sm:col-span-2" : ""}>
-            <label className="mb-2 block text-sm font-medium text-[#3d2f32]" htmlFor={name}>
-              {label}{required ? " *" : ""}
-            </label>
+            <label className="mb-2 block text-sm font-medium text-foreground" htmlFor={name}>{label}{required ? " *" : ""}</label>
             <input
-              className={`w-full rounded-xl border border-[#dcbfc5] bg-white px-4 py-3 text-[#2f2528] outline-none transition focus:border-[#b76e79] focus:ring-4 focus:ring-[#f4dce0] ${firstError(fieldErrors, name) ? "field-invalid" : ""}`}
+              className={firstError(fieldErrors, name) ? "field-invalid" : ""}
               aria-invalid={Boolean(firstError(fieldErrors, name))}
               aria-describedby={firstError(fieldErrors, name) ? `${name}-error` : undefined}
               id={name}
               name={name}
               type={type}
               value={values[name] || ""}
+              onBlur={handleBlur}
               onChange={handleChange}
               disabled={isSubmitting}
               required={required}
               maxLength={name === "telefono" ? 30 : undefined}
               ref={refs[name]}
             />
-            {name === "telefono" && <p className="mt-1 text-xs text-[#6f5b60]">Podés usar +, espacios, guiones y paréntesis. Debe contener entre 7 y 15 dígitos.</p>}
+            {name === "telefono" && <p className="mt-1 text-xs text-muted-foreground">Podés usar +, espacios, guiones y paréntesis. Debe contener entre 7 y 15 dígitos.</p>}
             <FieldError id={`${name}-error`} message={firstError(fieldErrors, name)} />
           </div>
         ))}
       </div>
       <div>
-        <label className="mb-2 block text-sm font-medium text-[#3d2f32]" htmlFor="notas">Notas</label>
-        <textarea
-          className="min-h-32 w-full rounded-xl border border-[#dcbfc5] bg-white px-4 py-3 text-[#2f2528] outline-none transition focus:border-[#b76e79] focus:ring-4 focus:ring-[#f4dce0]"
-          id="notas"
-          name="notas"
-          value={values.notas || ""}
-          onChange={handleChange}
-          disabled={isSubmitting}
-        />
-        {firstError(fieldErrors, "notas") && <p className="mt-2 text-sm text-[#8b3f4c]">{firstError(fieldErrors, "notas")}</p>}
+        <label className="mb-2 block text-sm font-medium text-foreground" htmlFor="notas">Notas</label>
+        <textarea id="notas" name="notas" value={values.notas || ""} onChange={handleChange} disabled={isSubmitting} />
+        {firstError(fieldErrors, "notas") && <p className="mt-2 text-sm text-destructive">{firstError(fieldErrors, "notas")}</p>}
       </div>
-      {formError && <p className="rounded-xl bg-[#fff0f1] px-4 py-3 text-sm text-[#8b3f4c]" role="alert">{formError}</p>}
-      <button
-        className="rounded-xl bg-[#b76e79] px-5 py-3 font-semibold text-white transition hover:bg-[#9e5e68] focus:outline-none focus:ring-4 focus:ring-[#e8c8ce] disabled:cursor-not-allowed disabled:opacity-70"
-        type="submit"
-        disabled={isSubmitting}
-      >
-        {isSubmitting ? "Guardando..." : submitLabel}
-      </button>
+      {formError && <p className="rounded-lg border border-destructive bg-[var(--color-danger-soft)] px-4 py-3 text-sm text-destructive" role="alert">{formError}</p>}
+      <FormActions cancelTo={cancelTo} isDirty={isDirty} isSubmitting={isSubmitting} submitLabel={submitLabel} />
     </form>
   );
 }

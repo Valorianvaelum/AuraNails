@@ -44,11 +44,35 @@ function mensajeError(error) {
 
 function TarjetaTurno({ turno, resumida = false }) {
   const abierto = ["pendiente", "confirmado", "reprogramado"].includes(turno.estado);
-  return <article className="ui-card">
-    <div className="flex flex-wrap items-start justify-between gap-2"><div><p className="font-semibold">{hora(turno.inicio)} – {hora(turno.fin)}</p><h3 className="mt-1 text-lg font-semibold">{turno.clienta.nombre_completo}</h3></div><span className={CLASES_ESTADO[turno.estado]}>{turno.estado_display}</span></div>
-    {!resumida && <><p className="mt-3 text-sm text-[#6f5b60]">{turno.servicios.map((servicio) => servicio.nombre).join(", ")}</p><p className="mt-2 text-sm">{turno.duracion_legible} · {dinero(turno.precio_estimado)}</p>{turno.estado === "realizado" && <p className={`mt-2 text-sm font-semibold ${turno.cobro_activo ? "text-[#356640]" : "text-[#76552e]"}`}>{turno.cobro_activo ? "Cobrado" : turno.puede_registrar_cobro ? "Pendiente de cobro" : "Estado de cobro no disponible"}</p>}</>}
-    <div className="mt-4 flex flex-wrap gap-2"><Link className="ui-button ui-button-secondary ui-button-compact" to={`/turnos/${turno.id}`}>Ver detalle</Link>{abierto && <Link className="ui-button ui-button-secondary ui-button-compact" to={`/turnos/${turno.id}/editar`}>Editar</Link>}{abierto && <Link className="ui-button ui-button-secondary ui-button-compact" to={`/turnos/${turno.id}/reprogramar`}>Reprogramar</Link>}</div>
-  </article>;
+  return (
+    <article className="ui-card">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <p className="text-sm font-semibold uppercase tracking-[0.08em] text-primary">{hora(turno.inicio)} – {hora(turno.fin)}</p>
+          <h3 className="mt-1 text-lg font-semibold text-foreground">{turno.clienta.nombre_completo}</h3>
+        </div>
+        <span className={CLASES_ESTADO[turno.estado]}>{turno.estado_display}</span>
+      </div>
+
+      {!resumida && (
+        <div className="mt-4 rounded-lg border border-border bg-secondary p-3">
+          <p className="text-sm text-muted-foreground">{turno.servicios.map((servicio) => servicio.nombre).join(", ")}</p>
+          <p className="mt-2 text-sm font-medium text-foreground">{turno.duracion_legible} · {dinero(turno.precio_estimado)}</p>
+          {turno.estado === "realizado" && (
+            <p className={`mt-2 text-sm font-semibold ${turno.cobro_activo ? "text-[#356640]" : "text-[#76552e]"}`}>
+              {turno.cobro_activo ? "Cobrado" : turno.puede_registrar_cobro ? "Pendiente de cobro" : "Estado de cobro no disponible"}
+            </p>
+          )}
+        </div>
+      )}
+
+      <div className="mt-4 flex flex-wrap items-center gap-2">
+        <Link className="ui-button ui-button-primary min-h-11" to={`/turnos/${turno.id}`}>Ver turno</Link>
+        {abierto && !resumida && <Link className="ui-button ui-button-secondary min-h-11" to={`/turnos/${turno.id}/editar`}>Editar datos</Link>}
+        {abierto && <Link className="ui-button ui-button-secondary min-h-11" to={`/turnos/${turno.id}/reprogramar`}>Reprogramar</Link>}
+      </div>
+    </article>
+  );
 }
 
 export default function AgendaPage() {
@@ -89,10 +113,61 @@ export default function AgendaPage() {
   const nuevoTurno = `/turnos/nuevo?fecha=${encodeURIComponent(fecha)}`;
   const mover = (cantidad) => setFecha((actual) => sumarDias(actual, vista === "dia" ? cantidad : cantidad * 7));
 
-  return <main className="min-h-screen bg-[#fff4f7] text-[#3d2f32]"><AppHeader /><section className="mx-auto max-w-7xl px-5 py-8 sm:px-8"><div className="flex flex-wrap items-start justify-between gap-4"><div><p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#b76e79]">Organización de turnos</p><h1 className="mt-2 text-3xl font-semibold">Agenda</h1><p className="mt-1 capitalize text-[#6f5b60]">{vista === "dia" ? fechaLarga(desde) : `${fechaLarga(desde)} al ${fechaLarga(hasta)}`}</p></div><Link className="rounded-xl bg-[#b76e79] px-4 py-2 font-semibold text-white" to={nuevoTurno}>Nuevo turno</Link></div>
-    <section className="mt-6 rounded-2xl border border-[#f1dce4] bg-white p-5" aria-label="Controles de agenda"><div className="flex flex-wrap items-end gap-2.5"><div className="flex rounded-xl bg-[#fff4f7] p-1" role="group" aria-label="Vista de agenda"><button className={`rounded-lg px-3 py-2 text-sm font-semibold transition-all duration-200 ${vista === "dia" ? "bg-white text-[#563947] shadow-sm" : "text-[#6f5b60] hover:bg-white/70"}`} type="button" onClick={() => setVista("dia")}>Día</button><button className={`rounded-lg px-3 py-2 text-sm font-semibold transition-all duration-200 ${vista === "semana" ? "bg-white text-[#563947] shadow-sm" : "text-[#6f5b60] hover:bg-white/70"}`} type="button" onClick={() => setVista("semana")}>Semana</button></div><button className="rounded-xl border border-[#f1dce4] px-3 py-2 text-sm font-semibold transition hover:bg-[#faf6f8]" type="button" onClick={() => mover(-1)}>Anterior</button><button className="rounded-xl border border-[#f1dce4] px-3 py-2 text-sm font-semibold transition hover:bg-[#faf6f8]" type="button" onClick={() => setFecha(hoy())}>Hoy</button><button className="rounded-xl border border-[#f1dce4] px-3 py-2 text-sm font-semibold transition hover:bg-[#faf6f8]" type="button" onClick={() => mover(1)}>Siguiente</button><label className="ml-auto grid gap-1 text-sm font-medium">Fecha<input className="rounded-xl border border-[#f1dce4] px-3 py-2" type="date" value={fecha} onChange={(event) => setFecha(event.target.value)} /></label></div><div className="mt-5 grid gap-3 sm:grid-cols-3"><label className="grid gap-1 text-sm font-medium">Estado<select className="rounded-xl border border-[#f1dce4] px-3 py-2" value={estado} onChange={(event) => setEstado(event.target.value)}><option value="">Todos</option>{ESTADOS.map(([valor, etiqueta]) => <option value={valor} key={valor}>{etiqueta}</option>)}</select></label><label className="grid gap-1 text-sm font-medium">Clienta<select className="rounded-xl border border-[#f1dce4] px-3 py-2" value={clientaId} onChange={(event) => setClientaId(event.target.value)}><option value="">Todas las clientas</option>{clientas.map((clienta) => <option value={clienta.id} key={clienta.id}>{clienta.nombre_completo}</option>)}</select>{errorClientas && <span className="text-xs text-[#8b3f4c]">{errorClientas}</span>}</label><label className="grid gap-1 text-sm font-medium">Buscar clienta<input className="rounded-xl border border-[#f1dce4] px-3 py-2" placeholder="Nombre o teléfono" value={busqueda} onChange={(event) => setBusqueda(event.target.value)} /></label></div>{tieneFiltros && <button className="mt-4 text-sm font-semibold underline underline-offset-4" type="button" onClick={() => { setEstado(""); setClientaId(""); setBusqueda(""); }}>Limpiar filtros</button>}</section>
-    {cargando && <p className="mt-6">Cargando agenda...</p>}{error && <section className="mt-6 rounded-2xl border border-[#e7c5ca] bg-white p-5"><p className="text-[#8b3f4c]">{error}</p><button className="mt-3 font-semibold underline" type="button" onClick={() => setReintentos((actual) => actual + 1)}>Reintentar</button></section>}
-    {!cargando && !error && agenda && vista === "dia" && <section className="mt-6 grid gap-3">{agenda.turnos.map((turno) => <TarjetaTurno turno={turno} key={turno.id} />)}{!agenda.turnos.length && <div className="rounded-3xl border border-dashed border-[#f1dce4] bg-white p-8 text-center"><p>{tieneFiltros ? "No encontramos turnos con los filtros seleccionados." : "Todavía no hay turnos para este día."}</p>{!tieneFiltros && <Link className="mt-3 inline-block font-semibold underline" to={nuevoTurno}>Crear turno</Link>}</div>}</section>}
-    {!cargando && !error && agenda && vista === "semana" && <section className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-7">{dias.map((dia) => { const turnos = turnosPorDia[dia] || []; return <article className="min-w-0 rounded-2xl border border-[#f1dce4] bg-[#fffafa] p-3" key={dia}><div className="flex items-start justify-between gap-2"><h2 className="font-semibold capitalize">{fechaCorta(dia)}</h2><span className="rounded-full bg-white px-2 py-1 text-xs font-semibold">{turnos.length}</span></div><div className="mt-3 grid gap-2">{turnos.map((turno) => <TarjetaTurno turno={turno} resumida key={turno.id} />)}{!turnos.length && <p className="py-3 text-sm text-[#6f5b60]">Sin turnos.</p>}</div></article>; })}</section>}
-  </section></main>;
+  return (
+    <main className="min-h-screen bg-[#fff4f7] text-[#3d2f32]">
+      <AppHeader />
+      <section className="mx-auto max-w-7xl px-5 py-8 sm:px-8">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.16em] text-primary">Organización diaria y semanal</p>
+            <h1 className="mt-2 text-3xl font-semibold">Agenda</h1>
+            <p className="mt-1 capitalize text-muted-foreground">{vista === "dia" ? fechaLarga(desde) : `${fechaLarga(desde)} al ${fechaLarga(hasta)}`}</p>
+            <p className="mt-2 max-w-2xl text-sm text-muted-foreground">Usá Agenda para organizar la jornada. Para buscar turnos históricos o revisar todos los estados, entrá en Todos los turnos.</p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Link className="ui-button ui-button-secondary min-h-11" to="/turnos">Todos los turnos</Link>
+            <Link className="ui-button ui-button-primary min-h-11" to={nuevoTurno}>Nuevo turno</Link>
+          </div>
+        </div>
+
+        <section className="mt-6 rounded-2xl border border-border bg-card p-5" aria-label="Controles de agenda">
+          <div className="flex flex-wrap items-end gap-2.5">
+            <div className="flex rounded-xl bg-secondary p-1" role="group" aria-label="Vista de agenda">
+              <button className={`min-h-11 rounded-lg px-4 text-sm font-semibold transition ${vista === "dia" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:bg-card/70"}`} type="button" onClick={() => setVista("dia")}>Día</button>
+              <button className={`min-h-11 rounded-lg px-4 text-sm font-semibold transition ${vista === "semana" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:bg-card/70"}`} type="button" onClick={() => setVista("semana")}>Semana</button>
+            </div>
+            <button className="ui-button ui-button-secondary min-h-11" type="button" onClick={() => mover(-1)}>Anterior</button>
+            <button className="ui-button ui-button-secondary min-h-11" type="button" onClick={() => setFecha(hoy())}>Hoy</button>
+            <button className="ui-button ui-button-secondary min-h-11" type="button" onClick={() => mover(1)}>Siguiente</button>
+            <label className="ml-auto grid gap-1 text-sm font-medium">Fecha<input type="date" value={fecha} onChange={(event) => setFecha(event.target.value)} /></label>
+          </div>
+          <div className="mt-5 grid gap-3 sm:grid-cols-3">
+            <label className="grid gap-1 text-sm font-medium">Estado<select value={estado} onChange={(event) => setEstado(event.target.value)}><option value="">Todos</option>{ESTADOS.map(([valor, etiqueta]) => <option value={valor} key={valor}>{etiqueta}</option>)}</select></label>
+            <label className="grid gap-1 text-sm font-medium">Clienta<select value={clientaId} onChange={(event) => setClientaId(event.target.value)}><option value="">Todas las clientas</option>{clientas.map((clienta) => <option value={clienta.id} key={clienta.id}>{clienta.nombre_completo}</option>)}</select>{errorClientas && <span className="text-xs text-destructive">{errorClientas}</span>}</label>
+            <label className="grid gap-1 text-sm font-medium">Buscar clienta<input placeholder="Nombre o teléfono" value={busqueda} onChange={(event) => setBusqueda(event.target.value)} /></label>
+          </div>
+          {tieneFiltros && <button className="mt-4 min-h-11 text-sm font-semibold text-primary underline underline-offset-4" type="button" onClick={() => { setEstado(""); setClientaId(""); setBusqueda(""); }}>Limpiar filtros</button>}
+        </section>
+
+        {cargando && <p className="mt-6">Cargando agenda...</p>}
+        {error && <section className="mt-6 rounded-2xl border border-border bg-card p-5"><p className="text-destructive">{error}</p><button className="mt-3 min-h-11 font-semibold text-primary underline" type="button" onClick={() => setReintentos((actual) => actual + 1)}>Reintentar</button></section>}
+
+        {!cargando && !error && agenda && vista === "dia" && (
+          <section className="mt-6 grid gap-3">
+            {agenda.turnos.map((turno) => <TarjetaTurno turno={turno} key={turno.id} />)}
+            {!agenda.turnos.length && <div className="rounded-3xl border border-dashed border-border bg-card p-8 text-center"><p>{tieneFiltros ? "No encontramos turnos con los filtros seleccionados." : "Todavía no hay turnos para este día."}</p>{!tieneFiltros && <Link className="mt-3 ui-button ui-button-primary" to={nuevoTurno}>Crear turno</Link>}</div>}
+          </section>
+        )}
+
+        {!cargando && !error && agenda && vista === "semana" && (
+          <section className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-7">
+            {dias.map((dia) => {
+              const turnos = turnosPorDia[dia] || [];
+              return <article className="min-w-0 rounded-2xl border border-border bg-card p-3" key={dia}><div className="flex items-start justify-between gap-2"><h2 className="font-semibold capitalize">{fechaCorta(dia)}</h2><span className="rounded-full bg-secondary px-2 py-1 text-xs font-semibold">{turnos.length}</span></div><div className="mt-3 grid gap-2">{turnos.map((turno) => <TarjetaTurno turno={turno} resumida key={turno.id} />)}{!turnos.length && <p className="py-3 text-sm text-muted-foreground">Sin turnos.</p>}</div></article>;
+            })}
+          </section>
+        )}
+      </section>
+    </main>
+  );
 }

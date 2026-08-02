@@ -1,0 +1,101 @@
+:root {
+  --color-canvas: #e5e2e9;
+  --color-canvas-deep: #dcd8e1;
+  --color-surface: #f3f1f5;
+  --color-surface-raised: #fffefe;
+  --color-surface-muted: #ebe7ef;
+  --color-border: #cec8d4;
+  --color-border-strong: #aaa1b2;
+  --color-text: #29252d;
+  --color-text-muted: #615a66;
+  --color-brand: #74566f;
+  --color-brand-hover: #5f455b;
+  --color-brand-soft: #e4dce5;
+  --color-success: #4f715e;
+  --color-success-soft: #e4efe8;
+  --color-warning: #805e32;
+  --color-warning-soft: #f1e5d1;
+  --color-danger: #824754;
+  --color-danger-soft: #f1dfe3;
+  --shadow-hairline: 0 1px 2px rgba(47, 40, 51, 0.08), 0 8px 20px rgba(47, 40, 51, 0.06);
+  --shadow-raised: 0 2px 5px rgba(47, 40, 51, 0.09), 0 16px 34px rgba(47, 40, 51, 0.10);
+}
+
+body {
+  background: var(--color-canvas);
+}
+
+#root {
+  background:
+    radial-gradient(72rem 34rem at 50% -22rem, rgba(255, 255, 255, 0.42), transparent 70%),
+    linear-gradient(155deg, #ebe8ee 0%, var(--color-canvas) 54%, var(--color-canvas-deep) 100%);
+}
+
+.ui-header {
+  background: rgba(255, 254, 254, 0.98);
+  border-bottom-color: var(--color-border-strong);
+  box-shadow: 0 1px 0 rgba(67, 57, 72, 0.08), 0 6px 18px rgba(67, 57, 72, 0.06);
+}
+
+.bg-white,
+.bg-card {
+  background-color: var(--color-surface-raised) !important;
+}
+
+.bg-card {
+  border-color: var(--color-border) !important;
+  box-shadow: var(--shadow-hairline);
+}
+
+.bg-secondary {
+  background-color: var(--color-surface-muted) !important;
+}
+
+.border-border {
+  border-color: var(--color-border) !important;
+}
+
+input:not([type="checkbox"]):not([type="radio"]),
+select,
+textarea {
+  background-color: #fbfafc;
+  border-color: var(--color-border-strong);
+}
+
+input:not([type="checkbox"]):not([type="radio"]):focus,
+select:focus,
+textarea:focus {
+  background-color: var(--color-surface-raised);
+}
+
+.ui-nav-link-active {
+  border-color: var(--color-border-strong);
+  background: var(--color-brand-soft);
+  color: var(--color-brand-hover);
+  box-shadow: inset 0 0 0 1px rgba(116, 86, 111, 0.08);
+}
+
+.ui-card,
+.ui-section,
+.ui-surface,
+.aura-form-surface {
+  border-color: var(--color-border);
+  background-color: var(--color-surface-raised);
+  box-shadow: var(--shadow-hairline);
+}
+
+.ui-section,
+.aura-form-surface {
+  background-color: var(--color-surface);
+}
+
+.ui-card:hover {
+  border-color: var(--color-border-strong);
+  background-color: var(--color-surface-raised);
+  box-shadow: var(--shadow-raised);
+}
+
+hr,
+[data-orientation="horizontal"] {
+  border-color: var(--color-border-strong) !important;
+}

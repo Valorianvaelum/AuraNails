@@ -33,7 +33,11 @@ def _caja_abierta(*, propietaria, caja_id):
 
 def abrir_caja(*, propietaria, saldo_inicial, observacion_apertura=""):
     with transaction.atomic():
-        Caja.objects.select_for_update().filter(propietaria=propietaria, estado=Caja.Estado.ABIERTA).exists()
+        # Siempre existe una fila de usuaria para bloquear. Esto serializa dos
+        # aperturas simultáneas incluso cuando todavía no existe ninguna caja,
+        # situación en la que select_for_update() sobre Caja no bloquearía filas.
+        propietaria.__class__.objects.select_for_update().get(pk=propietaria.pk)
+
         if Caja.objects.filter(propietaria=propietaria, estado=Caja.Estado.ABIERTA).exists():
             raise ValidationError({"detail": "Ya tenés una caja abierta."})
         try:
@@ -43,6 +47,8 @@ def abrir_caja(*, propietaria, saldo_inicial, observacion_apertura=""):
                 observacion_apertura=observacion_apertura.strip(),
             )
         except IntegrityError as error:
+            # La constraint sigue siendo la última línea de defensa ante
+            # escrituras externas o motores con semánticas de bloqueo distintas.
             raise ValidationError({"detail": "Ya tenés una caja abierta."}) from error
     return caja
 
