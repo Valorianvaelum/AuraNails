@@ -1,0 +1,331 @@
+/* Bloque 9 — Ritmo tipográfico, densidad y legibilidad responsive. */
+:root {
+  --aura-type-display: clamp(2rem, 3.2vw, 2.75rem);
+  --aura-type-title: clamp(1.15rem, 1.35vw, 1.3rem);
+  --aura-type-body: clamp(0.91rem, 0.22vw + 0.86rem, 0.98rem);
+  --aura-type-small: clamp(0.78rem, 0.16vw + 0.75rem, 0.86rem);
+  --aura-leading-tight: 1.08;
+  --aura-leading-copy: 1.62;
+  --aura-content-measure: 68ch;
+  --aura-section-gap: clamp(1rem, 1.8vw, 1.35rem);
+  --aura-card-gap: clamp(0.72rem, 1vw, 0.95rem);
+}
+
+html {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-synthesis: none;
+  font-kerning: normal;
+}
+
+::selection {
+  background: rgba(222, 151, 208, 0.34);
+  color: #fffaff;
+}
+
+.aura-page,
+.aura-login-page,
+.aura-notification-stack,
+.cash-dialog-backdrop {
+  font-size: var(--aura-type-body);
+}
+
+.aura-page {
+  container-type: inline-size;
+}
+
+.aura-page :is(h1, h2, h3, h4, p, dt, dd, label, legend, button, a, span) {
+  overflow-wrap: anywhere;
+}
+
+.aura-page :is(p, li, dd),
+.aura-login-description,
+.aura-login-hint,
+.aura-notification-message {
+  line-height: var(--aura-leading-copy);
+}
+
+.aura-hero-title,
+.aura-login-title,
+.aura-loading-title {
+  text-wrap: balance;
+}
+
+.aura-hero-title {
+  max-width: 22ch;
+  font-size: var(--aura-type-display);
+  line-height: var(--aura-leading-tight);
+  letter-spacing: -0.04em;
+}
+
+.aura-hero-description {
+  max-width: var(--aura-content-measure);
+  font-size: var(--aura-type-body);
+  line-height: var(--aura-leading-copy);
+  text-wrap: pretty;
+}
+
+.aura-eyebrow,
+.cash-kicker,
+.finance-cobro-kicker,
+.aura-notification-label {
+  line-height: 1.25;
+  letter-spacing: 0.16em;
+}
+
+.aura-panel-title {
+  font-size: var(--aura-type-title);
+  line-height: 1.2;
+  text-wrap: balance;
+}
+
+.aura-panel-description,
+.aura-empty-state-description,
+.aura-home-metric-description,
+.aura-field-help,
+.cash-muted,
+.cash-balance-help,
+.finance-record-label,
+.finance-amount-label {
+  font-size: var(--aura-type-small);
+  line-height: 1.55;
+}
+
+.aura-panel-header > div:first-child,
+.aura-hero-copy,
+.aura-home-metric-body,
+.aura-agenda-day-turn-body,
+.aura-agenda-week-turn-copy,
+.finance-cobro-main,
+.cash-movement-copy {
+  min-width: 0;
+}
+
+.aura-panel-header > div:first-child {
+  max-width: var(--aura-content-measure);
+}
+
+.aura-panel + .aura-panel,
+.aura-hero + .aura-panel,
+.aura-hero + .aura-home-stack,
+.aura-hero + .finance-stack,
+.aura-hero + .cash-stack,
+.aura-agenda-hero + .aura-agenda-stack {
+  margin-top: var(--aura-section-gap);
+}
+
+.aura-record-card :is(h2, h3, h4),
+.aura-content-card :is(h2, h3, h4),
+.aura-light-card :is(h2, h3, h4),
+.aura-service-card :is(h2, h3, h4),
+.aura-agenda-turn-heading,
+.finance-cobro-client,
+.cash-movement-heading,
+.cash-history-heading {
+  line-height: 1.28;
+  letter-spacing: -0.015em;
+  text-wrap: pretty;
+}
+
+.aura-record-card :is(p, dl),
+.aura-content-card :is(p, dl),
+.aura-light-card :is(p, dl) {
+  line-height: 1.55;
+}
+
+/* Datos operativos: números alineados y fáciles de comparar. */
+:is(
+  .aura-home-metric-value,
+  .aura-agenda-count,
+  .aura-agenda-day-count,
+  .aura-agenda-week-turn-time,
+  .aura-agenda-time-rail,
+  .finance-cobro-amount,
+  .finance-receipt-hero-amount,
+  .cash-balance-card,
+  .cash-summary,
+  .cash-method-item,
+  .cash-history-metrics,
+  .cash-movement-time,
+  .aura-amount,
+  .aura-amount-primary
+) {
+  font-variant-numeric: tabular-nums lining-nums;
+  font-feature-settings: "tnum" 1, "lnum" 1;
+}
+
+.finance-cobro-amount,
+.finance-receipt-hero-amount,
+.aura-home-metric-value,
+.aura-amount-primary {
+  letter-spacing: -0.035em;
+}
+
+/* Formularios: etiquetas, ayudas y errores forman una única columna rítmica. */
+.aura-field,
+.aura-login-field,
+.cash-dialog-field {
+  display: grid;
+  align-content: start;
+  gap: 0.42rem;
+}
+
+.aura-field-label,
+.aura-form-panel label,
+.aura-form-panel legend,
+.aura-login-field > label,
+.cash-dialog-field > label {
+  line-height: 1.35;
+}
+
+.aura-field-help,
+.field-error,
+.aura-agenda-field-error,
+.finance-inline-error,
+.aura-form-status {
+  margin-block: 0;
+}
+
+.aura-form-panel,
+.aura-login-form,
+.finance-payment-form,
+.cash-dialog-body {
+  gap: clamp(1rem, 1.5vw, 1.25rem);
+}
+
+textarea {
+  line-height: 1.55;
+}
+
+/* Acciones: el texto permanece estable durante carga y en anchos estrechos. */
+.aura-button,
+.aura-header-action,
+.aura-nav-link,
+.aura-mobile-nav-link,
+.aura-quick-action {
+  text-wrap: balance;
+}
+
+.aura-button {
+  white-space: normal;
+}
+
+.aura-button[data-loading="true"],
+.aura-button.is-loading {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Fechas, horas y metadatos no compiten con títulos. */
+.aura-agenda-turn-meta,
+.aura-agenda-payment,
+.finance-cobro-method,
+.finance-receipt-meta,
+.cash-movement-type,
+.cash-cancel-reason {
+  font-size: var(--aura-type-small);
+  line-height: 1.45;
+}
+
+/* Scrollbars discretas para vistas largas y carruseles semanales. */
+:where(html, .aura-agenda-week-scroll, .aura-mobile-nav) {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(221, 168, 211, 0.48) rgba(12, 5, 27, 0.18);
+}
+
+:where(html, .aura-agenda-week-scroll, .aura-mobile-nav)::-webkit-scrollbar {
+  width: 0.72rem;
+  height: 0.72rem;
+}
+
+:where(html, .aura-agenda-week-scroll, .aura-mobile-nav)::-webkit-scrollbar-track {
+  background: rgba(12, 5, 27, 0.18);
+}
+
+:where(html, .aura-agenda-week-scroll, .aura-mobile-nav)::-webkit-scrollbar-thumb {
+  border: 0.2rem solid transparent;
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(231, 178, 219, 0.62), rgba(126, 99, 181, 0.58));
+  background-clip: padding-box;
+}
+
+:where(html, .aura-agenda-week-scroll, .aura-mobile-nav)::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, rgba(243, 198, 231, 0.78), rgba(149, 119, 203, 0.72));
+  background-clip: padding-box;
+}
+
+/* Escritorio amplio: más aire sin agrandar en exceso los controles. */
+@media (min-width: 1180px) {
+  .aura-page {
+    padding-block: clamp(2.25rem, 4vh, 3.25rem);
+  }
+
+  .aura-hero {
+    padding: clamp(1.55rem, 2vw, 1.9rem);
+  }
+
+  .aura-panel {
+    padding: clamp(1.35rem, 1.7vw, 1.65rem);
+  }
+}
+
+/* Tablet y móvil: densidad controlada, lectura sin saltos ni títulos sobredimensionados. */
+@media (max-width: 767px) {
+  :root {
+    --aura-type-display: clamp(1.72rem, 8vw, 2.05rem);
+    --aura-type-title: 1.08rem;
+    --aura-type-body: 0.94rem;
+    --aura-type-small: 0.82rem;
+    --aura-section-gap: 0.95rem;
+  }
+
+  .aura-hero-title {
+    max-width: 18ch;
+    letter-spacing: -0.032em;
+  }
+
+  .aura-hero-description,
+  .aura-login-description {
+    line-height: 1.58;
+  }
+
+  .aura-panel-header {
+    gap: 0.75rem;
+  }
+
+  .aura-panel-description {
+    margin-top: 0.38rem;
+  }
+
+  .aura-record-card,
+  .aura-content-card,
+  .aura-light-card {
+    line-height: 1.5;
+  }
+
+  .aura-empty-state {
+    row-gap: 0.8rem;
+  }
+}
+
+@media (max-width: 380px) {
+  :root {
+    --aura-type-display: 1.62rem;
+    --aura-type-body: 0.92rem;
+  }
+
+  .aura-eyebrow,
+  .cash-kicker,
+  .finance-cobro-kicker {
+    letter-spacing: 0.13em;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :where(html, .aura-agenda-week-scroll, .aura-mobile-nav) {
+    scroll-behavior: auto;
+  }
+}

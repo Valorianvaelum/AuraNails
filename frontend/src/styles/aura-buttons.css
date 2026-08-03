@@ -1,0 +1,454 @@
+/* AuraNails — Sistema de botones 6.0
+   Jerarquía liquid glass, respuesta táctil y estados accesibles. */
+
+:root {
+  --aura-button-radius: 0.78rem;
+  --aura-button-ring: rgba(247, 214, 239, 0.92);
+  --aura-button-duration: 180ms;
+  --aura-button-ease: cubic-bezier(.2, .72, .2, 1);
+}
+
+.aura-button,
+.ui-button,
+.aura-action,
+.confirm-dialog-actions > button,
+.finance-destructive-trigger,
+.finance-destructive-button,
+.cash-close-button,
+.cash-destructive-button {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: 1px solid transparent;
+  border-radius: var(--aura-button-radius);
+  padding: 0.66rem 1rem;
+  color: #fffaff;
+  font-size: 0.875rem;
+  font-weight: 760;
+  line-height: 1.1;
+  letter-spacing: -0.006em;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transform: translateZ(0);
+  transition:
+    transform 110ms var(--aura-button-ease),
+    border-color var(--aura-button-duration) var(--aura-button-ease),
+    background var(--aura-button-duration) var(--aura-button-ease),
+    color var(--aura-button-duration) var(--aura-button-ease),
+    box-shadow var(--aura-button-duration) var(--aura-button-ease),
+    opacity var(--aura-button-duration) ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.aura-button::before,
+.ui-button::before,
+.aura-action::before,
+.confirm-dialog-actions > button::before,
+.finance-destructive-trigger::before,
+.finance-destructive-button::before,
+.cash-close-button::before,
+.cash-destructive-button::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  border-radius: inherit;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.19), transparent 42%),
+    radial-gradient(circle at 28% -18%, rgba(255, 255, 255, 0.2), transparent 44%);
+  opacity: 0.72;
+  pointer-events: none;
+  transition: opacity var(--aura-button-duration) ease, transform var(--aura-button-duration) var(--aura-button-ease);
+}
+
+.aura-button::after,
+.ui-button::after,
+.aura-action::after,
+.confirm-dialog-actions > button::after,
+.finance-destructive-trigger::after,
+.finance-destructive-button::after,
+.cash-close-button::after,
+.cash-destructive-button::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  width: 7rem;
+  height: 7rem;
+  top: -4.8rem;
+  left: -2.5rem;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.18);
+  filter: blur(18px);
+  opacity: 0;
+  pointer-events: none;
+  transform: translate3d(-14px, 10px, 0);
+  transition: opacity 200ms ease, transform 280ms var(--aura-button-ease);
+}
+
+.aura-button:hover:not(:disabled):not([aria-disabled="true"]),
+.ui-button:hover:not(:disabled),
+.aura-action:hover:not(:disabled),
+.confirm-dialog-actions > button:hover:not(:disabled),
+.finance-destructive-trigger:hover:not(:disabled),
+.finance-destructive-button:hover:not(:disabled),
+.cash-close-button:hover:not(:disabled),
+.cash-destructive-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.aura-button:hover:not(:disabled):not([aria-disabled="true"])::before,
+.ui-button:hover:not(:disabled)::before,
+.aura-action:hover:not(:disabled)::before,
+.confirm-dialog-actions > button:hover:not(:disabled)::before,
+.finance-destructive-trigger:hover:not(:disabled)::before,
+.finance-destructive-button:hover:not(:disabled)::before,
+.cash-close-button:hover:not(:disabled)::before,
+.cash-destructive-button:hover:not(:disabled)::before {
+  opacity: 1;
+}
+
+.aura-button:hover:not(:disabled):not([aria-disabled="true"])::after,
+.ui-button:hover:not(:disabled)::after,
+.aura-action:hover:not(:disabled)::after,
+.confirm-dialog-actions > button:hover:not(:disabled)::after,
+.finance-destructive-trigger:hover:not(:disabled)::after,
+.finance-destructive-button:hover:not(:disabled)::after,
+.cash-close-button:hover:not(:disabled)::after,
+.cash-destructive-button:hover:not(:disabled)::after {
+  opacity: 0.72;
+  transform: translate3d(20px, 20px, 0);
+}
+
+.aura-button:active:not(:disabled):not([aria-disabled="true"]),
+.ui-button:active:not(:disabled),
+.aura-action:active:not(:disabled),
+.confirm-dialog-actions > button:active:not(:disabled),
+.finance-destructive-trigger:active:not(:disabled),
+.finance-destructive-button:active:not(:disabled),
+.cash-close-button:active:not(:disabled),
+.cash-destructive-button:active:not(:disabled) {
+  transform: translateY(0) scale(0.982);
+  transition-duration: 90ms;
+}
+
+.aura-button:focus-visible,
+.ui-button:focus-visible,
+.aura-action:focus-visible,
+.confirm-dialog-actions > button:focus-visible,
+.finance-destructive-trigger:focus-visible,
+.finance-destructive-button:focus-visible,
+.cash-close-button:focus-visible,
+.cash-destructive-button:focus-visible,
+.aura-icon-button:focus-visible,
+.aura-header-action:focus-visible,
+.aura-notification-close:focus-visible,
+.cash-dialog-close:focus-visible {
+  outline: 2px solid var(--aura-button-ring);
+  outline-offset: 3px;
+}
+
+.aura-button:disabled,
+.aura-button[aria-disabled="true"],
+.ui-button:disabled,
+.aura-action:disabled,
+.confirm-dialog-actions > button:disabled,
+.finance-destructive-trigger:disabled,
+.finance-destructive-button:disabled,
+.cash-close-button:disabled,
+.cash-destructive-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+  transform: none;
+  box-shadow: none !important;
+  filter: saturate(0.62);
+}
+
+.aura-button[aria-busy="true"],
+.ui-button[aria-busy="true"],
+.confirm-dialog-actions > button[aria-busy="true"],
+.finance-destructive-button[aria-busy="true"],
+.cash-destructive-button[aria-busy="true"] {
+  opacity: 0.78;
+  filter: none;
+}
+
+/* Primario: firma Aura, profundo y luminoso sin neón. */
+.aura-button-primary,
+.ui-button-primary,
+.aura-action-primary,
+.confirm-dialog-confirm {
+  border-color: rgba(255, 255, 255, 0.25) !important;
+  background:
+    linear-gradient(135deg, rgba(168, 103, 160, 0.98), rgba(111, 69, 132, 0.98) 54%, rgba(70, 66, 130, 0.98)) !important;
+  color: #fff !important;
+  box-shadow:
+    0 12px 30px rgba(58, 20, 72, 0.32),
+    0 3px 10px rgba(126, 74, 139, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    inset 0 -1px 0 rgba(19, 8, 35, 0.28) !important;
+}
+
+.aura-button-primary:hover:not(:disabled),
+.ui-button-primary:hover:not(:disabled),
+.aura-action-primary:hover:not(:disabled),
+.confirm-dialog-confirm:hover:not(:disabled) {
+  border-color: rgba(255, 255, 255, 0.36) !important;
+  background:
+    linear-gradient(135deg, rgba(184, 118, 175, 1), rgba(126, 79, 147, 1) 54%, rgba(78, 75, 145, 1)) !important;
+  box-shadow:
+    0 16px 36px rgba(58, 20, 72, 0.38),
+    0 4px 14px rgba(165, 99, 158, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.36),
+    inset 0 -1px 0 rgba(19, 8, 35, 0.24) !important;
+}
+
+/* Secundario: cristal oscuro, subordinado al primario. */
+.aura-button-secondary,
+.ui-button-secondary,
+.aura-action-secondary,
+.confirm-dialog-actions > button:first-child {
+  border-color: rgba(255, 255, 255, 0.21) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.105), rgba(255, 255, 255, 0.055)),
+    rgba(9, 5, 22, 0.34) !important;
+  color: #fffaff !important;
+  box-shadow:
+    0 8px 22px rgba(5, 2, 14, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    inset 0 -1px 0 rgba(4, 2, 10, 0.18) !important;
+  -webkit-backdrop-filter: blur(13px) saturate(118%);
+  backdrop-filter: blur(13px) saturate(118%);
+}
+
+.aura-button-secondary:hover:not(:disabled),
+.ui-button-secondary:hover:not(:disabled),
+.aura-action-secondary:hover:not(:disabled),
+.confirm-dialog-actions > button:first-child:hover:not(:disabled) {
+  border-color: rgba(255, 255, 255, 0.36) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.085)),
+    rgba(19, 10, 35, 0.4) !important;
+  box-shadow:
+    0 11px 26px rgba(5, 2, 14, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.16) !important;
+}
+
+/* Ghost: caja casi invisible, aparece solo al interactuar. */
+.aura-button-ghost,
+.ui-button-ghost,
+.aura-action-contextual {
+  border-color: transparent !important;
+  background: transparent !important;
+  color: rgba(255, 244, 252, 0.82) !important;
+  box-shadow: none !important;
+}
+
+.aura-button-ghost::before,
+.ui-button-ghost::before,
+.aura-action-contextual::before {
+  opacity: 0;
+}
+
+.aura-button-ghost:hover:not(:disabled),
+.ui-button-ghost:hover:not(:disabled),
+.aura-action-contextual:hover:not(:disabled) {
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  background: rgba(255, 255, 255, 0.075) !important;
+  color: #fffaff !important;
+}
+
+/* Destructivo: contenido en reposo, explícito al interactuar. */
+.aura-button-danger,
+.ui-button-danger,
+.aura-action-destructive,
+.confirm-dialog-destructive,
+.finance-destructive-trigger,
+.finance-destructive-button,
+.cash-close-button,
+.cash-destructive-button {
+  border-color: rgba(244, 163, 180, 0.3) !important;
+  background:
+    linear-gradient(180deg, rgba(122, 48, 67, 0.23), rgba(75, 25, 43, 0.18)),
+    rgba(12, 5, 20, 0.33) !important;
+  color: #ffd2dc !important;
+  box-shadow:
+    0 8px 22px rgba(45, 8, 20, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.09) !important;
+}
+
+.aura-button-danger:hover:not(:disabled),
+.ui-button-danger:hover:not(:disabled),
+.aura-action-destructive:hover:not(:disabled),
+.confirm-dialog-destructive:hover:not(:disabled),
+.finance-destructive-trigger:hover:not(:disabled),
+.finance-destructive-button:hover:not(:disabled),
+.cash-close-button:hover:not(:disabled),
+.cash-destructive-button:hover:not(:disabled) {
+  border-color: rgba(255, 190, 203, 0.48) !important;
+  background: linear-gradient(135deg, rgba(151, 66, 86, 0.96), rgba(103, 43, 61, 0.96)) !important;
+  color: #fff !important;
+  box-shadow:
+    0 13px 30px rgba(72, 14, 30, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18) !important;
+}
+
+.aura-button-warning,
+.ui-button-warning,
+.aura-action-warning {
+  border-color: rgba(237, 204, 157, 0.32) !important;
+  background: rgba(111, 73, 32, 0.18) !important;
+  color: #f3d7ad !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+}
+
+.aura-button-warning:hover:not(:disabled),
+.ui-button-warning:hover:not(:disabled),
+.aura-action-warning:hover:not(:disabled) {
+  border-color: rgba(245, 215, 174, 0.5) !important;
+  background: rgba(137, 90, 40, 0.3) !important;
+  color: #fff1d8 !important;
+}
+
+/* Tamaños reutilizables. */
+.aura-button-sm { min-height: 2.3rem; padding: 0.48rem 0.75rem; font-size: 0.82rem; }
+.aura-button-lg { min-height: 3rem; padding: 0.78rem 1.25rem; font-size: 0.92rem; }
+.aura-button-block { width: 100%; }
+
+/* Icon buttons y controles compactos. */
+.aura-icon-button,
+.cash-dialog-close,
+.aura-notification-close {
+  display: inline-grid;
+  min-width: 2.65rem;
+  min-height: 2.65rem;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 0.78rem;
+  background: rgba(8, 4, 19, 0.24);
+  color: #fffaff;
+  cursor: pointer;
+  transition: transform 110ms var(--aura-button-ease), border-color 170ms ease, background 170ms ease, box-shadow 170ms ease;
+}
+
+.aura-icon-button:hover:not(:disabled),
+.cash-dialog-close:hover:not(:disabled),
+.aura-notification-close:hover:not(:disabled) {
+  border-color: rgba(255, 255, 255, 0.34);
+  background: rgba(255, 255, 255, 0.11);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.11);
+  transform: translateY(-1px);
+}
+
+.aura-icon-button:active:not(:disabled),
+.cash-dialog-close:active:not(:disabled),
+.aura-notification-close:active:not(:disabled) {
+  transform: scale(0.96);
+}
+
+/* Cabecera: misma respuesta táctil, menor protagonismo. */
+.aura-header-action {
+  transition: transform 110ms var(--aura-button-ease), border-color 170ms ease, background 170ms ease, box-shadow 170ms ease !important;
+}
+.aura-header-action:hover:not(:disabled) { transform: translateY(-1px); }
+.aura-header-action:active:not(:disabled) { transform: scale(0.97); }
+
+/* Loading: conserva dimensiones y reemplaza el destello por spinner. */
+.aura-button[aria-busy="true"],
+.ui-button[aria-busy="true"],
+.confirm-dialog-actions > button[aria-busy="true"],
+.finance-destructive-button[aria-busy="true"],
+.cash-destructive-button[aria-busy="true"] {
+  color: transparent !important;
+  pointer-events: none;
+}
+
+.aura-button[aria-busy="true"]::after,
+.ui-button[aria-busy="true"]::after,
+.confirm-dialog-actions > button[aria-busy="true"]::after,
+.finance-destructive-button[aria-busy="true"]::after,
+.cash-destructive-button[aria-busy="true"]::after {
+  z-index: 2;
+  width: 1rem;
+  height: 1rem;
+  inset: 50% auto auto 50%;
+  border: 2px solid rgba(255, 255, 255, 0.32);
+  border-top-color: #fff;
+  border-radius: 50%;
+  background: transparent;
+  filter: none;
+  opacity: 1;
+  transform: translate(-50%, -50%);
+  animation: aura-button-spin 720ms linear infinite;
+}
+
+@keyframes aura-button-spin {
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+@media (hover: none) {
+  .aura-button:hover:not(:disabled),
+  .ui-button:hover:not(:disabled),
+  .aura-action:hover:not(:disabled),
+  .confirm-dialog-actions > button:hover:not(:disabled),
+  .finance-destructive-trigger:hover:not(:disabled),
+  .finance-destructive-button:hover:not(:disabled),
+  .cash-close-button:hover:not(:disabled),
+  .cash-destructive-button:hover:not(:disabled) {
+    transform: none;
+  }
+
+  .aura-button:not([aria-busy="true"])::after,
+  .ui-button:not([aria-busy="true"])::after,
+  .aura-action:not([aria-busy="true"])::after,
+  .confirm-dialog-actions > button:not([aria-busy="true"])::after,
+  .finance-destructive-trigger:not([aria-busy="true"])::after,
+  .finance-destructive-button:not([aria-busy="true"])::after,
+  .cash-close-button:not([aria-busy="true"])::after,
+  .cash-destructive-button:not([aria-busy="true"])::after {
+    display: none;
+  }
+}
+
+@media (max-width: 767px) {
+  .aura-button,
+  .ui-button,
+  .aura-action,
+  .confirm-dialog-actions > button,
+  .finance-destructive-trigger,
+  .finance-destructive-button,
+  .cash-close-button,
+  .cash-destructive-button {
+    min-height: 2.9rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aura-button,
+  .ui-button,
+  .aura-action,
+  .confirm-dialog-actions > button,
+  .finance-destructive-trigger,
+  .finance-destructive-button,
+  .cash-close-button,
+  .cash-destructive-button,
+  .aura-icon-button,
+  .cash-dialog-close,
+  .aura-notification-close,
+  .aura-header-action {
+    transition: none !important;
+  }
+
+  .aura-button[aria-busy="true"]::after,
+  .ui-button[aria-busy="true"]::after,
+  .confirm-dialog-actions > button[aria-busy="true"]::after,
+  .finance-destructive-button[aria-busy="true"]::after,
+  .cash-destructive-button[aria-busy="true"]::after {
+    animation-duration: 1.4s;
+  }
+}

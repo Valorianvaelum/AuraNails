@@ -1,0 +1,289 @@
+/* Bloque 1: Inicio, Clientas, Turnos y Servicios. Reglas por rol visual explícito. */
+
+.aura-module-inicio .aura-page,
+.aura-module-clientas .aura-page,
+.aura-module-turnos .aura-page,
+.aura-module-servicios .aura-page {
+  color: var(--aura-text-on-glass);
+}
+
+/* Inicio */
+.aura-home-stack {
+  gap: 1.5rem;
+}
+
+.aura-home-section {
+  position: relative;
+  overflow: hidden;
+}
+
+.aura-home-metrics {
+  align-items: stretch;
+}
+
+.aura-home-metric {
+  display: flex;
+  min-width: 0;
+  min-height: 10.25rem;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.17);
+  border-radius: 0.95rem;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.07), rgba(7, 3, 17, 0.12));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  color: var(--aura-text-on-glass);
+  -webkit-backdrop-filter: blur(11px) saturate(112%);
+  backdrop-filter: blur(11px) saturate(112%);
+}
+
+.aura-home-metric-body {
+  flex: 1 1 auto;
+  padding: 1.15rem 1.2rem 1rem;
+}
+
+.aura-home-metric-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.aura-home-metric-label {
+  margin: 0;
+  color: var(--aura-text-on-glass-muted);
+  font-size: 0.82rem;
+}
+
+.aura-home-metric-value {
+  margin: 0.5rem 0 0;
+  color: var(--aura-text-on-glass);
+  font-size: 1.55rem;
+  font-weight: 740;
+  letter-spacing: -0.025em;
+}
+
+.aura-home-metric-description {
+  margin: 0.65rem 0 0;
+  color: var(--aura-text-on-glass-muted);
+  font-size: 0.875rem;
+  line-height: 1.55;
+}
+
+.aura-home-metric-action {
+  display: flex;
+  min-height: 2.85rem;
+  align-items: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.11);
+  background: rgba(7, 3, 17, 0.12);
+  color: var(--aura-link-on-glass) !important;
+  padding: 0.72rem 1.2rem;
+  font-size: 0.875rem;
+  font-weight: 730;
+  text-decoration: none;
+  transition: background 150ms ease, color 150ms ease;
+}
+
+.aura-home-metric-action:hover {
+  background: rgba(255, 255, 255, 0.065);
+  color: #fffaff !important;
+}
+
+.aura-quick-access-panel {
+  background:
+    radial-gradient(circle at 14% 10%, rgba(237, 175, 221, 0.055), transparent 34%),
+    var(--aura-glass-bg);
+}
+
+.aura-quick-actions {
+  display: grid;
+  overflow: hidden;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 0.95rem;
+  background: rgba(7, 3, 17, 0.12);
+}
+
+.aura-quick-action {
+  display: flex;
+  min-height: 3.25rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border-right: 1px solid rgba(255, 255, 255, 0.11);
+  color: var(--aura-text-on-glass) !important;
+  padding: 0.8rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background 150ms ease, color 150ms ease;
+}
+
+.aura-quick-action:last-child {
+  border-right: 0;
+}
+
+.aura-quick-action:hover {
+  background: rgba(255, 255, 255, 0.07);
+  color: #fffaff !important;
+}
+
+.aura-quick-action span:last-child {
+  color: var(--aura-link-on-glass);
+}
+
+/* Turnos */
+.aura-turn-summary {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.aura-turn-summary > div {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.aura-turn-summary span {
+  color: var(--aura-text-on-glass-muted);
+  font-size: 0.78rem;
+}
+
+.aura-turn-summary strong {
+  color: var(--aura-text-on-glass);
+  font-size: 1.05rem;
+}
+
+/* Formularios */
+.aura-form-shell {
+  padding: 1.35rem;
+}
+
+.aura-form-shell > .aura-form-panel,
+.aura-panel.aura-form-panel {
+  margin-top: 0;
+}
+
+.aura-form-status {
+  color: var(--aura-text-on-glass-muted);
+}
+
+.aura-module-clientas .aura-form-panel .field-error,
+.aura-module-turnos .aura-form-panel .field-error,
+.aura-module-servicios .aura-form-panel .field-error {
+  color: #ffd5dd !important;
+}
+
+.aura-module-clientas .field-invalid,
+.aura-module-turnos .field-invalid,
+.aura-module-servicios .field-invalid {
+  border-color: #ff9bae !important;
+  box-shadow: 0 0 0 3px rgba(255, 155, 174, 0.2) !important;
+}
+
+/* Tarjetas navegables de registros */
+.aura-service-card {
+  text-decoration: none;
+}
+
+.aura-service-card:hover {
+  transform: translateY(-1px);
+}
+
+@media (max-width: 767px) {
+  .aura-home-stack {
+    gap: 1rem;
+  }
+
+  .aura-home-section {
+    overflow: visible;
+  }
+
+  .aura-home-metric {
+    min-height: 0;
+  }
+
+  .aura-home-metric-action {
+    min-height: 3rem;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 639px) {
+  .aura-turn-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .aura-quick-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .aura-quick-action {
+    border-right: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.11);
+  }
+
+  .aura-quick-action:last-child {
+    border-bottom: 0;
+  }
+}
+
+
+/* Ajuste final Bloque 1: controles menos blancos en Clientas, Servicios y Turnos. */
+.aura-module-clientas :is(.aura-control, .aura-form-panel input:not([type="checkbox"]):not([type="radio"]), .aura-form-panel select, .aura-form-panel textarea),
+.aura-module-servicios :is(.aura-control, .aura-form-panel input:not([type="checkbox"]):not([type="radio"]), .aura-form-panel select, .aura-form-panel textarea),
+.aura-module-turnos :is(.aura-control, .aura-form-panel input:not([type="checkbox"]):not([type="radio"]), .aura-form-panel select, .aura-form-panel textarea) {
+  border-color: rgba(255, 255, 255, 0.24) !important;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.08)) !important;
+  color: var(--aura-text-on-glass) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 8px 22px rgba(11, 4, 20, 0.12) !important;
+  -webkit-backdrop-filter: blur(10px) saturate(112%);
+  backdrop-filter: blur(10px) saturate(112%);
+  color-scheme: dark;
+}
+
+.aura-module-clientas :is(.aura-control, .aura-form-panel input:not([type="checkbox"]):not([type="radio"]), .aura-form-panel select, .aura-form-panel textarea)::placeholder,
+.aura-module-servicios :is(.aura-control, .aura-form-panel input:not([type="checkbox"]):not([type="radio"]), .aura-form-panel select, .aura-form-panel textarea)::placeholder,
+.aura-module-turnos :is(.aura-control, .aura-form-panel input:not([type="checkbox"]):not([type="radio"]), .aura-form-panel select, .aura-form-panel textarea)::placeholder {
+  color: rgba(249, 239, 251, 0.56) !important;
+}
+
+.aura-module-clientas :is(input[type="date"], input[type="time"]),
+.aura-module-servicios :is(input[type="date"], input[type="time"]),
+.aura-module-turnos :is(input[type="date"], input[type="time"]) {
+  color-scheme: dark;
+}
+
+.aura-module-clientas :is(input[type="date"], input[type="time"])::-webkit-calendar-picker-indicator,
+.aura-module-servicios :is(input[type="date"], input[type="time"])::-webkit-calendar-picker-indicator,
+.aura-module-turnos :is(input[type="date"], input[type="time"])::-webkit-calendar-picker-indicator {
+  filter: invert(1) opacity(0.78);
+}
+
+.aura-module-clientas :is(.aura-control, .aura-form-panel input:not([type="checkbox"]):not([type="radio"]), .aura-form-panel select, .aura-form-panel textarea):focus,
+.aura-module-servicios :is(.aura-control, .aura-form-panel input:not([type="checkbox"]):not([type="radio"]), .aura-form-panel select, .aura-form-panel textarea):focus,
+.aura-module-turnos :is(.aura-control, .aura-form-panel input:not([type="checkbox"]):not([type="radio"]), .aura-form-panel select, .aura-form-panel textarea):focus {
+  border-color: rgba(241, 201, 230, 0.54) !important;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.1)) !important;
+  box-shadow: 0 0 0 3px rgba(228, 166, 215, 0.18), 0 10px 26px rgba(22, 10, 34, 0.12) !important;
+}
+
+/* Bloque 6.1: opciones nativas de select legibles sobre el tema oscuro AuraNails. */
+.aura-module-clientas select :is(option, optgroup),
+.aura-module-servicios select :is(option, optgroup),
+.aura-module-turnos select :is(option, optgroup) {
+  background-color: #24132f;
+  color: #fffaff;
+}
+
+.aura-module-clientas select option:disabled,
+.aura-module-servicios select option:disabled,
+.aura-module-turnos select option:disabled {
+  color: #bcaec3;
+}
+
+.aura-module-clientas select option:checked,
+.aura-module-servicios select option:checked,
+.aura-module-turnos select option:checked {
+  background-color: #5d4370;
+  color: #ffffff;
+}

@@ -1,0 +1,124 @@
+.aura-module-inicio .aura-home-hero {
+  border: 1px solid rgba(255, 255, 255, 0.26) !important;
+  border-radius: 1.25rem;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.04)) !important;
+  padding: 1.5rem;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.13), 0 18px 44px rgba(20, 10, 38, 0.12);
+  backdrop-filter: blur(12px) saturate(118%);
+}
+
+.aura-module-inicio .aura-home-hero h1,
+.aura-module-inicio .aura-home-hero > div > p:first-child {
+  color: #fff9ff !important;
+}
+
+.aura-module-inicio .aura-home-hero .text-muted-foreground {
+  color: rgba(248, 239, 251, 0.82) !important;
+}
+
+.aura-module-inicio .aura-home-section-head h2,
+.aura-module-inicio .aura-home-section > h2 {
+  color: #fff9ff !important;
+  text-shadow: 0 2px 18px rgba(17, 8, 30, 0.42);
+}
+
+.aura-module-inicio .aura-home-section-head .text-muted-foreground {
+  color: rgba(248, 239, 251, 0.78) !important;
+}
+
+.aura-module-inicio .aura-home-link {
+  color: #f4cde8 !important;
+  text-shadow: 0 1px 14px rgba(18, 8, 30, 0.35);
+}
+
+.aura-module-inicio .aura-home-link:hover {
+  color: #fff4fc !important;
+}
+
+.aura-module-inicio .aura-home-metric {
+  border: 1px solid rgba(255, 255, 255, 0.56) !important;
+  background: rgba(255, 253, 255, 0.91) !important;
+  color: #392d33 !important;
+  box-shadow: 0 18px 48px rgba(24, 12, 43, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.78) !important;
+  backdrop-filter: blur(20px) saturate(132%);
+}
+
+.aura-module-inicio .aura-home-metric :is(h1, h2, h3, h4, p, span) {
+  text-shadow: none;
+}
+
+.aura-module-inicio .aura-home-metric .text-foreground,
+.aura-module-inicio .aura-home-metric [class*="CardTitle"] {
+  color: #392d33 !important;
+}
+
+.aura-module-inicio .aura-home-metric .text-muted-foreground,
+.aura-module-inicio .aura-home-metric p {
+  color: #6e5d63 !important;
+}
+
+.aura-module-inicio .aura-home-metric .aura-home-link {
+  color: #694658 !important;
+  text-shadow: none;
+}
+
+.aura-module-inicio .aura-home-empty {
+  border: 1px dashed rgba(255, 255, 255, 0.52) !important;
+  background: rgba(247, 241, 250, 0.78) !important;
+  color: #392d33 !important;
+  box-shadow: 0 14px 34px rgba(24, 12, 43, 0.12) !important;
+  backdrop-filter: blur(16px) saturate(124%);
+}
+
+.aura-module-inicio .aura-home-empty p {
+  color: #392d33 !important;
+  text-shadow: none;
+}
+
+.aura-module-inicio .aura-home-empty .text-muted-foreground {
+  color: #6e5d63 !important;
+}
+
+.aura-module-inicio .aura-home-upcoming {
+  color: #392d33 !important;
+  background: rgba(255, 253, 255, 0.9) !important;
+}
+
+.aura-module-inicio .aura-home-upcoming p {
+  text-shadow: none;
+}
+
+.aura-module-inicio .aura-home-separator {
+  background: rgba(255, 255, 255, 0.38) !important;
+}
+
+.aura-module-inicio .aura-home-action-primary {
+  border-color: rgba(255, 255, 255, 0.18) !important;
+  background: linear-gradient(135deg, #8a5f88, #68456f) !important;
+  color: #ffffff !important;
+  box-shadow: 0 10px 24px rgba(34, 18, 51, 0.26), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+.aura-module-inicio .aura-home-action-secondary {
+  border-color: rgba(255, 255, 255, 0.58) !important;
+  background: rgba(255, 253, 255, 0.9) !important;
+  color: #523b46 !important;
+  box-shadow: 0 8px 20px rgba(32, 17, 48, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.76);
+}
+
+.aura-module-inicio .aura-home-action-secondary:hover {
+  background: #fff9ff !important;
+  color: #503340 !important;
+}
+
+@media (max-width: 767px) {
+  .aura-module-inicio .aura-home-hero {
+    padding: 1.25rem;
+  }
+
+  .aura-module-inicio .aura-home-metric,
+  .aura-module-inicio .aura-home-empty,
+  .aura-module-inicio .aura-home-upcoming {
+    background: rgba(255, 253, 255, 0.94) !important;
+  }
+}

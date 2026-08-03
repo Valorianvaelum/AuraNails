@@ -2,10 +2,10 @@ import { useEffect, useState } from "react";
 import { Link, Route, Routes, useSearchParams } from "react-router-dom";
 
 import { listarTurnos } from "../api/turnos.js";
-import AppHeader from "../components/AppHeader.jsx";
 import TurnoDetailPage from "./TurnoDetailPage.jsx";
 import TurnoFormPage from "./TurnoFormPage.jsx";
 import TurnoReprogramarPage from "./TurnoReprogramarPage.jsx";
+import { AuraEmptyState, AuraHero, AuraPage, AuraPanel, AuraPanelHeader, AuraRecordCard } from "../components/visual";
 
 const hoy = () => new Date().toLocaleDateString("en-CA");
 const hora = (value) => new Intl.DateTimeFormat("es-AR", { hour: "2-digit", minute: "2-digit" }).format(new Date(value));
@@ -80,39 +80,37 @@ function ListaTurnos() {
   };
 
   return (
-    <main className="min-h-screen bg-[#fff4f7] text-[#3d2f32]">
-      <AppHeader />
-      <section className="mx-auto max-w-5xl px-5 py-8 sm:px-8">
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.16em] text-primary">Consulta e historial</p>
-            <h1 className="mt-2 text-3xl font-semibold">Todos los turnos</h1>
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
-              Buscá turnos por fecha, estado o clienta. Para organizar visualmente el día o la semana, usá la Agenda.
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-3">
-            <Link className="ui-button ui-button-secondary min-h-11" to="/agenda">Abrir agenda</Link>
-            <Link className="ui-button ui-button-primary min-h-11" to="nuevo">Nuevo turno</Link>
-          </div>
-        </div>
+    <AuraPage width="content">
+      <div className="grid gap-5">
+        <AuraHero
+          eyebrow="Consulta e historial"
+          title="Todos los turnos"
+          description="Buscá turnos por fecha, estado o clienta. Para organizar visualmente el día o la semana, usá la Agenda."
+          actions={(
+            <>
+              <Link className="aura-button aura-button-secondary" to="/agenda">Abrir agenda</Link>
+              <Link className="aura-button aura-button-primary" to="nuevo">Nuevo turno</Link>
+            </>
+          )}
+        />
 
-        <section className="ui-section mt-6" aria-label="Filtros de turnos">
+        <AuraPanel aria-label="Filtros de turnos">
+          <AuraPanelHeader title="Filtrar turnos" description="Navegá por fecha o combiná estado y búsqueda de clienta." />
           <div className="flex flex-wrap items-center gap-2">
-            <button className="ui-button ui-button-secondary min-h-11" type="button" onClick={() => moverDia(-1)}>Día anterior</button>
-            <button className="ui-button ui-button-secondary min-h-11" type="button" onClick={() => setFecha(hoy())}>Hoy</button>
-            <button className="ui-button ui-button-secondary min-h-11" type="button" onClick={() => moverDia(1)}>Día siguiente</button>
-            {tieneFiltros && <button className="ui-button ui-button-ghost min-h-11" type="button" onClick={limpiarFiltros}>Limpiar filtros</button>}
+            <button className="aura-button aura-button-secondary" type="button" onClick={() => moverDia(-1)}>Día anterior</button>
+            <button className="aura-button aura-button-secondary" type="button" onClick={() => setFecha(hoy())}>Hoy</button>
+            <button className="aura-button aura-button-secondary" type="button" onClick={() => moverDia(1)}>Día siguiente</button>
+            {tieneFiltros && <button className="aura-button aura-button-ghost" type="button" onClick={limpiarFiltros}>Limpiar filtros</button>}
           </div>
 
           <div className="mt-4 grid gap-4 sm:grid-cols-3">
-            <label className="grid gap-1 text-sm font-medium text-foreground">
-              Fecha
-              <input type="date" value={fecha} onChange={(event) => setFecha(event.target.value)} />
-            </label>
-            <label className="grid gap-1 text-sm font-medium text-foreground">
-              Estado
-              <select value={estado} onChange={(event) => setEstado(event.target.value)}>
+            <div className="aura-field">
+              <label className="aura-field-label mb-2 block" htmlFor="turnos-fecha">Fecha</label>
+              <input id="turnos-fecha" className="aura-control" type="date" value={fecha} onChange={(event) => setFecha(event.target.value)} />
+            </div>
+            <div className="aura-field">
+              <label className="aura-field-label mb-2 block" htmlFor="turnos-estado">Estado</label>
+              <select id="turnos-estado" className="aura-control" value={estado} onChange={(event) => setEstado(event.target.value)}>
                 <option value="">Todos</option>
                 <option value="pendiente">Pendientes</option>
                 <option value="confirmado">Confirmados</option>
@@ -121,49 +119,50 @@ function ListaTurnos() {
                 <option value="realizado">Realizados</option>
                 <option value="no_vino">No vinieron</option>
               </select>
-            </label>
-            <label className="grid gap-1 text-sm font-medium text-foreground">
-              Buscar clienta
-              <input
-                placeholder="Nombre o teléfono"
-                value={busqueda}
-                onChange={(event) => setBusqueda(event.target.value)}
-              />
-            </label>
+            </div>
+            <div className="aura-field">
+              <label className="aura-field-label mb-2 block" htmlFor="turnos-busqueda">Buscar clienta</label>
+              <input id="turnos-busqueda" className="aura-control" placeholder="Nombre o teléfono" value={busqueda} onChange={(event) => setBusqueda(event.target.value)} />
+            </div>
           </div>
-        </section>
+        </AuraPanel>
 
-        {fecha && <p className="mt-5 text-sm font-medium capitalize text-muted-foreground">Mostrando turnos del {fechaLegible(fecha)}</p>}
-        {cargando && <p className="mt-5 text-muted-foreground">Cargando turnos...</p>}
-        {error && <p className="mt-5 rounded-lg bg-[var(--color-danger-soft)] px-4 py-3 text-destructive">{error}</p>}
-        {!cargando && !error && (
-          <div className="mt-5 grid gap-3">
-            {turnos.map((turno) => (
-              <article className="ui-card" key={turno.id}>
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div>
-                    <p className="text-lg font-semibold">{hora(turno.inicio)} – {hora(turno.fin)}</p>
-                    <h2 className="mt-1 text-lg font-semibold">{turno.clienta.nombre_completo}</h2>
+        <AuraPanel>
+          <AuraPanelHeader
+            title="Resultados"
+            description={fecha ? `Mostrando turnos del ${fechaLegible(fecha)}` : "Listado completo según los filtros seleccionados."}
+          />
+          {cargando && <p className="aura-form-status">Cargando turnos...</p>}
+          {error && <p className="rounded-lg bg-[var(--color-danger-soft)] px-4 py-3 text-destructive">{error}</p>}
+          {!cargando && !error && (
+            <div className="grid gap-3">
+              {turnos.map((turno) => (
+                <AuraRecordCard as="article" className="p-5" key={turno.id}>
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div>
+                      <p className="text-lg font-semibold">{hora(turno.inicio)} – {hora(turno.fin)}</p>
+                      <h2 className="mt-1 text-lg font-semibold">{turno.clienta.nombre_completo}</h2>
+                    </div>
+                    <span className={claseEstado(turno.estado)}>{turno.estado_display}</span>
                   </div>
-                  <span className={claseEstado(turno.estado)}>{turno.estado_display}</span>
-                </div>
-                <p className="mt-3 text-sm text-muted-foreground">{turno.servicios.map((servicio) => servicio.nombre).join(", ")}</p>
-                <p className="mt-2 text-sm">{turno.duracion_legible} · <strong>{dinero(turno.precio_estimado)}</strong></p>
-                <div className="mt-4">
-                  <Link className="ui-button ui-button-primary min-h-11" to={`${turno.id}`}>Ver turno</Link>
-                </div>
-              </article>
-            ))}
-            {!turnos.length && (
-              <div className="ui-card-muted text-center">
-                <p>{tieneFiltros ? "No encontramos turnos con los filtros seleccionados." : "Todavía no tenés turnos registrados."}</p>
-                {!tieneFiltros && <Link className="mt-3 ui-button ui-button-secondary min-h-11" to="nuevo">Crear primer turno</Link>}
-              </div>
-            )}
-          </div>
-        )}
-      </section>
-    </main>
+                  <p className="mt-3 text-sm text-muted-foreground">{turno.servicios.map((servicio) => servicio.nombre).join(", ")}</p>
+                  <p className="mt-2 text-sm">{turno.duracion_legible} · <strong>{dinero(turno.precio_estimado)}</strong></p>
+                  <div className="mt-4">
+                    <Link className="aura-button aura-button-primary" to={`${turno.id}`}>Ver turno</Link>
+                  </div>
+                </AuraRecordCard>
+              ))}
+              {!turnos.length && (
+                <AuraEmptyState
+                  title={tieneFiltros ? "No encontramos turnos con los filtros seleccionados." : "Todavía no tenés turnos registrados."}
+                  action={!tieneFiltros ? <Link className="aura-button aura-button-secondary" to="nuevo">Crear primer turno</Link> : null}
+                />
+              )}
+            </div>
+          )}
+        </AuraPanel>
+      </div>
+    </AuraPage>
   );
 }
 

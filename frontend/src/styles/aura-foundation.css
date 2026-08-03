@@ -1,0 +1,743 @@
+:root {
+  --aura-text-on-glass: #fffaff;
+  --aura-text-on-glass-muted: rgba(249, 239, 251, 0.8);
+  --aura-link-on-glass: #f2c9e6;
+  --aura-glass-border: rgba(255, 255, 255, 0.22);
+  --aura-glass-border-strong: rgba(255, 255, 255, 0.34);
+  --aura-glass-bg: linear-gradient(145deg, rgba(255, 255, 255, 0.105), rgba(255, 255, 255, 0.035));
+  --aura-glass-bg-strong: linear-gradient(145deg, rgba(255, 255, 255, 0.145), rgba(255, 255, 255, 0.055));
+  --aura-glass-shadow: 0 22px 58px rgba(16, 7, 29, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  --aura-light-surface: rgba(255, 253, 255, 0.93);
+  --aura-light-surface-soft: rgba(246, 240, 249, 0.9);
+  --aura-light-border: rgba(255, 255, 255, 0.58);
+  --aura-light-shadow: 0 16px 42px rgba(20, 9, 35, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.72);
+  --aura-dark-ink: #352c38;
+  --aura-dark-muted: #6c6171;
+  --aura-brand: #80577c;
+  --aura-brand-hover: #654563;
+}
+
+body {
+  background: #160d25;
+}
+
+html {
+  scroll-padding-top: calc(var(--aura-header-height, 4.75rem) + 1rem);
+}
+
+.aura-main {
+  min-width: 0;
+}
+
+.aura-page :is([id], .aura-hero, .aura-panel, .aura-field, input, select, textarea) {
+  scroll-margin-top: calc(var(--aura-header-height, 4.75rem) + 1rem);
+}
+
+#root {
+  background: transparent !important;
+}
+
+.aura-module,
+.aura-page,
+.aura-page > * {
+  box-sizing: border-box;
+}
+
+.aura-page {
+  animation: aura-page-in 220ms ease-out both;
+}
+
+@keyframes aura-page-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Navegación: barra flotante de vidrio, integrada a la galaxia. */
+.aura-app-header {
+  pointer-events: none;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  color: var(--aura-text-on-glass);
+}
+
+.aura-app-header-inner {
+  position: relative;
+  pointer-events: none;
+}
+
+.aura-app-header-shell {
+  pointer-events: auto;
+  border-radius: 1.05rem;
+  padding: 0.62rem 0.72rem;
+  background:
+    radial-gradient(circle at 14% 0%, rgba(238, 178, 221, 0.08), transparent 34%),
+    linear-gradient(135deg, rgba(38, 18, 53, 0.78), rgba(16, 18, 45, 0.72));
+  box-shadow: 0 14px 38px rgba(9, 4, 22, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.09);
+  -webkit-backdrop-filter: blur(24px) saturate(135%);
+  backdrop-filter: blur(24px) saturate(135%);
+}
+
+.aura-brand {
+  border-radius: 0.85rem;
+  color: var(--aura-text-on-glass);
+  text-decoration: none;
+  transition: background 160ms ease, box-shadow 160ms ease;
+}
+
+.aura-brand:hover {
+  background: rgba(255, 255, 255, 0.055);
+}
+
+.aura-brand:focus-visible,
+.aura-nav-link:focus-visible,
+.aura-mobile-nav-link:focus-visible,
+.aura-header-action:focus-visible {
+  outline: 2px solid rgba(244, 202, 232, 0.82);
+  outline-offset: 3px;
+}
+
+.aura-brand-mark {
+  display: grid;
+  width: 2.5rem;
+  height: 2.5rem;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 0.78rem;
+  background: rgba(255, 255, 255, 0.075);
+  color: #fff8fe;
+  font-size: 0.82rem;
+  font-weight: 800;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.aura-brand-title {
+  color: #fffaff;
+  font-size: 0.875rem;
+  font-weight: 780;
+  letter-spacing: 0.025em;
+}
+
+.aura-brand-subtitle {
+  margin-top: 0.12rem;
+  color: rgba(249, 239, 251, 0.66);
+  font-size: 0.75rem;
+}
+
+.aura-nav-link,
+.aura-mobile-nav-link {
+  color: rgba(249, 239, 251, 0.72);
+  text-decoration: none;
+  transition: color 150ms ease, background 150ms ease, border-color 150ms ease;
+}
+
+.aura-nav-link {
+  display: inline-flex;
+  min-height: 2.5rem;
+  flex-shrink: 0;
+  align-items: center;
+  border: 1px solid transparent;
+  border-radius: 0.72rem;
+  padding: 0 0.8rem;
+  font-size: 0.875rem;
+  font-weight: 620;
+}
+
+.aura-nav-link:hover {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.055);
+  color: #fffaff;
+}
+
+.aura-nav-link.is-active {
+  border-color: rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.11);
+  color: #fffaff;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.aura-header-action {
+  display: inline-flex;
+  min-height: 2.5rem;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 0.72rem;
+  background: rgba(7, 3, 18, 0.18);
+  color: #fffaff;
+  padding: 0.55rem 0.85rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 150ms ease, border-color 150ms ease, transform 150ms ease;
+}
+
+.aura-header-action:hover {
+  border-color: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.095);
+  transform: translateY(-1px);
+}
+
+.aura-header-logout {
+  border-color: transparent;
+  background: transparent;
+  color: rgba(249, 239, 251, 0.8);
+}
+
+.aura-mobile-nav {
+  display: grid;
+  gap: 0.4rem;
+  margin-top: 0.7rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  padding-top: 0.7rem;
+}
+
+.aura-mobile-nav-link {
+  display: flex;
+  min-height: 2.75rem;
+  align-items: center;
+  border: 1px solid transparent;
+  border-radius: 0.75rem;
+  padding: 0.65rem 0.9rem;
+  font-size: 0.875rem;
+  font-weight: 690;
+}
+
+.aura-mobile-nav-link:hover,
+.aura-mobile-nav-link.is-active {
+  border-color: rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.075);
+  color: #fffaff;
+}
+
+/* Primitivas visuales. */
+.aura-glass {
+  border: 1px solid var(--aura-glass-border);
+  background: var(--aura-glass-bg);
+  box-shadow: var(--aura-glass-shadow);
+  color: var(--aura-text-on-glass);
+  -webkit-backdrop-filter: blur(16px) saturate(120%);
+  backdrop-filter: blur(16px) saturate(120%);
+}
+
+.aura-hero {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.5rem;
+  border-radius: 1.3rem;
+  padding: 1.5rem;
+}
+
+.aura-hero-copy {
+  min-width: 0;
+  max-width: 46rem;
+}
+
+.aura-hero-back {
+  margin-bottom: 0.9rem;
+}
+
+.aura-hero-back a,
+.aura-hero-back button {
+  color: var(--aura-link-on-glass) !important;
+}
+
+.aura-eyebrow {
+  margin: 0;
+  color: rgba(245, 208, 236, 0.88);
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
+}
+
+.aura-hero-title {
+  margin: 0.55rem 0 0;
+  color: var(--aura-text-on-glass) !important;
+  font-size: clamp(1.85rem, 4vw, 2.55rem);
+  font-weight: 760;
+  letter-spacing: -0.035em;
+  line-height: 1.04;
+  text-shadow: 0 2px 18px rgba(12, 5, 23, 0.24);
+}
+
+.aura-hero-description {
+  margin: 0.7rem 0 0;
+  color: var(--aura-text-on-glass-muted) !important;
+  font-size: 0.98rem;
+  line-height: 1.65;
+}
+
+.aura-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.aura-panel {
+  border-radius: 1.3rem;
+  padding: 1.35rem;
+}
+
+.aura-panel-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.aura-panel-title {
+  margin: 0;
+  color: var(--aura-text-on-glass) !important;
+  font-size: 1.18rem;
+  font-weight: 720;
+  letter-spacing: -0.02em;
+}
+
+.aura-panel-description {
+  margin: 0.3rem 0 0;
+  color: var(--aura-text-on-glass-muted) !important;
+  font-size: 0.86rem;
+  line-height: 1.55;
+}
+
+.aura-panel-action a,
+.aura-panel-action button,
+.aura-glass-link {
+  color: var(--aura-link-on-glass) !important;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.aura-panel-action a:hover,
+.aura-glass-link:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+}
+
+/* Botones explícitos. */
+.aura-button {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  border-radius: 0.72rem;
+  padding: 0.65rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 730;
+  line-height: 1.1;
+  text-decoration: none;
+  transition: transform 160ms ease, background 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.aura-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.aura-button-primary {
+  border-color: rgba(255, 255, 255, 0.18) !important;
+  background: linear-gradient(135deg, #8b6288, #6d4a6b) !important;
+  color: #fff !important;
+  box-shadow: 0 10px 26px rgba(35, 15, 49, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.18) !important;
+}
+
+.aura-button-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #987095, #765272) !important;
+}
+
+.aura-button-secondary {
+  border-color: rgba(255, 255, 255, 0.22) !important;
+  background: rgba(8, 4, 19, 0.2) !important;
+  color: #fffaff !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.075) !important;
+  -webkit-backdrop-filter: blur(12px) saturate(112%);
+  backdrop-filter: blur(12px) saturate(112%);
+}
+
+.aura-button-secondary:hover:not(:disabled) {
+  border-color: rgba(255, 255, 255, 0.34) !important;
+  background: rgba(255, 255, 255, 0.105) !important;
+}
+
+.aura-button-ghost {
+  border-color: rgba(255, 255, 255, 0.22) !important;
+  background: rgba(255, 255, 255, 0.065) !important;
+  color: var(--aura-text-on-glass) !important;
+}
+
+/* Superficies internas del Bloque 1: subordinadas al panel, sin placas blancas. */
+.aura-record-card,
+.aura-content-card,
+.aura-light-card {
+  display: block;
+  min-width: 0;
+  border: 1px solid rgba(255, 255, 255, 0.17) !important;
+  border-radius: 0.95rem;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.07), rgba(7, 3, 17, 0.12)) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.065) !important;
+  color: var(--aura-text-on-glass) !important;
+  text-decoration: none;
+  -webkit-backdrop-filter: blur(11px) saturate(112%);
+  backdrop-filter: blur(11px) saturate(112%);
+  transition: border-color 150ms ease, background 150ms ease, transform 150ms ease;
+}
+
+.aura-record-card :is(h1, h2, h3, h4, strong, label, dd, .text-foreground),
+.aura-content-card :is(h1, h2, h3, h4, strong, label, dd, .text-foreground),
+.aura-light-card :is(h1, h2, h3, h4, strong, label, dd, .text-foreground) {
+  color: var(--aura-text-on-glass) !important;
+  text-shadow: none !important;
+}
+
+.aura-record-card :is(p, dt, .text-muted-foreground),
+.aura-content-card :is(p, dt, .text-muted-foreground),
+.aura-light-card :is(p, dt, .text-muted-foreground) {
+  color: var(--aura-text-on-glass-muted) !important;
+  text-shadow: none !important;
+}
+
+.aura-record-card a:not(.aura-button),
+.aura-content-card a:not(.aura-button),
+.aura-light-card a:not(.aura-button) {
+  color: var(--aura-link-on-glass) !important;
+}
+
+.aura-record-card:hover,
+.aura-content-card:hover {
+  border-color: rgba(255, 255, 255, 0.28) !important;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.105), rgba(7, 3, 17, 0.1)) !important;
+}
+
+/* Estados vacíos: mensaje integrado, no una tarjeta anidada. */
+.aura-empty-state {
+  display: flex;
+  min-height: 5.5rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  border-radius: 0.95rem;
+  background: rgba(7, 3, 17, 0.13) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.045) !important;
+  color: var(--aura-text-on-glass-muted) !important;
+  padding: 1.1rem 1.2rem;
+}
+
+.aura-empty-state-copy {
+  min-width: 0;
+}
+
+.aura-empty-state-title {
+  margin: 0;
+  color: var(--aura-text-on-glass) !important;
+  font-weight: 680;
+}
+
+.aura-empty-state-description {
+  margin: 0.3rem 0 0;
+  color: var(--aura-text-on-glass-muted) !important;
+  font-size: 0.875rem;
+  line-height: 1.55;
+}
+
+.aura-empty-state-action {
+  flex: 0 0 auto;
+}
+
+.aura-empty-state :is(p, .text-muted-foreground) {
+  color: var(--aura-text-on-glass-muted) !important;
+}
+
+/* Formularios glass: panel oscuro, controles claros. */
+.aura-form-panel {
+  display: grid;
+  gap: 1.25rem;
+  margin-top: 1.25rem;
+}
+
+.aura-form-panel label,
+.aura-field-label,
+.aura-form-panel legend {
+  color: var(--aura-text-on-glass) !important;
+  font-size: 0.875rem;
+  font-weight: 680;
+}
+
+.aura-field,
+.aura-form-panel label {
+  min-width: 0;
+}
+
+.aura-control,
+.aura-form-panel input:not([type="checkbox"]):not([type="radio"]),
+.aura-form-panel select,
+.aura-form-panel textarea {
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.46) !important;
+  border-radius: 0.78rem;
+  background: rgba(255, 253, 255, 0.92) !important;
+  color: var(--aura-dark-ink) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85), 0 8px 22px rgba(22, 10, 34, 0.09);
+}
+
+.aura-form-panel input:not([type="checkbox"]):not([type="radio"]),
+.aura-form-panel select {
+  min-height: 2.9rem;
+}
+
+.aura-form-panel textarea {
+  min-height: 7rem;
+}
+
+.aura-form-panel input:focus,
+.aura-form-panel select:focus,
+.aura-form-panel textarea:focus {
+  border-color: rgba(241, 201, 230, 0.78) !important;
+  background: #fff !important;
+  box-shadow: 0 0 0 3px rgba(228, 166, 215, 0.22), 0 10px 26px rgba(22, 10, 34, 0.1) !important;
+}
+
+.aura-field-help,
+.aura-form-panel .text-muted-foreground {
+  color: rgba(249, 239, 251, 0.72) !important;
+}
+
+.aura-form-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.2) !important;
+  padding-top: 1.15rem;
+}
+
+.aura-inset {
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 0.95rem;
+  background: rgba(255, 255, 255, 0.085);
+  color: var(--aura-text-on-glass);
+  padding: 1rem;
+}
+
+.aura-inset p,
+.aura-inset span,
+.aura-inset strong {
+  color: inherit;
+}
+
+.aura-choice {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0.9rem;
+  background: rgba(255, 255, 255, 0.075);
+  padding: 0.9rem;
+  color: var(--aura-text-on-glass);
+  cursor: pointer;
+  transition: border-color 150ms ease, background 150ms ease;
+}
+
+.aura-choice:hover {
+  border-color: rgba(255, 255, 255, 0.36);
+  background: rgba(255, 255, 255, 0.11);
+}
+
+.aura-choice input {
+  margin-top: 0.18rem;
+  accent-color: #b77aae;
+}
+
+/* Módulos todavía no intervenidos: fallback legible, sin definir su identidad final. */
+.aura-module-cobros main > section,
+.aura-module-caja main > section {
+  margin-top: 1.5rem;
+  margin-bottom: 2rem;
+  border: 1px solid var(--aura-light-border);
+  border-radius: 1.25rem;
+  background: rgba(255, 253, 255, 0.92);
+  box-shadow: var(--aura-light-shadow);
+  color: var(--aura-dark-ink);
+  -webkit-backdrop-filter: blur(20px) saturate(122%);
+  backdrop-filter: blur(20px) saturate(122%);
+}
+
+@media (max-width: 767px) {
+  .aura-page {
+    padding-top: 1rem !important;
+    padding-bottom: calc(2rem + env(safe-area-inset-bottom)) !important;
+  }
+
+  .aura-hero,
+  .aura-panel-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .aura-hero {
+    padding: 1.2rem;
+  }
+
+  .aura-panel {
+    padding: 1.1rem;
+  }
+
+  .aura-hero-actions,
+  .aura-panel-action {
+    width: 100%;
+    justify-content: stretch;
+  }
+
+  .aura-hero-actions .aura-button {
+    flex: 1 1 100%;
+  }
+
+  .aura-button {
+    min-height: 2.9rem;
+  }
+
+  .aura-form-panel input:not([type="checkbox"]):not([type="radio"]),
+  .aura-form-panel select,
+  .aura-form-panel textarea {
+    font-size: 1rem;
+  }
+
+  .aura-form-footer {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .aura-form-footer .aura-button {
+    width: 100%;
+  }
+
+  .aura-app-header-inner {
+    padding-inline: 0.5rem;
+  }
+
+  .aura-app-header-shell {
+    border-radius: 0.95rem;
+    padding: 0.55rem 0.6rem;
+  }
+
+  .aura-empty-state {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .aura-empty-state-action .aura-button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 380px) {
+  .aura-form-footer {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aura-page,
+  .aura-button,
+  .aura-choice {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+
+/* Diálogo de confirmación: misma jerarquía glass que el resto de AuraNails. */
+.confirm-backdrop {
+  background:
+    radial-gradient(circle at 50% 38%, rgba(129, 79, 126, 0.16), transparent 42%),
+    rgba(7, 3, 17, 0.68) !important;
+  -webkit-backdrop-filter: blur(9px) saturate(92%);
+  backdrop-filter: blur(9px) saturate(92%);
+}
+
+.confirm-dialog {
+  border: 1px solid rgba(255, 255, 255, 0.24) !important;
+  background:
+    radial-gradient(circle at 18% 0%, rgba(238, 178, 221, 0.12), transparent 34%),
+    linear-gradient(145deg, rgba(52, 27, 65, 0.94), rgba(18, 18, 46, 0.92)) !important;
+  color: var(--aura-text-on-glass) !important;
+  box-shadow:
+    0 28px 78px rgba(5, 2, 14, 0.48),
+    inset 0 1px 0 rgba(255, 255, 255, 0.13) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(138%);
+  backdrop-filter: blur(28px) saturate(138%);
+  animation: aura-dialog-in 180ms ease-out both;
+}
+
+.confirm-dialog h2 {
+  color: var(--aura-text-on-glass) !important;
+  letter-spacing: -0.02em;
+}
+
+.confirm-dialog p,
+.confirm-dialog #confirm-dialog-description {
+  color: var(--aura-text-on-glass-muted) !important;
+  line-height: 1.6;
+}
+
+.confirm-dialog-details {
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.07) !important;
+  color: var(--aura-text-on-glass-muted) !important;
+}
+
+.confirm-dialog-actions {
+  border-top-color: rgba(255, 255, 255, 0.16) !important;
+}
+
+.confirm-dialog-actions > button {
+  min-height: 2.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 0.72rem;
+  padding: 0.65rem 1rem;
+  font-weight: 730;
+  transition: transform 150ms ease, background 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.confirm-dialog-actions > button:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.confirm-dialog-actions > button:first-child {
+  background: rgba(8, 4, 19, 0.22);
+  color: var(--aura-text-on-glass);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.075);
+}
+
+.confirm-dialog-actions > button:first-child:hover:not(:disabled) {
+  border-color: rgba(255, 255, 255, 0.34);
+  background: rgba(255, 255, 255, 0.105);
+}
+
+.confirm-dialog-confirm {
+  border-color: rgba(255, 255, 255, 0.18) !important;
+  background: linear-gradient(135deg, #8b6288, #6d4a6b) !important;
+  color: #fff !important;
+  box-shadow: 0 10px 26px rgba(35, 15, 49, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+.confirm-dialog-destructive {
+  border-color: rgba(255, 255, 255, 0.16) !important;
+  background: linear-gradient(135deg, #934d60, #703746) !important;
+  color: #fff !important;
+  box-shadow: 0 10px 26px rgba(48, 13, 24, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+.confirm-dialog-actions > button:focus-visible {
+  outline: 2px solid rgba(244, 202, 232, 0.86);
+  outline-offset: 3px;
+}
+
+@keyframes aura-dialog-in {
+  from { opacity: 0; transform: translateY(8px) scale(0.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}

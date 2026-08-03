@@ -1,9 +1,9 @@
-import { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { NavLink, useLocation } from "react-router-dom";
 
 import { useAuth } from "@/auth/AuthContext.jsx";
-import { Button } from "@/components/ui/button.jsx";
 import { cn } from "@/lib/utils";
+import { preloadRoute } from "@/routes/routeModules.js";
 
 const links = [
   ["Inicio", "/inicio"],
@@ -15,80 +15,139 @@ const links = [
   ["Caja", "/caja"],
 ];
 
-const desktopLinkClassName = ({ isActive }) =>
-  cn(
-    "inline-flex h-10 shrink-0 items-center rounded-md px-3 text-sm font-medium text-muted-foreground transition-colors",
-    "hover:bg-secondary hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-    isActive && "bg-[var(--color-brand-soft)] text-primary",
-  );
-
-const mobileLinkClassName = ({ isActive }) =>
-  cn(
-    "flex min-h-11 items-center rounded-lg px-4 py-2.5 text-sm font-semibold text-muted-foreground transition-colors",
-    "hover:bg-secondary hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-    isActive && "bg-[var(--color-brand-soft)] text-primary",
-  );
+const desktopLinkClassName = ({ isActive }) => cn("aura-nav-link", isActive && "is-active");
+const mobileLinkClassName = ({ isActive }) => cn("aura-mobile-nav-link", isActive && "is-active");
 
 function AppHeader() {
   const { logout } = useAuth();
+  const { pathname } = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
+  const headerRef = useRef(null);
+  const menuButtonRef = useRef(null);
 
   const closeMenu = () => setMenuOpen(false);
+  const warmRoute = (to) => {
+    void preloadRoute(to);
+  };
+
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    const header = headerRef.current;
+    if (!header) return undefined;
+
+    const updateHeaderHeight = () => {
+      document.documentElement.style.setProperty("--aura-header-height", `${header.getBoundingClientRect().height}px`);
+    };
+
+    updateHeaderHeight();
+    const observer = typeof window.ResizeObserver === "function" ? new window.ResizeObserver(updateHeaderHeight) : null;
+    observer?.observe(header);
+    window.addEventListener("resize", updateHeaderHeight);
+
+    return () => {
+      observer?.disconnect();
+      window.removeEventListener("resize", updateHeaderHeight);
+      document.documentElement.style.removeProperty("--aura-header-height");
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!menuOpen) return undefined;
+
+    const handleKeyDown = (event) => {
+      if (event.key !== "Escape") return;
+      setMenuOpen(false);
+      menuButtonRef.current?.focus();
+    };
+
+    const handlePointerDown = (event) => {
+      if (headerRef.current?.contains(event.target)) return;
+      setMenuOpen(false);
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("pointerdown", handlePointerDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("pointerdown", handlePointerDown);
+    };
+  }, [menuOpen]);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-card shadow-sm">
-      <div className="mx-auto w-full max-w-7xl px-4 py-3 sm:px-6 lg:px-8">
-        <div className="flex items-center gap-3">
-          <NavLink
-            className="flex shrink-0 items-center gap-3 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-            to="/inicio"
-            aria-label="Ir al inicio de AuraNails"
-            onClick={closeMenu}
-          >
-            <span className="grid h-10 w-10 place-items-center rounded-lg border border-[var(--color-border-strong)] bg-[var(--color-brand-soft)] text-sm font-bold text-primary" aria-hidden="true">
-              AN
-            </span>
-            <span className="leading-tight">
-              <span className="block text-sm font-bold tracking-wide text-foreground">AuraNails</span>
-              <span className="block text-xs text-muted-foreground">Gestión del estudio</span>
-            </span>
-          </NavLink>
-
-          <nav className="hidden min-w-0 flex-1 justify-center gap-1 lg:flex" aria-label="Navegación principal">
-            {links.map(([label, to]) => (
-              <NavLink className={desktopLinkClassName} key={to} to={to}>
-                {label}
-              </NavLink>
-            ))}
-          </nav>
-
-          <div className="ml-auto flex items-center gap-2">
-            <Button
-              className="h-10 px-3 lg:hidden"
-              variant="secondary"
-              size="sm"
-              type="button"
-              aria-expanded={menuOpen}
-              aria-controls="mobile-navigation"
-              onClick={() => setMenuOpen((current) => !current)}
+    <header ref={headerRef} className="aura-app-header sticky top-0 z-40">
+      <div className="aura-app-header-inner mx-auto w-full max-w-7xl px-3 py-2 sm:px-6 lg:px-8">
+        <div className="aura-app-header-shell aura-glass">
+          <div className="flex items-center gap-3">
+            <NavLink
+              className="aura-brand flex shrink-0 items-center gap-3"
+              to="/inicio"
+              aria-label="Ir al inicio de AuraNails"
+              onClick={closeMenu}
+              onFocus={() => warmRoute("/inicio")}
+              onPointerEnter={() => warmRoute("/inicio")}
             >
-              {menuOpen ? "Cerrar" : "Menú"}
-            </Button>
-            <Button className="h-10 px-3" variant="ghost" size="sm" type="button" onClick={logout}>
-              Salir
-            </Button>
-          </div>
-        </div>
+              <span className="aura-brand-mark" aria-hidden="true">
+                <img className="aura-brand-logo" src="/logo-favicon.png" alt="" width="512" height="512" decoding="async" />
+              </span>
+              <span className="leading-tight">
+                <span className="aura-brand-title block">AuraNails</span>
+                <span className="aura-brand-subtitle block">Gestión del estudio</span>
+              </span>
+            </NavLink>
 
-        {menuOpen && (
-          <nav id="mobile-navigation" className="mt-3 grid gap-1 border-t border-border pt-3 lg:hidden" aria-label="Navegación principal móvil">
-            {links.map(([label, to]) => (
-              <NavLink className={mobileLinkClassName} key={to} to={to} onClick={closeMenu}>
-                {label}
-              </NavLink>
-            ))}
-          </nav>
-        )}
+            <nav className="hidden min-w-0 flex-1 justify-center gap-1 lg:flex" aria-label="Navegación principal">
+              {links.map(([label, to]) => (
+                <NavLink
+                  className={desktopLinkClassName}
+                  key={to}
+                  to={to}
+                  onFocus={() => warmRoute(to)}
+                  onPointerEnter={() => warmRoute(to)}
+                >
+                  {label}
+                </NavLink>
+              ))}
+            </nav>
+
+            <div className="ml-auto flex items-center gap-2">
+              <button
+                ref={menuButtonRef}
+                className="aura-header-action aura-header-menu lg:hidden"
+                type="button"
+                aria-expanded={menuOpen}
+                aria-controls="mobile-navigation"
+                aria-haspopup="true"
+                aria-label={menuOpen ? "Cerrar menú principal" : "Abrir menú principal"}
+                onClick={() => setMenuOpen((current) => !current)}
+              >
+                {menuOpen ? "Cerrar" : "Menú"}
+              </button>
+              <button className="aura-header-action aura-header-logout" type="button" onClick={logout} aria-label="Cerrar sesión de AuraNails">
+                Salir
+              </button>
+            </div>
+          </div>
+
+          {menuOpen && (
+            <nav id="mobile-navigation" className="aura-mobile-nav lg:hidden" aria-label="Navegación principal móvil">
+              {links.map(([label, to]) => (
+                <NavLink
+                  className={mobileLinkClassName}
+                  key={to}
+                  to={to}
+                  onClick={closeMenu}
+                  onFocus={() => warmRoute(to)}
+                  onPointerEnter={() => warmRoute(to)}
+                >
+                  {label}
+                </NavLink>
+              ))}
+            </nav>
+          )}
+        </div>
       </div>
     </header>
   );

@@ -5,10 +5,13 @@ import { obtenerCaja, obtenerCajaAbierta } from "../api/caja.js";
 import CajaDialog from "../components/CajaDialog.jsx";
 import CajaMovimientos from "../components/CajaMovimientos.jsx";
 import CajaResumen, { dinero, fechaHora } from "../components/CajaResumen.jsx";
-import AppHeader from "../components/AppHeader.jsx";
+import { FinancialAmount, FinancialStatus } from "../components/Financial.jsx";
+import { AuraEmptyState, AuraHero, AuraPage, AuraPanel, AuraPanelHeader } from "../components/visual";
 
 function mensajeDeError(error) {
-  return error.response?.status === 404 ? "No encontramos esta caja." : "No pudimos cargar tu caja. Intentá nuevamente.";
+  return error.response?.status === 404
+    ? "No encontramos esta caja."
+    : "No pudimos cargar tu caja. Intentá nuevamente.";
 }
 
 export default function CajaPage() {
@@ -36,9 +39,10 @@ export default function CajaPage() {
   useEffect(() => { cargarCaja(); }, [cargarCaja]);
 
   const operacionExitosa = async (texto) => {
+    const tipo = dialogo?.tipo;
     setDialogo(null);
     setMensaje(texto);
-    if (dialogo?.tipo === "cerrar" && caja) {
+    if (tipo === "cerrar" && caja) {
       navigate(`/caja/${caja.id}`, { state: { message: texto } });
       return;
     }
@@ -46,25 +50,121 @@ export default function CajaPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#fff4f7] text-[#3d2f32]">
-      <AppHeader />
-      <section className="mx-auto max-w-5xl px-5 py-8 sm:px-8">
-        <div className="flex flex-wrap items-start justify-between gap-4"><div><h1 className="text-3xl font-semibold">Caja</h1><p className="mt-1 text-[#6f5b60]">Controlá el dinero físico de la jornada.</p></div><Link className="aura-action aura-action-contextual" to="/caja/historial">Ver historial</Link></div>
-        {mensaje && <p className="mt-5 rounded-xl bg-[#eef8f0] p-3 text-[#356640]">{mensaje}</p>}
-        {cargando && <p className="mt-6">Cargando caja...</p>}
-        {error && <div className="mt-6 rounded-2xl border border-[#e7c5ca] bg-white p-5"><p className="text-[#8b3f4c]">{error}</p><button className="mt-3 aura-action aura-action-secondary" type="button" onClick={cargarCaja}>Reintentar</button></div>}
-        {!cargando && !error && !caja && <section className="mt-6 rounded-3xl border border-[#efdadd] bg-white p-7 sm:p-10"><p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#b76e79]">Caja cerrada</p><h2 className="mt-3 text-2xl font-semibold">No tenés una caja abierta.</h2><p className="mt-3 max-w-xl text-[#6f5b60]">Abrila antes de registrar cobros y movimientos de esta jornada.</p><div className="mt-6 flex flex-wrap gap-3"><button className="aura-action aura-action-primary" type="button" onClick={() => setDialogo({ tipo: "abrir" })}>Abrir caja</button></div></section>}
-        {!cargando && !error && caja && <>
-          <section className="mt-6 rounded-3xl border border-[#efdadd] bg-white p-6 sm:p-7">
-            <div className="flex flex-wrap items-start justify-between gap-4"><div><span className="rounded-full bg-[#e7f5ea] px-3 py-1 text-sm font-semibold text-[#356640]">Caja abierta</span><p className="mt-4 text-sm text-[#6f5b60]">Abierta: {fechaHora(caja.abierta_en)}</p><p className="mt-1 text-sm text-[#6f5b60]">Saldo inicial: {dinero(caja.saldo_inicial)}</p></div><Link className="aura-action aura-action-secondary" to={`/caja/${caja.id}`}>Ver detalle</Link></div>
-            <div className="mt-6"><CajaResumen caja={caja} /></div>
-            <section className="aura-financial-section mt-7"><h2 className="text-lg font-semibold">Movimientos de caja</h2><p className="mt-1 text-sm text-[#6f5b60]">Registrá entradas y salidas de efectivo durante la jornada.</p><div className="mt-4 grid gap-3 sm:grid-cols-3"><button className="aura-action aura-action-secondary" type="button" onClick={() => setDialogo({ tipo: "gasto" })}>Registrar gasto</button><button className="aura-action aura-action-secondary" type="button" onClick={() => setDialogo({ tipo: "aporte" })}>Registrar aporte</button><button className="aura-action aura-action-warning" type="button" onClick={() => setDialogo({ tipo: "retiro" })}>Registrar retiro</button></div></section>
-            <section className="aura-financial-section mt-7"><h2 className="text-lg font-semibold">Cierre de jornada</h2><p className="mt-1 max-w-2xl text-sm text-[#6f5b60]">Revisá el saldo esperado y registrá el efectivo contado antes de cerrar.</p><div className="mt-4"><button className="aura-action aura-action-destructive" type="button" onClick={() => setDialogo({ tipo: "cerrar" })}>Cerrar caja</button></div></section>
-          </section>
-          <CajaMovimientos caja={caja} onAnularGasto={(registro) => setDialogo({ tipo: "anularGasto", registro })} onAnularMovimiento={(registro) => setDialogo({ tipo: "anularMovimiento", registro })} />
-        </>}
-      </section>
-      {dialogo && <CajaDialog tipo={dialogo.tipo} caja={caja} registro={dialogo.registro} onClose={() => setDialogo(null)} onSuccess={operacionExitosa} />}
-    </main>
+    <AuraPage className="cash-page" width="content">
+      <div className="cash-stack">
+        <AuraHero
+          eyebrow="Control de jornada"
+          title="Caja"
+          description="Controlá el efectivo, registrá movimientos y conciliá la jornada desde un único lugar."
+          actions={<Link className="aura-button aura-button-secondary" to="/caja/historial">Ver historial</Link>}
+        />
+
+        {mensaje ? <p className="cash-feedback is-success" role="status">{mensaje}</p> : null}
+
+        {cargando ? (
+          <AuraPanel>
+            <div className="cash-loading" aria-label="Cargando caja">
+              <span />
+              <span />
+              <span />
+            </div>
+          </AuraPanel>
+        ) : null}
+
+        {error ? (
+          <AuraPanel>
+            <div className="cash-error">
+              <div>
+                <strong>No pudimos cargar la caja.</strong>
+                <p>{error}</p>
+              </div>
+              <button className="aura-button aura-button-secondary" type="button" onClick={cargarCaja}>Reintentar</button>
+            </div>
+          </AuraPanel>
+        ) : null}
+
+        {!cargando && !error && !caja ? (
+          <AuraPanel className="cash-closed-panel">
+            <AuraEmptyState
+              title="Caja cerrada"
+              description="Abrila para registrar cobros y movimientos de efectivo durante la jornada."
+              action={(
+                <div className="cash-empty-actions">
+                  <button className="aura-button aura-button-primary" type="button" onClick={() => setDialogo({ tipo: "abrir" })}>Abrir caja</button>
+                  <Link className="aura-button aura-button-secondary" to="/caja/historial">Ver historial</Link>
+                </div>
+              )}
+            >
+              <p className="cash-closed-note">No se pueden registrar cobros mientras la caja permanezca cerrada.</p>
+            </AuraEmptyState>
+          </AuraPanel>
+        ) : null}
+
+        {!cargando && !error && caja ? (
+          <>
+            <AuraPanel className="cash-open-panel">
+              <div className="cash-open-header">
+                <div>
+                  <FinancialStatus label="Caja abierta" status="abierta" />
+                  <h2>Jornada en curso</h2>
+                  <p>Abierta el {fechaHora(caja.abierta_en)}</p>
+                </div>
+                <div className="cash-open-header-actions">
+                  <FinancialAmount amount={caja.saldo_inicial} label="Saldo inicial" size="md" />
+                  <Link className="aura-button aura-button-secondary" to={`/caja/${caja.id}`}>Ver detalle</Link>
+                </div>
+              </div>
+              <CajaResumen caja={caja} />
+            </AuraPanel>
+
+            <AuraPanel className="cash-operations-panel">
+              <AuraPanelHeader
+                title="Operaciones de efectivo"
+                description="Registrá entradas y salidas que no corresponden a cobros de servicios."
+              />
+              <div className="cash-operation-grid">
+                <button className="cash-operation-card is-expense" type="button" onClick={() => setDialogo({ tipo: "gasto" })}>
+                  <span className="cash-operation-symbol">−</span>
+                  <span><strong>Registrar gasto</strong><small>Compra o egreso operativo.</small></span>
+                </button>
+                <button className="cash-operation-card is-contribution" type="button" onClick={() => setDialogo({ tipo: "aporte" })}>
+                  <span className="cash-operation-symbol">+</span>
+                  <span><strong>Registrar aporte</strong><small>Agregar efectivo sin registrar un cobro.</small></span>
+                </button>
+                <button className="cash-operation-card is-withdrawal" type="button" onClick={() => setDialogo({ tipo: "retiro" })}>
+                  <span className="cash-operation-symbol">↗</span>
+                  <span><strong>Registrar retiro</strong><small>Quitar efectivo sin registrar un gasto.</small></span>
+                </button>
+              </div>
+            </AuraPanel>
+
+            <AuraPanel className="cash-close-panel">
+              <div className="cash-close-copy">
+                <p className="cash-kicker">Cierre de jornada</p>
+                <h2>Conciliá el efectivo antes de cerrar</h2>
+                <p>El saldo esperado es {dinero(caja.resumen?.saldo_teorico)}. Contá el dinero físico y registrá cualquier diferencia.</p>
+              </div>
+              <button className="cash-close-button" type="button" onClick={() => setDialogo({ tipo: "cerrar" })}>Cerrar caja</button>
+            </AuraPanel>
+
+            <CajaMovimientos
+              caja={caja}
+              onAnularGasto={(registro) => setDialogo({ tipo: "anularGasto", registro })}
+              onAnularMovimiento={(registro) => setDialogo({ tipo: "anularMovimiento", registro })}
+            />
+          </>
+        ) : null}
+      </div>
+
+      {dialogo ? (
+        <CajaDialog
+          tipo={dialogo.tipo}
+          caja={caja}
+          registro={dialogo.registro}
+          onClose={() => setDialogo(null)}
+          onSuccess={operacionExitosa}
+        />
+      ) : null}
+    </AuraPage>
   );
 }

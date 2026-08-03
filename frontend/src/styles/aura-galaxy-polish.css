@@ -1,0 +1,128 @@
+:root {
+  --aura-ink-on-galaxy: #fff9ff;
+  --aura-muted-on-galaxy: rgba(246, 236, 250, 0.82);
+  --aura-link-on-galaxy: #f2c8e5;
+  --aura-divider-on-galaxy: rgba(255, 255, 255, 0.32);
+}
+
+/*
+ * El texto claro se aplica solo a encabezados y controles que viven
+ * directamente sobre la galaxia. Nunca se propaga a tarjetas o formularios.
+ */
+.aura-app-layer main > section > h1,
+.aura-app-layer main > section > h2,
+.aura-app-layer main > section > h3,
+.aura-app-layer main > section > .ui-page-head h1,
+.aura-app-layer main > section > .ui-page-head h2,
+.aura-app-layer main > section > .ui-page-head h3,
+.aura-app-layer main > section > .space-y-8 > header h1,
+.aura-app-layer main > section > .space-y-8 > header h2,
+.aura-app-layer main > section > .space-y-8 > section > div:first-child h2,
+.aura-app-layer main > section > .space-y-8 > section > h2 {
+  color: var(--aura-ink-on-galaxy) !important;
+  text-shadow: 0 2px 18px rgba(18, 8, 32, 0.48);
+}
+
+.aura-app-layer main > section > p,
+.aura-app-layer main > section > .ui-page-head p,
+.aura-app-layer main > section > .space-y-8 > header p,
+.aura-app-layer main > section > .space-y-8 > section > div:first-child p,
+.aura-app-layer main > section > .space-y-8 > section > p {
+  color: var(--aura-muted-on-galaxy) !important;
+  text-shadow: 0 1px 14px rgba(18, 8, 32, 0.38);
+}
+
+.aura-app-layer main > section > a:not(.ui-button):not(.aura-action),
+.aura-app-layer main > section > .ui-page-head a:not(.ui-button):not(.aura-action),
+.aura-app-layer main > section > .space-y-8 > header a:not(.ui-button):not(.aura-action),
+.aura-app-layer main > section > .space-y-8 > section > div:first-child a:not(.ui-button):not(.aura-action),
+.aura-app-layer main > section > .space-y-8 > section > a:not(.ui-button):not(.aura-action),
+.aura-app-layer .ui-eyebrow {
+  color: var(--aura-link-on-galaxy) !important;
+}
+
+/* Formularios simples: sus títulos son hijos directos de la sección. */
+.aura-app-layer main > section > h1 + p {
+  color: var(--aura-muted-on-galaxy) !important;
+}
+
+/* Las superficies claras conservan siempre la paleta operativa original. */
+.aura-app-layer .ui-surface,
+.aura-app-layer .ui-section,
+.aura-app-layer .ui-card,
+.aura-app-layer .ui-card-muted,
+.aura-app-layer .aura-financial-card,
+.aura-app-layer .aura-financial-summary,
+.aura-app-layer .confirm-dialog,
+.aura-app-layer article.bg-white,
+.aura-app-layer form.bg-white,
+.aura-app-layer section.bg-white,
+.aura-app-layer div.bg-white.rounded-2xl,
+.aura-app-layer div.bg-white.rounded-3xl,
+.aura-app-layer [class~="bg-card"] {
+  color: var(--color-text) !important;
+}
+
+.aura-app-layer .ui-surface .text-muted-foreground,
+.aura-app-layer .ui-section .text-muted-foreground,
+.aura-app-layer .ui-card .text-muted-foreground,
+.aura-app-layer .ui-card-muted .text-muted-foreground,
+.aura-app-layer [class~="bg-card"] .text-muted-foreground {
+  color: var(--color-text-muted) !important;
+}
+
+.aura-app-layer .ui-surface a:not(.ui-button):not(.aura-action),
+.aura-app-layer .ui-section a:not(.ui-button):not(.aura-action),
+.aura-app-layer .ui-card a:not(.ui-button):not(.aura-action),
+.aura-app-layer [class~="bg-card"] a:not(.ui-button):not(.aura-action) {
+  color: var(--color-brand) !important;
+}
+
+/* Header translúcido, legible y sin teñir su contenido. */
+.aura-app-layer header,
+.aura-app-layer .ui-header {
+  border-color: rgba(255, 255, 255, 0.38) !important;
+  background: linear-gradient(180deg, rgba(255, 252, 255, 0.84), rgba(245, 236, 250, 0.76)) !important;
+  box-shadow: 0 10px 38px rgba(26, 12, 45, 0.18), inset 0 -1px 0 rgba(255, 255, 255, 0.42) !important;
+  -webkit-backdrop-filter: blur(22px) saturate(140%);
+  backdrop-filter: blur(22px) saturate(140%);
+}
+
+/* Botón primario visible; secundarios conservan texto oscuro. */
+.aura-app-layer .ui-button-primary,
+.aura-app-layer .aura-action-primary,
+.aura-app-layer .bg-\[\#b76e79\] {
+  border-color: rgba(255, 255, 255, 0.22) !important;
+  background: linear-gradient(135deg, #8a5f88 0%, #68456f 100%) !important;
+  color: #fff !important;
+  box-shadow: 0 10px 28px rgba(48, 27, 67, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+}
+
+.aura-app-layer .ui-button-secondary,
+.aura-app-layer .aura-action-secondary,
+.aura-app-layer a[class*="bg-card"] {
+  color: var(--color-text) !important;
+}
+
+/* Divisores exteriores; los divisores dentro de paneles siguen siendo oscuros. */
+.aura-app-layer main > section > .space-y-8 > [role="separator"],
+.aura-app-layer main > section > .space-y-8 > hr {
+  border-color: var(--aura-divider-on-galaxy) !important;
+  background-color: var(--aura-divider-on-galaxy) !important;
+}
+
+@media (max-width: 767px) {
+  .aura-app-layer header,
+  .aura-app-layer .ui-header {
+    background: rgba(252, 247, 255, 0.88) !important;
+    -webkit-backdrop-filter: blur(18px) saturate(132%);
+    backdrop-filter: blur(18px) saturate(132%);
+  }
+}
+
+@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  .aura-app-layer header,
+  .aura-app-layer .ui-header {
+    background: #f8f1fa !important;
+  }
+}

@@ -1,28 +1,86 @@
-import { createContext, useCallback, useContext, useMemo, useRef, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 
 const NotificationsContext = createContext(null);
-const DURATIONS = { success: 3500, info: 4000, warning: 5500, error: 7000 };
+const DURATIONS = { success: 6000, info: 6500, warning: 8500, error: 10000 };
 const LABELS = { success: "Correcto", info: "Información", warning: "Atención", error: "Error" };
 
 export function NotificationsProvider({ children }) {
   const [notifications, setNotifications] = useState([]);
   const ids = useRef(0);
+  const timers = useRef(new Map());
+  const signatures = useRef(new Map());
 
-  const dismiss = useCallback((id) => setNotifications((current) => current.filter((item) => item.id !== id)), []);
+  const dismiss = useCallback((id) => {
+    const timer = timers.current.get(id);
+    if (timer) window.clearTimeout(timer);
+    timers.current.delete(id);
+    signatures.current.delete(id);
+    setNotifications((current) => current.filter((item) => item.id !== id));
+  }, []);
+
   const notify = useCallback((message, type = "info") => {
     if (!message) return;
-    const created = { id: ++ids.current, message, type };
-    let accepted = false;
+
+    const signature = `${type}:${message}`;
+    if ([...signatures.current.values()].includes(signature)) return;
+
+    const id = ++ids.current;
+    const created = { id, message, type };
+    signatures.current.set(id, signature);
     setNotifications((current) => {
-      if (current.some((item) => item.message === message && item.type === type)) return current;
-      accepted = true;
-      return [...current, created].slice(-3);
+      const next = [...current, created];
+      const dropped = next.slice(0, Math.max(0, next.length - 3));
+      dropped.forEach((item) => {
+        const oldTimer = timers.current.get(item.id);
+        if (oldTimer) window.clearTimeout(oldTimer);
+        timers.current.delete(item.id);
+        signatures.current.delete(item.id);
+      });
+      return next.slice(-3);
     });
-    window.setTimeout(() => { if (accepted && DURATIONS[type]) dismiss(created.id); }, DURATIONS[type] || 4000);
+
+    const timer = window.setTimeout(() => dismiss(id), DURATIONS[type] || DURATIONS.info);
+    timers.current.set(id, timer);
   }, [dismiss]);
 
+  useEffect(() => () => {
+    timers.current.forEach((timer) => window.clearTimeout(timer));
+    timers.current.clear();
+    signatures.current.clear();
+  }, []);
+
   const value = useMemo(() => ({ notify, dismiss }), [dismiss, notify]);
-  return <NotificationsContext.Provider value={value}>{children}<section className="pointer-events-none fixed inset-x-4 top-4 z-50 mx-auto grid max-w-md gap-3 sm:left-auto sm:right-6 sm:mx-0" aria-label="Avisos" aria-live="polite">{notifications.map((item) => <div className={`pointer-events-auto flex items-start gap-3 rounded-2xl border px-4 py-3 shadow-lg ${item.type === "error" ? "border-[#d8b8c1] bg-[#f8edef] text-[#6f3443]" : item.type === "warning" ? "border-[#e7d4b0] bg-[#fbf6e9] text-[#6b5023]" : item.type === "success" ? "border-[#c9ddce] bg-[#f0f8f1] text-[#315e3a]" : "border-[#d8ced4] bg-[#fbf9f8] text-[#563947]"}`} key={item.id} role={item.type === "error" ? "alert" : "status"}><div className="min-w-0 flex-1"><p className="text-xs font-semibold uppercase tracking-[0.12em]">{LABELS[item.type]}</p><p className="mt-1 text-sm">{item.message}</p></div><button aria-label="Cerrar aviso" className="shrink-0 rounded-lg px-2 py-1 text-sm" type="button" onClick={() => dismiss(item.id)}>Cerrar</button></div>)}</section></NotificationsContext.Provider>;
+
+  return (
+    <NotificationsContext.Provider value={value}>
+      {children}
+      <section className="aura-notification-stack" aria-label="Avisos">
+        {notifications.map((item) => (
+          <div
+            aria-atomic="true"
+            aria-live={item.type === "error" ? "assertive" : "polite"}
+            className={`aura-notification is-${item.type}`}
+            key={item.id}
+            role={item.type === "error" ? "alert" : "status"}
+          >
+            <span className="aura-notification-indicator" aria-hidden="true" />
+            <div className="aura-notification-copy">
+              <p className="aura-notification-label">{LABELS[item.type]}</p>
+              <p className="aura-notification-message">{item.message}</p>
+            </div>
+            <button
+              aria-label={`Cerrar aviso: ${LABELS[item.type]}`}
+              className="aura-notification-close"
+              type="button"
+              onClick={() => dismiss(item.id)}
+            >
+              Cerrar
+            </button>
+          </div>
+        ))}
+      </section>
+    </NotificationsContext.Provider>
+  );
 }
 
 export function useNotifications() {

@@ -1,0 +1,188 @@
+:root {
+  --aura-stars-x: 0px;
+  --aura-stars-y: 0px;
+  --aura-violet-x: 0px;
+  --aura-violet-y: 0px;
+  --aura-rose-x: 0px;
+  --aura-rose-y: 0px;
+  --aura-blue-x: 0px;
+  --aura-blue-y: 0px;
+  --aura-glow-x: 0px;
+  --aura-glow-y: 0px;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+  background: #160d25;
+}
+
+#root {
+  isolation: isolate;
+  position: relative;
+  overflow-x: clip;
+}
+
+.aura-app-layer {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+}
+
+.aura-galaxy {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 50% 14%, rgba(255, 220, 249, 0.16), transparent 25%),
+    linear-gradient(145deg, #140c21 0%, #281235 42%, #14223f 72%, #1c1029 100%);
+}
+
+.aura-galaxy__fallback,
+.aura-galaxy__webgl,
+.aura-galaxy__veil {
+  position: absolute;
+  inset: 0;
+}
+
+.aura-galaxy__fallback {
+  inset: -7vmax;
+  opacity: 1;
+  transition: opacity 700ms ease;
+}
+
+.aura-galaxy__webgl {
+  opacity: 0;
+  transition: opacity 700ms ease;
+}
+
+.aura-galaxy.is-webgl-ready .aura-galaxy__fallback {
+  opacity: 0;
+}
+
+.aura-galaxy.is-webgl-ready .aura-galaxy__webgl {
+  opacity: 1;
+}
+
+.aura-galaxy__canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.aura-galaxy__stars,
+.aura-galaxy__nebula,
+.aura-galaxy__glow {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+}
+
+.aura-galaxy__stars {
+  opacity: 0.46;
+  transform: translate3d(var(--aura-stars-x), var(--aura-stars-y), 0) scale(1.04);
+  background-image:
+    radial-gradient(circle, rgba(255, 255, 255, 0.82) 0 1px, transparent 1.5px),
+    radial-gradient(circle, rgba(232, 214, 255, 0.64) 0 1px, transparent 1.5px),
+    radial-gradient(circle, rgba(194, 224, 255, 0.58) 0 1px, transparent 1.5px);
+  background-position: 12px 18px, 72px 46px, 38px 92px;
+  background-size: 118px 118px, 164px 164px, 212px 212px;
+  mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.78), transparent 94%);
+}
+
+.aura-galaxy__nebula {
+  filter: blur(20px) saturate(116%);
+  opacity: 0.68;
+}
+
+.aura-galaxy__nebula--violet {
+  inset: -14%;
+  transform: translate3d(var(--aura-violet-x), var(--aura-violet-y), 0) rotate(-8deg);
+  background:
+    radial-gradient(ellipse at 25% 28%, rgba(188, 118, 255, 0.68), transparent 31%),
+    radial-gradient(ellipse at 68% 74%, rgba(102, 79, 210, 0.52), transparent 35%);
+  animation: aura-nebula-drift-a 24s ease-in-out infinite alternate;
+}
+
+.aura-galaxy__nebula--rose {
+  inset: -18%;
+  transform: translate3d(var(--aura-rose-x), var(--aura-rose-y), 0) rotate(12deg);
+  background:
+    radial-gradient(ellipse at 76% 24%, rgba(255, 122, 193, 0.55), transparent 28%),
+    radial-gradient(ellipse at 36% 78%, rgba(236, 139, 206, 0.39), transparent 34%);
+  animation: aura-nebula-drift-b 30s ease-in-out infinite alternate;
+}
+
+.aura-galaxy__nebula--blue {
+  inset: -12%;
+  transform: translate3d(var(--aura-blue-x), var(--aura-blue-y), 0) rotate(-3deg);
+  background:
+    radial-gradient(ellipse at 82% 66%, rgba(77, 183, 255, 0.48), transparent 29%),
+    radial-gradient(ellipse at 18% 62%, rgba(109, 140, 255, 0.34), transparent 34%);
+  animation: aura-nebula-drift-c 36s ease-in-out infinite alternate;
+}
+
+.aura-galaxy__glow {
+  transform: translate3d(var(--aura-glow-x), var(--aura-glow-y), 0);
+  background: radial-gradient(circle at 50% 50%, rgba(255, 235, 255, 0.13), transparent 20%);
+  mix-blend-mode: screen;
+}
+
+.aura-galaxy__veil {
+  z-index: 2;
+  background:
+    linear-gradient(to bottom, rgba(20, 11, 33, 0.04), rgba(20, 11, 33, 0.22)),
+    radial-gradient(ellipse at center, transparent 30%, rgba(14, 8, 26, 0.20) 100%);
+}
+
+@keyframes aura-nebula-drift-a {
+  from { margin: -1.5% 0 0 -1%; }
+  to { margin: 1.5% -1% 0 1.5%; }
+}
+
+@keyframes aura-nebula-drift-b {
+  from { margin: 1% -1.5% -1% 0; }
+  to { margin: -1% 1.5% 1% -1%; }
+}
+
+@keyframes aura-nebula-drift-c {
+  from { margin: 0 1% -1.5% -1%; }
+  to { margin: -1% -1% 1.5% 1%; }
+}
+
+@media (max-width: 767px) {
+  .aura-galaxy__fallback {
+    inset: -12vmax;
+  }
+
+  .aura-galaxy__stars {
+    opacity: 0.3;
+  }
+
+  .aura-galaxy__nebula {
+    opacity: 0.58;
+  }
+
+  .aura-galaxy__veil {
+    background:
+      linear-gradient(to bottom, rgba(20, 11, 33, 0.08), rgba(20, 11, 33, 0.26)),
+      radial-gradient(ellipse at center, transparent 24%, rgba(14, 8, 26, 0.24) 100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aura-galaxy__fallback,
+  .aura-galaxy__webgl {
+    transition: none;
+  }
+
+  .aura-galaxy__stars,
+  .aura-galaxy__nebula,
+  .aura-galaxy__glow {
+    animation: none !important;
+    transform: none !important;
+  }
+}

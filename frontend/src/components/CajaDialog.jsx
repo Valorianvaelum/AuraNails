@@ -12,6 +12,7 @@ import {
 import { focusFirstError } from "../utils/apiErrors.js";
 import { validNumber } from "../utils/validators.js";
 import ConfirmDialog from "./ConfirmDialog.jsx";
+import useDialogAccessibility from "../hooks/useDialogAccessibility.js";
 import FieldError from "./FieldError.jsx";
 import { dinero } from "./CajaResumen.jsx";
 
@@ -45,6 +46,8 @@ export default function CajaDialog({ tipo, caja, registro, onClose, onSuccess })
   const [guardando, setGuardando] = useState(false);
   const [confirmando, setConfirmando] = useState(false);
   const [confirmandoSalida, setConfirmandoSalida] = useState(false);
+  const dialogRef = useRef(null);
+  const closeRef = useRef(null);
 
   const refs = {
     importe: useRef(null),
@@ -140,29 +143,177 @@ export default function CajaDialog({ tipo, caja, registro, onClose, onSuccess })
       ? "El importe se descontará del efectivo disponible en la caja."
       : "El movimiento dejará de considerarse activo y la anulación quedará registrada.";
 
+
+  useDialogAccessibility({
+    active: true,
+    suspended: confirmando || confirmandoSalida,
+    containerRef: dialogRef,
+    initialFocusRef: esAnulacion ? refs.motivo : refs.importe,
+    onEscape: solicitarCierre,
+  });
+
+  const campoImporte = (label, options = {}) => (
+    <div className="cash-dialog-field">
+      <label htmlFor="caja-dialog-importe">{label}</label>
+      <input
+        id="caja-dialog-importe"
+        ref={refs.importe}
+        autoFocus={options.autoFocus}
+        aria-describedby={erroresCampos.importe ? "caja-importe-error" : undefined}
+        aria-invalid={Boolean(erroresCampos.importe)}
+        className={`aura-control ${erroresCampos.importe ? "field-invalid" : ""}`}
+        min={options.min ?? "0"}
+        step="0.01"
+        type="number"
+        value={importe}
+        onChange={(event) => { setImporte(event.target.value); limpiarError("importe"); }}
+      />
+      <FieldError id="caja-importe-error" message={erroresCampos.importe} />
+    </div>
+  );
+
   return (
-    <div aria-modal="true" className="fixed inset-0 z-20 flex items-end bg-[#2f2528]/40 p-4 sm:items-center sm:justify-center" role="dialog" aria-labelledby="caja-dialog-titulo">
-      <form className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl" onSubmit={guardar} noValidate>
-        <header className="aura-dialog-header"><h2 className="text-2xl font-semibold" id="caja-dialog-titulo">{titulos[tipo]}</h2></header>
-        <div className="space-y-4 py-5">
-          {tipo === "abrir" && <><p className="text-sm text-[#6f5b60]">Abrí la caja antes de registrar cobros.</p><label className="grid gap-1">Saldo inicial<input ref={refs.importe} autoFocus aria-invalid={Boolean(erroresCampos.importe)} className={erroresCampos.importe ? "field-invalid" : ""} min="0" step="0.01" type="number" value={importe} onChange={(event) => { setImporte(event.target.value); limpiarError("importe"); }} /></label><FieldError id="caja-importe-error" message={erroresCampos.importe} /><label className="grid gap-1">Observación opcional<textarea ref={refs.observacion} value={observacion} onChange={(event) => { setObservacion(event.target.value); limpiarError("observacion"); }} /></label></>}
+    <div className="cash-dialog-backdrop" role="presentation">
+      <form
+        ref={dialogRef}
+        aria-describedby="caja-dialog-descripcion"
+        aria-labelledby="caja-dialog-titulo"
+        aria-modal="true"
+        className="cash-dialog"
+        noValidate
+        onSubmit={guardar}
+        role="dialog"
+        tabIndex="-1"
+      >
+        <header className="cash-dialog-header">
+          <div>
+            <p className="cash-kicker">Operación de caja</p>
+            <h2 id="caja-dialog-titulo">{titulos[tipo]}</h2>
+            <p className="aura-sr-only" id="caja-dialog-descripcion">Completá los datos de la operación y confirmá para registrarla.</p>
+          </div>
+          <button ref={closeRef} aria-label="Cerrar diálogo" className="cash-dialog-close" disabled={guardando} type="button" onClick={solicitarCierre}>×</button>
+        </header>
 
-          {tipo === "gasto" && <><p className="text-sm text-[#6f5b60]">Solo los gastos en efectivo reducen el dinero físico esperado.</p><label className="grid gap-1">Concepto<input ref={refs.concepto} autoFocus aria-invalid={Boolean(erroresCampos.concepto)} className={erroresCampos.concepto ? "field-invalid" : ""} value={concepto} onChange={(event) => { setConcepto(event.target.value); limpiarError("concepto"); }} /></label><FieldError id="caja-concepto-error" message={erroresCampos.concepto} /><label className="grid gap-1">Importe<input ref={refs.importe} aria-invalid={Boolean(erroresCampos.importe)} className={erroresCampos.importe ? "field-invalid" : ""} min="0.01" step="0.01" type="number" value={importe} onChange={(event) => { setImporte(event.target.value); limpiarError("importe"); }} /></label><FieldError id="caja-importe-error" message={erroresCampos.importe} /><label className="grid gap-1">Método de pago<select value={metodoPago} onChange={(event) => { setMetodoPago(event.target.value); if (event.target.value !== "otro") limpiarError("observacion"); }}><option value="efectivo">Efectivo</option><option value="transferencia">Transferencia</option><option value="tarjeta">Tarjeta</option><option value="otro">Otro</option></select></label><label className="grid gap-1">Observación{metodoPago === "otro" ? " (obligatoria)" : " opcional"}<textarea ref={refs.observacion} aria-invalid={Boolean(erroresCampos.observacion)} className={erroresCampos.observacion ? "field-invalid" : ""} value={observacion} onChange={(event) => { setObservacion(event.target.value); limpiarError("observacion"); }} /></label><FieldError id="caja-observacion-error" message={erroresCampos.observacion} /></>}
+        <div className="cash-dialog-body">
+          {tipo === "abrir" ? (
+            <>
+              <p className="cash-dialog-intro">Definí el efectivo inicial antes de comenzar a registrar cobros y movimientos.</p>
+              {campoImporte("Saldo inicial", { autoFocus: true })}
+              <div className="cash-dialog-field">
+                <label htmlFor="caja-dialog-observacion">Observación opcional</label>
+                <textarea id="caja-dialog-observacion" ref={refs.observacion} className="aura-control" value={observacion} onChange={(event) => { setObservacion(event.target.value); limpiarError("observacion"); }} />
+              </div>
+            </>
+          ) : null}
 
-          {esMovimiento && <><p className="text-sm text-[#6f5b60]">{tipo === "aporte" ? "Un aporte agrega dinero físico a la caja sin representar un cobro." : "Un retiro quita dinero físico de la caja sin representar un gasto."}</p><label className="grid gap-1">Importe<input ref={refs.importe} autoFocus aria-invalid={Boolean(erroresCampos.importe)} className={erroresCampos.importe ? "field-invalid" : ""} min="0.01" step="0.01" type="number" value={importe} onChange={(event) => { setImporte(event.target.value); limpiarError("importe"); }} /></label><FieldError id="caja-importe-error" message={erroresCampos.importe} /><label className="grid gap-1">Motivo<textarea ref={refs.motivo} aria-invalid={Boolean(erroresCampos.motivo)} className={erroresCampos.motivo ? "field-invalid" : ""} value={motivo} onChange={(event) => { setMotivo(event.target.value); limpiarError("motivo"); }} /></label><FieldError id="caja-motivo-error" message={erroresCampos.motivo} /></>}
+          {tipo === "gasto" ? (
+            <>
+              <p className="cash-dialog-intro">Solo los gastos en efectivo reducen el saldo físico esperado.</p>
+              <div className="cash-dialog-field">
+                <label htmlFor="caja-dialog-concepto">Concepto</label>
+                <input id="caja-dialog-concepto" ref={refs.concepto} autoFocus aria-describedby={erroresCampos.concepto ? "caja-concepto-error" : undefined} aria-invalid={Boolean(erroresCampos.concepto)} className={`aura-control ${erroresCampos.concepto ? "field-invalid" : ""}`} value={concepto} onChange={(event) => { setConcepto(event.target.value); limpiarError("concepto"); }} />
+                <FieldError id="caja-concepto-error" message={erroresCampos.concepto} />
+              </div>
+              {campoImporte("Importe", { min: "0.01" })}
+              <div className="cash-dialog-field">
+                <label htmlFor="caja-dialog-metodo">Método de pago</label>
+                <select id="caja-dialog-metodo" className="aura-control" value={metodoPago} onChange={(event) => { setMetodoPago(event.target.value); if (event.target.value !== "otro") limpiarError("observacion"); }}>
+                  <option value="efectivo">Efectivo</option>
+                  <option value="transferencia">Transferencia</option>
+                  <option value="tarjeta">Tarjeta</option>
+                  <option value="otro">Otro</option>
+                </select>
+              </div>
+              <div className="cash-dialog-field">
+                <label htmlFor="caja-dialog-observacion">Observación{metodoPago === "otro" ? " obligatoria" : " opcional"}</label>
+                <textarea id="caja-dialog-observacion" ref={refs.observacion} aria-describedby={erroresCampos.observacion ? "caja-observacion-error" : undefined} aria-invalid={Boolean(erroresCampos.observacion)} className={`aura-control ${erroresCampos.observacion ? "field-invalid" : ""}`} value={observacion} onChange={(event) => { setObservacion(event.target.value); limpiarError("observacion"); }} />
+                <FieldError id="caja-observacion-error" message={erroresCampos.observacion} />
+              </div>
+            </>
+          ) : null}
 
-          {tipo === "cerrar" && <><div className="rounded-xl bg-[#f4eff0] p-4 text-sm"><p>Saldo esperado: <strong>{dinero(caja?.resumen?.saldo_teorico)}</strong></p><p>Efectivo ingresado: <strong>{dinero(caja?.resumen?.cobros_por_metodo?.efectivo)}</strong></p><p>Gastos en efectivo: <strong>{dinero(caja?.resumen?.gastos_por_metodo?.efectivo)}</strong></p><p>Aportes: <strong>{dinero(caja?.resumen?.aportes)}</strong></p><p>Retiros: <strong>{dinero(caja?.resumen?.retiros)}</strong></p></div><label className="grid gap-1">Dinero contado<input ref={refs.importe} autoFocus aria-invalid={Boolean(erroresCampos.importe)} className={erroresCampos.importe ? "field-invalid" : ""} min="0" step="0.01" type="number" value={importe} onChange={(event) => { setImporte(event.target.value); limpiarError("importe"); }} /></label><FieldError id="caja-importe-error" message={erroresCampos.importe} />{diferenciaEstimada !== null && <p className="rounded-xl bg-[#f4eff0] p-3 text-sm">Diferencia estimada: <strong>{dinero(diferenciaEstimada)}</strong>{diferenciaEstimada === 0 ? " · Caja equilibrada" : diferenciaEstimada > 0 ? " · Sobrante" : " · Faltante"}</p>}<label className="grid gap-1">Observación{diferenciaEstimada !== null && diferenciaEstimada !== 0 ? " (obligatoria)" : " opcional"}<textarea ref={refs.observacion} aria-invalid={Boolean(erroresCampos.observacion)} className={erroresCampos.observacion ? "field-invalid" : ""} value={observacion} onChange={(event) => { setObservacion(event.target.value); limpiarError("observacion"); }} /></label><FieldError id="caja-observacion-error" message={erroresCampos.observacion} /></>}
+          {esMovimiento ? (
+            <>
+              <p className="cash-dialog-intro">{tipo === "aporte" ? "Un aporte agrega efectivo sin representar un cobro." : "Un retiro quita efectivo sin representar un gasto."}</p>
+              {campoImporte("Importe", { autoFocus: true, min: "0.01" })}
+              <div className="cash-dialog-field">
+                <label htmlFor="caja-dialog-motivo">Motivo</label>
+                <textarea id="caja-dialog-motivo" ref={refs.motivo} aria-describedby={erroresCampos.motivo ? "caja-motivo-error" : undefined} aria-invalid={Boolean(erroresCampos.motivo)} className={`aura-control ${erroresCampos.motivo ? "field-invalid" : ""}`} value={motivo} onChange={(event) => { setMotivo(event.target.value); limpiarError("motivo"); }} />
+                <FieldError id="caja-motivo-error" message={erroresCampos.motivo} />
+              </div>
+            </>
+          ) : null}
 
-          {esAnulacion && <><p className="text-sm text-[#6f5b60]">{registro?.concepto || registro?.tipo_display} · {dinero(registro?.importe)}</p><label className="grid gap-1">Motivo de anulación<textarea ref={refs.motivo} autoFocus aria-invalid={Boolean(erroresCampos.motivo)} className={erroresCampos.motivo ? "field-invalid" : ""} value={motivo} onChange={(event) => { setMotivo(event.target.value); limpiarError("motivo"); }} /></label><FieldError id="caja-motivo-error" message={erroresCampos.motivo} /></>}
+          {tipo === "cerrar" ? (
+            <>
+              <div className="cash-dialog-summary">
+                <div><span>Saldo esperado</span><strong>{dinero(caja?.resumen?.saldo_teorico)}</strong></div>
+                <div><span>Efectivo ingresado</span><strong>{dinero(caja?.resumen?.cobros_por_metodo?.efectivo)}</strong></div>
+                <div><span>Gastos en efectivo</span><strong>{dinero(caja?.resumen?.gastos_por_metodo?.efectivo)}</strong></div>
+                <div><span>Aportes / Retiros</span><strong>{dinero(Number(caja?.resumen?.aportes || 0) - Number(caja?.resumen?.retiros || 0))}</strong></div>
+              </div>
+              {campoImporte("Dinero contado", { autoFocus: true })}
+              {diferenciaEstimada !== null ? (
+                <div className={`cash-dialog-difference ${diferenciaEstimada === 0 ? "is-balanced" : diferenciaEstimada > 0 ? "is-surplus" : "is-shortage"}`}>
+                  <span>Diferencia estimada</span>
+                  <strong>{dinero(diferenciaEstimada)}</strong>
+                  <small>{diferenciaEstimada === 0 ? "Caja equilibrada" : diferenciaEstimada > 0 ? "Sobrante" : "Faltante"}</small>
+                </div>
+              ) : null}
+              <div className="cash-dialog-field">
+                <label htmlFor="caja-dialog-observacion">Observación{diferenciaEstimada !== null && diferenciaEstimada !== 0 ? " obligatoria" : " opcional"}</label>
+                <textarea id="caja-dialog-observacion" ref={refs.observacion} aria-describedby={erroresCampos.observacion ? "caja-observacion-error" : undefined} aria-invalid={Boolean(erroresCampos.observacion)} className={`aura-control ${erroresCampos.observacion ? "field-invalid" : ""}`} value={observacion} onChange={(event) => { setObservacion(event.target.value); limpiarError("observacion"); }} />
+                <FieldError id="caja-observacion-error" message={erroresCampos.observacion} />
+              </div>
+            </>
+          ) : null}
 
-          {error && <p className="rounded-xl bg-[#fff4f5] p-3 text-sm text-[#8b3f4c]" role="alert">{error}</p>}
+          {esAnulacion ? (
+            <>
+              <div className="cash-dialog-record">
+                <span>{registro?.concepto || registro?.tipo_display}</span>
+                <strong>{dinero(registro?.importe)}</strong>
+              </div>
+              <div className="cash-dialog-field">
+                <label htmlFor="caja-dialog-motivo">Motivo de anulación</label>
+                <textarea id="caja-dialog-motivo" ref={refs.motivo} autoFocus aria-describedby={erroresCampos.motivo ? "caja-motivo-error" : undefined} aria-invalid={Boolean(erroresCampos.motivo)} className={`aura-control ${erroresCampos.motivo ? "field-invalid" : ""}`} value={motivo} onChange={(event) => { setMotivo(event.target.value); limpiarError("motivo"); }} />
+                <FieldError id="caja-motivo-error" message={erroresCampos.motivo} />
+              </div>
+            </>
+          ) : null}
+
+          {error ? <p className="cash-feedback is-error" role="alert">{error}</p> : null}
         </div>
-        <footer className="aura-dialog-footer"><button className="aura-action aura-action-secondary" disabled={guardando} type="button" onClick={solicitarCierre}>Cancelar</button><button className={`aura-action ${tipo === "cerrar" || esAnulacion ? "aura-action-destructive" : "aura-action-primary"}`} disabled={guardando} type="submit">{guardando ? "Guardando..." : esAnulacion ? "Confirmar anulación" : tipo === "cerrar" ? "Confirmar cierre" : tipo === "abrir" ? "Confirmar apertura" : "Confirmar"}</button></footer>
+
+        <footer className="cash-dialog-footer">
+          <button className="aura-button aura-button-secondary" disabled={guardando} type="button" onClick={solicitarCierre}>Cancelar</button>
+          <button aria-busy={guardando || undefined} className={`aura-button ${tipo === "cerrar" || esAnulacion ? "aura-button-danger cash-destructive-button" : "aura-button-primary"}`} disabled={guardando} type="submit">
+            {guardando ? "Guardando..." : esAnulacion ? "Confirmar anulación" : tipo === "cerrar" ? "Confirmar cierre" : tipo === "abrir" ? "Confirmar apertura" : "Confirmar"}
+          </button>
+        </footer>
       </form>
 
-      <ConfirmDialog open={confirmando} title={confirmTitle} description={confirmDescription} details={tipo === "cerrar" ? `Efectivo contado: ${dinero(importe)}` : `${registro?.concepto || registro?.tipo_display || "Retiro"} · ${dinero(tipo === "retiro" ? importe : registro?.importe)}`} confirmLabel={tipo === "cerrar" ? "Cerrar caja" : tipo === "retiro" ? "Registrar retiro" : "Anular movimiento"} destructive={tipo !== "retiro"} isProcessing={guardando} onClose={() => setConfirmando(false)} onConfirm={async () => { setConfirmando(false); await ejecutar(); }} />
+      <ConfirmDialog
+        open={confirmando}
+        title={confirmTitle}
+        description={confirmDescription}
+        details={tipo === "cerrar" ? `Efectivo contado: ${dinero(importe)}` : `${registro?.concepto || registro?.tipo_display || "Retiro"} · ${dinero(tipo === "retiro" ? importe : registro?.importe)}`}
+        confirmLabel={tipo === "cerrar" ? "Cerrar caja" : tipo === "retiro" ? "Registrar retiro" : "Anular movimiento"}
+        destructive={tipo !== "retiro"}
+        isProcessing={guardando}
+        onClose={() => setConfirmando(false)}
+        onConfirm={async () => { setConfirmando(false); await ejecutar(); }}
+      />
 
-      <ConfirmDialog open={confirmandoSalida} title="¿Descartar los datos ingresados?" description="La operación no se registrará y la información escrita se perderá." confirmLabel="Descartar y cerrar" destructive onClose={() => setConfirmandoSalida(false)} onConfirm={onClose} />
+      <ConfirmDialog
+        open={confirmandoSalida}
+        title="¿Descartar los datos ingresados?"
+        description="La operación no se registrará y la información escrita se perderá."
+        confirmLabel="Descartar y cerrar"
+        destructive
+        onClose={() => setConfirmandoSalida(false)}
+        onConfirm={onClose}
+      />
     </div>
   );
 }
