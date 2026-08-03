@@ -92,10 +92,10 @@ class CobroSerializer(serializers.ModelSerializer):
 
 
 class AnularCobroSerializer(serializers.Serializer):
-    motivo = serializers.CharField(max_length=1000)
+    motivo = serializers.CharField(max_length=250)
 
     def validate_motivo(self, value):
         motivo = value.strip()
-        if not motivo:
-            raise serializers.ValidationError("Ingresá el motivo de anulación.")
+        if len(motivo) < 5:
+            raise serializers.ValidationError("El motivo debe tener al menos 5 caracteres.")
         return motivo

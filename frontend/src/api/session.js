@@ -22,6 +22,10 @@ export function saveAccessToken(access) {
   localStorage.setItem(ACCESS_TOKEN_KEY, access);
 }
 
+export function saveRefreshToken(refresh) {
+  localStorage.setItem(REFRESH_TOKEN_KEY, refresh);
+}
+
 export function clearSession() {
   localStorage.removeItem(ACCESS_TOKEN_KEY);
   localStorage.removeItem(REFRESH_TOKEN_KEY);
