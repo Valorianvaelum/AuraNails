@@ -2,9 +2,19 @@
 
 ## Estado
 
-**Capa 7 en progreso.** Las Capas 7A backend y 7B frontend están implementadas. La Capa 7C confirmó validaciones técnicas, smoke runtime y regresión de Caja, Cobros y Turnos. El recorrido visual autenticado queda pendiente porque el navegador de validación no estuvo disponible en este entorno; esta capa no se declara cerrada plenamente en runtime.
+**Capa 7 cerrada y estable.** Las Capas 7A backend y 7B frontend están implementadas. La Capa 7C completó validaciones técnicas, smoke runtime, regresión de Caja, Cobros y Turnos, y recorrido visual autenticado.
 
 El ajuste posterior al recorrido manual mejora la visibilidad de acciones en el detalle de Turnos, el acceso al cobro y el resumen diario de Inicio; no altera reglas de Caja ni habilita operaciones nuevas.
+
+## Validación de cierre
+
+- apertura y cierre de caja revisados en navegador autenticado;
+- gastos, aportes, retiros y anulaciones revisados;
+- integración de Cobros con caja abierta confirmada;
+- historial y detalle de cajas revisados;
+- estados de solo lectura para cajas cerradas confirmados;
+- suite backend, comprobaciones de migraciones, lint y build integrados en CI;
+- prueba integral `Clienta → Servicio → Caja → Turno → Cobro → Cierre` validada.
 
 ## Alcance implementado
 
