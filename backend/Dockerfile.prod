@@ -15,7 +15,8 @@ RUN python -m pip install --upgrade pip \
 
 COPY . .
 
-RUN chmod +x /app/entrypoint.prod.sh \
+RUN sed -i 's/\r$//' /app/entrypoint.prod.sh \
+    && chmod +x /app/entrypoint.prod.sh \
     && mkdir -p /app/staticfiles \
     && chown -R auranails:auranails /app
 
