@@ -22,6 +22,12 @@ URLs locales:
 - Backend: http://localhost:8001/api/health/
 - Frontend: http://localhost:5174
 
+## Stack productivo del piloto
+
+El repositorio incluye un stack separado que compila el frontend, ejecuta Django con Gunicorn, utiliza Nginx como gateway único y mantiene PostgreSQL sin puerto público.
+
+La validación local y las restricciones del Gate P1 están documentadas en [Preparación de piloto](docs/deploy-piloto.md). El stack se ejecuta con `docker-compose.production.yml` y un archivo local `.env.production` que nunca debe versionarse.
+
 ## Autenticación
 
 No existe registro público. Las cuentas se crean desde el administrador de Django o con:
