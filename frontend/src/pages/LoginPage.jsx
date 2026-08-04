@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Navigate, useLocation, useNavigate } from "react-router-dom";
+import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 
 import { useAuth } from "../auth/AuthContext.jsx";
 import AuraLoadingScreen from "../components/AuraLoadingScreen.jsx";
@@ -137,6 +137,10 @@ function LoginPage() {
               </div>
               {fieldErrors.password && <p className="field-error" id="password-error">{fieldErrors.password}</p>}
               {capsLock && <p className="aura-login-hint" id="caps-lock">Bloq Mayús está activado.</p>}
+            </div>
+
+            <div className="aura-auth-secondary-action aura-auth-secondary-action-end">
+              <Link className="aura-auth-link" to="/recuperar-contrasena">¿Olvidaste tu contraseña?</Link>
             </div>
 
             {error && <p className="aura-login-error" id="login-error" role="alert">{error}</p>}
