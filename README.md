@@ -28,6 +28,12 @@ El repositorio incluye un stack separado que compila el frontend, ejecuta Django
 
 La validación local y las restricciones del Gate P1 están documentadas en [Preparación de piloto](docs/deploy-piloto.md). El stack se ejecuta con `docker-compose.production.yml` y un archivo local `.env.production` que nunca debe versionarse.
 
+## Backup y restauración
+
+El Gate P2 incorpora backups PostgreSQL en formato custom, checksum SHA-256, manifiesto y restauración verificable en un volumen separado. El procedimiento y sus criterios de cierre están documentados en [Backup y restauración](docs/backup-restauracion.md).
+
+Los dumps pueden contener información personal y financiera. La carpeta `backups/`, los archivos `.dump` y `.env.production` permanecen fuera de Git.
+
 ## Autenticación
 
 No existe registro público. Las cuentas se crean desde el administrador de Django o con:
