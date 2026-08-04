@@ -29,7 +29,26 @@ Rutas disponibles:
 - `POST /api/auth/login/`
 - `POST /api/auth/refresh/`
 - `GET /api/auth/me/`
+- `POST /api/auth/password-reset/request/`
+- `POST /api/auth/password-reset/confirm/`
 - `GET /api/health/`
+
+### Recuperación de contraseña por correo
+
+Docker propaga al backend las variables `DJANGO_EMAIL_*`, `AURANAILS_FRONTEND_URL` y los límites de recuperación definidos en `.env`.
+
+En desarrollo, el backend de correo predeterminado imprime el mensaje en la consola. Para una prueba SMTP real:
+
+1. copiar `.env.example` como `.env`;
+2. configurar `DJANGO_EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend`;
+3. completar host, puerto, usuario, contraseña, TLS/SSL y remitente según el proveedor;
+4. recrear el servicio backend para aplicar las variables:
+
+```bash
+docker-compose up -d --force-recreate backend
+```
+
+El archivo `.env` está ignorado por Git. No se deben versionar contraseñas SMTP ni credenciales reales.
 
 Para las pruebas locales del backend:
 
