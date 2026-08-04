@@ -142,6 +142,14 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ],
+    "DEFAULT_THROTTLE_RATES": {
+        "password_reset_request": os.getenv(
+            "DJANGO_PASSWORD_RESET_REQUEST_RATE", "5/hour"
+        ),
+        "password_reset_confirm": os.getenv(
+            "DJANGO_PASSWORD_RESET_CONFIRM_RATE", "10/hour"
+        ),
+    },
 }
 if DEBUG:
     REST_FRAMEWORK["DEFAULT_RENDERER_CLASSES"].append(
@@ -151,7 +159,37 @@ if DEBUG:
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+    "CHECK_REVOKE_TOKEN": True,
 }
+
+AURANAILS_FRONTEND_URL = os.getenv(
+    "AURANAILS_FRONTEND_URL", "http://localhost:5174"
+).rstrip("/")
+PASSWORD_RESET_TIMEOUT = env_int("DJANGO_PASSWORD_RESET_TIMEOUT", 3600)
+
+EMAIL_BACKEND = os.getenv(
+    "DJANGO_EMAIL_BACKEND",
+    (
+        "django.core.mail.backends.console.EmailBackend"
+        if DEBUG
+        else "django.core.mail.backends.smtp.EmailBackend"
+    ),
+)
+EMAIL_HOST = os.getenv("DJANGO_EMAIL_HOST", "")
+EMAIL_PORT = env_int("DJANGO_EMAIL_PORT", 587)
+EMAIL_HOST_USER = os.getenv("DJANGO_EMAIL_HOST_USER", "")
+EMAIL_HOST_PASSWORD = os.getenv("DJANGO_EMAIL_HOST_PASSWORD", "")
+EMAIL_USE_TLS = env_bool("DJANGO_EMAIL_USE_TLS", True)
+EMAIL_USE_SSL = env_bool("DJANGO_EMAIL_USE_SSL", False)
+EMAIL_TIMEOUT = env_int("DJANGO_EMAIL_TIMEOUT", 10)
+DEFAULT_FROM_EMAIL = os.getenv(
+    "DJANGO_DEFAULT_FROM_EMAIL", "AuraNails <no-responder@auranails.local>"
+)
+
+if EMAIL_USE_TLS and EMAIL_USE_SSL:
+    raise ImproperlyConfigured(
+        "DJANGO_EMAIL_USE_TLS y DJANGO_EMAIL_USE_SSL no pueden activarse al mismo tiempo."
+    )
 
 SESSION_COOKIE_SECURE = env_bool("DJANGO_SESSION_COOKIE_SECURE", not DEBUG)
 CSRF_COOKIE_SECURE = env_bool("DJANGO_CSRF_COOKIE_SECURE", not DEBUG)

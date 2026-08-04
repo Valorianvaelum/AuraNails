@@ -22,6 +22,8 @@ const {
   CobrosPage,
   InicioPage,
   LoginPage,
+  PasswordResetConfirmPage,
+  PasswordResetRequestPage,
   ServiciosPage,
   TurnosPage,
 } = RoutePages;
@@ -39,7 +41,7 @@ const MODULE_LABELS = {
 };
 
 function getModuleName(pathname) {
-  if (pathname === "/login") return "login";
+  if (["/login", "/recuperar-contrasena", "/restablecer-contrasena"].includes(pathname)) return "login";
   if (pathname === "/inicio") return "inicio";
   if (pathname.startsWith("/agenda")) return "agenda";
   if (pathname.startsWith("/turnos")) return "turnos";
@@ -51,6 +53,8 @@ function getModuleName(pathname) {
 }
 
 function getRouteLabel(pathname, moduleName) {
+  if (pathname === "/recuperar-contrasena") return "Recuperar contraseña";
+  if (pathname === "/restablecer-contrasena") return "Restablecer contraseña";
   if (pathname === "/turnos/nuevo") return "Nuevo turno";
   if (pathname.endsWith("/reprogramar")) return "Reprogramar turno";
   if (pathname === "/clientas/nueva") return "Nueva clienta";
@@ -128,23 +132,25 @@ function AppRoutes() {
   return (
     <Suspense fallback={<AuraLoadingScreen label="Cargando módulo..." />}>
       <Routes>
-      <Route path="/" element={<RedirectBySession />} />
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/inicio" element={<ProtectedRoute><InicioPage /></ProtectedRoute>} />
-      <Route path="/servicios/*" element={<ProtectedRoute><ServiciosPage /></ProtectedRoute>} />
-      <Route path="/turnos/*" element={<ProtectedRoute><TurnosPage /></ProtectedRoute>} />
-      <Route path="/agenda" element={<ProtectedRoute><AgendaPage /></ProtectedRoute>} />
-      <Route path="/cobros" element={<ProtectedRoute><CobrosPage /></ProtectedRoute>} />
-      <Route path="/cobros/nuevo" element={<ProtectedRoute><CobroFormPage /></ProtectedRoute>} />
-      <Route path="/cobros/:id" element={<ProtectedRoute><CobroDetailPage /></ProtectedRoute>} />
-      <Route path="/caja" element={<ProtectedRoute><CajaPage /></ProtectedRoute>} />
-      <Route path="/caja/historial" element={<ProtectedRoute><CajasHistorialPage /></ProtectedRoute>} />
-      <Route path="/caja/:id" element={<ProtectedRoute><CajaDetailPage /></ProtectedRoute>} />
-      <Route path="/clientas" element={<ProtectedRoute><ClientasPage /></ProtectedRoute>} />
-      <Route path="/clientas/nueva" element={<ProtectedRoute><ClientaFormPage /></ProtectedRoute>} />
-      <Route path="/clientas/:id" element={<ProtectedRoute><ClientaDetailPage /></ProtectedRoute>} />
-      <Route path="/clientas/:id/editar" element={<ProtectedRoute><ClientaFormPage /></ProtectedRoute>} />
-      <Route path="*" element={<RedirectBySession />} />
+        <Route path="/" element={<RedirectBySession />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/recuperar-contrasena" element={<PasswordResetRequestPage />} />
+        <Route path="/restablecer-contrasena" element={<PasswordResetConfirmPage />} />
+        <Route path="/inicio" element={<ProtectedRoute><InicioPage /></ProtectedRoute>} />
+        <Route path="/servicios/*" element={<ProtectedRoute><ServiciosPage /></ProtectedRoute>} />
+        <Route path="/turnos/*" element={<ProtectedRoute><TurnosPage /></ProtectedRoute>} />
+        <Route path="/agenda" element={<ProtectedRoute><AgendaPage /></ProtectedRoute>} />
+        <Route path="/cobros" element={<ProtectedRoute><CobrosPage /></ProtectedRoute>} />
+        <Route path="/cobros/nuevo" element={<ProtectedRoute><CobroFormPage /></ProtectedRoute>} />
+        <Route path="/cobros/:id" element={<ProtectedRoute><CobroDetailPage /></ProtectedRoute>} />
+        <Route path="/caja" element={<ProtectedRoute><CajaPage /></ProtectedRoute>} />
+        <Route path="/caja/historial" element={<ProtectedRoute><CajasHistorialPage /></ProtectedRoute>} />
+        <Route path="/caja/:id" element={<ProtectedRoute><CajaDetailPage /></ProtectedRoute>} />
+        <Route path="/clientas" element={<ProtectedRoute><ClientasPage /></ProtectedRoute>} />
+        <Route path="/clientas/nueva" element={<ProtectedRoute><ClientaFormPage /></ProtectedRoute>} />
+        <Route path="/clientas/:id" element={<ProtectedRoute><ClientaDetailPage /></ProtectedRoute>} />
+        <Route path="/clientas/:id/editar" element={<ProtectedRoute><ClientaFormPage /></ProtectedRoute>} />
+        <Route path="*" element={<RedirectBySession />} />
       </Routes>
     </Suspense>
   );
