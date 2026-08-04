@@ -17,6 +17,7 @@ import "./styles/aura-controls.css";
 import "./styles/aura-states.css";
 import "./styles/aura-rhythm.css";
 import "./styles/aura-accessibility.css";
+import "./styles/aura-auth.css";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
