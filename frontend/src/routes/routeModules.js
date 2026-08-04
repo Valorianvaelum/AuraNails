@@ -13,6 +13,8 @@ const loaders = {
   cobros: () => import("../pages/CobrosPage.jsx"),
   inicio: () => import("../pages/InicioPage.jsx"),
   login: () => import("../pages/LoginPage.jsx"),
+  passwordResetConfirm: () => import("../pages/PasswordResetConfirmPage.jsx"),
+  passwordResetRequest: () => import("../pages/PasswordResetRequestPage.jsx"),
   servicios: () => import("../pages/ServiciosPage.jsx"),
   turnos: () => import("../pages/TurnosPage.jsx"),
 };
@@ -30,12 +32,16 @@ export const RoutePages = {
   CobrosPage: lazy(loaders.cobros),
   InicioPage: lazy(loaders.inicio),
   LoginPage: lazy(loaders.login),
+  PasswordResetConfirmPage: lazy(loaders.passwordResetConfirm),
+  PasswordResetRequestPage: lazy(loaders.passwordResetRequest),
   ServiciosPage: lazy(loaders.servicios),
   TurnosPage: lazy(loaders.turnos),
 };
 
 function getLoader(pathname) {
   if (pathname === "/login") return loaders.login;
+  if (pathname === "/recuperar-contrasena") return loaders.passwordResetRequest;
+  if (pathname === "/restablecer-contrasena") return loaders.passwordResetConfirm;
   if (pathname === "/inicio" || pathname === "/") return loaders.inicio;
   if (pathname.startsWith("/agenda")) return loaders.agenda;
   if (pathname.startsWith("/turnos")) return loaders.turnos;
