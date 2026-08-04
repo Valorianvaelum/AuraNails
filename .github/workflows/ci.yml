@@ -5,6 +5,8 @@ on:
     branches:
       - main
       - "feature/**"
+      - "chore/**"
+      - "docs/**"
   pull_request:
     branches:
       - main
@@ -83,3 +85,20 @@ jobs:
 
       - name: Build
         run: npm run build
+
+  production-stack:
+    name: Production stack
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Prepare smoke environment
+        run: cp .env.production.smoke.example .env.production
+
+      - name: Validate Compose
+        run: docker compose --env-file .env.production -f docker-compose.production.yml config
+
+      - name: Build production images
+        run: docker compose --env-file .env.production -f docker-compose.production.yml build
