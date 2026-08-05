@@ -1,0 +1,45 @@
+name: auranails-restore
+
+services:
+  db:
+    image: postgres:17-alpine
+    env_file:
+      - .env.production
+    volumes:
+      - postgres_restore_data:/var/lib/postgresql/data
+    restart: "no"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\""]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 5s
+    networks:
+      - restore_internal
+
+  verifier:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod
+    env_file:
+      - .env.production
+    environment:
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+      DJANGO_RUN_MIGRATIONS: "false"
+    entrypoint: ["python", "manage.py"]
+    restart: "no"
+    depends_on:
+      db:
+        condition: service_healthy
+    profiles:
+      - verify
+    networks:
+      - restore_internal
+
+volumes:
+  postgres_restore_data:
+
+networks:
+  restore_internal:
+    driver: bridge

@@ -97,8 +97,33 @@ jobs:
       - name: Prepare smoke environment
         run: cp .env.production.smoke.example .env.production
 
-      - name: Validate Compose
+      - name: Validate production Compose
         run: docker compose --env-file .env.production -f docker-compose.production.yml config
+
+      - name: Validate restore Compose
+        run: docker compose --env-file .env.production -f docker-compose.restore.yml --profile verify config
+
+      - name: Validate PowerShell scripts
+        shell: pwsh
+        run: |
+          $allErrors = @()
+          foreach ($script in @("scripts/backup-production.ps1", "scripts/verify-restore.ps1")) {
+            $tokens = $null
+            $parseErrors = $null
+            [System.Management.Automation.Language.Parser]::ParseFile(
+              $script,
+              [ref]$tokens,
+              [ref]$parseErrors
+            ) | Out-Null
+            $allErrors += $parseErrors
+          }
+          if ($allErrors.Count -gt 0) {
+            $allErrors | Format-List | Out-String | Write-Error
+            exit 1
+          }
 
       - name: Build production images
         run: docker compose --env-file .env.production -f docker-compose.production.yml build
+
+      - name: Build restore verifier
+        run: docker compose --env-file .env.production -f docker-compose.restore.yml --profile verify build verifier
