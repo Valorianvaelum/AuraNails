@@ -16,7 +16,7 @@ function Invoke-DockerChecked {
 
     & docker @Arguments
     if ($LASTEXITCODE -ne 0) {
-        throw "Docker terminó con código $LASTEXITCODE: docker $($Arguments -join ' ')"
+        throw "Docker terminó con código ${LASTEXITCODE}: docker $($Arguments -join ' ')"
     }
 }
 
